@@ -26,9 +26,8 @@
             &NegativeThickSpace;
           </p>
           <ul class="nav">
-            <li class="active"><a href="<?php echo base_url('index.php/main/index') ?>">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
+              <li><a href="<?php echo base_url('index.php/main/qa_wiki/qa'); ?>">Q/A section</a></li>
+            <li><a href="<?php echo base_url('index.php/main/qa_wiki/wiki'); ?>">Wiki section</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

@@ -42,4 +42,15 @@ class Main extends CI_Controller
         $data['sessionData'] = $this->data;
         $this->load->view('login', $data);
     }
+    
+    public function qa_wiki($key, $ask = null)
+    {
+        $data['sessionData'] = $this->data;
+        $data['key'] = $key;
+        $data['ask'] = $ask;
+        if($key == 'qa')
+            $this->load->view('qa', $data);
+        if($key == 'wiki')
+            $this->load->view('wiki', $data);
+    }
 }

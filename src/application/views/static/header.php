@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css"  href="<?php echo base_url('bootstrap/css/bootstrap.css'); ?>"/>
     <link rel="stylesheet" type="text/css"  href="<?php echo base_url('bootstrap/css/bootstrap-responsive.css'); ?>"/>
+    <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/myCssStyle.css'); ?>"/>
+    
     <title>
         <?php 
 	if(isset($title))
@@ -23,6 +25,16 @@
         padding: 9px 0;
       }
     </style>
+    <script type="text/javascript"> 
+        var editor, html = '';
+        function createEditor() 
+        {
+            if ( editor ) return;
+            var config = {};
+            config.entities = true;
+            editor = CKEDITOR.replace( 'editor', config );
+        }
+    </script>
     
   </head>
   <body>
