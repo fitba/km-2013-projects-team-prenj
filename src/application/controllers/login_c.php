@@ -2,14 +2,23 @@
 
 class Login_c extends CI_Controller 
 {   
-    var $data;
+    var $data; // globalna varijabla - definisana je na nivou klase.
+    
+    /* Konstruktor klase Login_c. On u sebi nasleđuje konstruktor iz klase CI_Controller, 
+     * poziva model login_m i globalnoj varijabli $data prosleđuje funkciju isLoggedIn()
+     * koja je definisana u modelu login_m */
     public function __construct()
     {
         parent::__construct();
         $this->load->model('login_m');
         $this->data = $this->login_m->isLoggedIn();
     }
-
+    
+    /* loginUser() ima sledeće funkcionalnosti: Ako je korisnik logiran, ne može se vratiti opet na login stranicu. 
+     * Ako je dugme za login pritisnuto, provjeravaju se unijete vrijednosti za username i password.
+     * Ako unešene vrijednosti odgovaraju vrijednostima iz baze, kreira se sesija i korisnik je uspješno logiran.
+     * Ako vrijednosti ne odgovaraj vrijednostima iz baze, korisniku će se izbaciti greška.
+     */
     public function loginUser()
     {
         if($this->data)
@@ -55,8 +64,11 @@ class Login_c extends CI_Controller
             $this->load->view('login', $data);
         }
     }
-
-    public function logout() 
+    
+    /* logout() označava prekidanje svih sesija koje se nalaze u sistemu. To znači da korisnika automatski 
+     * izlogira iz sistema.
+     */
+    public function logout()
     {
         session_start ();
         session_destroy ();

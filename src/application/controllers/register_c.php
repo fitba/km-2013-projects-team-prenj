@@ -2,6 +2,9 @@
 
 class Register_c extends CI_Controller 
 {
+    /* Konstruktor klase Register_c. On u sebi nasleđuje konstruktor iz klase CI_Controller, 
+     * poziva model login_m i general_m. Ako je korisnik već logiran na sistem, on se ne može vratiti na register
+     * stranicu sve dok je sesija popunjena. */
     public function __construct()
     {
         parent::__construct();
@@ -13,6 +16,10 @@ class Register_c extends CI_Controller
         }
     }
     
+    /* confirmAccount() prima jedan parametar, tj ključ. Kada se korisnik registruje na sistem, neophodno je da potvrdi
+     * svoj account. Potvrda za account mu se šalje putem maila. Randomly generisan ključ mu se prosleđuje u linku
+     * i klikom na taj link potvrđuje mu se account.
+     */
     public function confirmAccount($key)
     {
         $this->load->database();
@@ -30,6 +37,14 @@ class Register_c extends CI_Controller
         }
     }
 
+    /* registerUser() funkcija ima sledeće funkcionalnosti: Kada se pritisne dugme za registraciju, definišu se 
+     * obavezna polja. Ako je jedno polje od obaveznih prazno, funkcija se prekida i izbacuje se upozorenje da svako polje
+     * koje je obavetno mora biti popunjeno. Ako je svako takvo polje popunjeno, vrše se dodatne validacije i to:
+     * korisničko ime ne smije imati razmak u sebi, lozinka ne smije biti manja od 6 karaktera, lozinke moraju biti iste,
+     * i na kraju ne smijemo unijeti username i email koji već postoje u sistemu. Ako smo sve zadovoljili, prelazi se na
+     * definisanje podataka za unos. To su oni podaci koje ste unijeli u formi. Ako je sve u redu, prelazi se na slanje
+     * e-maila korisniku. Na kraju ostaje samo potvrda accounta koji je objašnjen funkcijom confirmAccount($key)
+     */
     public function registerUser()
     {
         if(isset($_POST['registerUser']))
