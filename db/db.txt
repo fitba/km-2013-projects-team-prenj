@@ -18,3 +18,20 @@ CREATE TABLE IF NOT EXISTS `users` (
   UNIQUE KEY `Username` (`Username`),
   UNIQUE KEY `Key` (`Key`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `users` (
+  `UserID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `FirstName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `LastName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
+  `Username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `Password` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `Email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `RegistrationDate` datetime NOT NULL,
+  `Key` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+  `ConfirmAccount` tinyint(1) NOT NULL DEFAULT '0',
+  `UserType` enum('admin','user') COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`UserID`),
+  UNIQUE KEY `Email` (`Email`),
+  UNIQUE KEY `Username` (`Username`),
+  UNIQUE KEY `Key` (`Key`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;

@@ -25,6 +25,7 @@
         padding: 9px 0;
       }
     </style>
+    <script type="text/javascript" src="<?php echo base_url("ckeditor/ckeditor.js"); ?>"></script>
     <script type="text/javascript"> 
         var editor, html = '';
         function createEditor() 
@@ -37,7 +38,7 @@
     </script>
     
   </head>
-  <body>
+  <body onload="createEditor()">
 <?php 
     $this->load->view('static/main-menu.php');
 ?>

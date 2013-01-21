@@ -52,5 +52,15 @@ class Main extends CI_Controller
             $this->load->view('qa', $data);
         if($key == 'wiki')
             $this->load->view('wiki', $data);
+        if(isset($ask))
+        {
+            if($ask == 'ask')
+            {
+                if($this->data == false)
+                {
+                    redirect('main/login');
+                }
+            }
+        }
     }
 }

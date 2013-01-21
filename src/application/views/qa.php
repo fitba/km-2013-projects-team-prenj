@@ -11,12 +11,40 @@
 <div class="row-fluid">
   <div class="span12">
     <?php 
-    if($ask)
+    if(isset($ask))
     {
+        if(isset($errors))
+        {
+            echo '<div class="alert alert-error">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h4>Upozorenje!</h4>
+                    '.$errors.'
+                  </div>';
+        }
+        if(isset($isOk))
+        {
+            echo '<div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h4>Informacija!</h4>
+                    '.$isOk.'
+                  </div>';
+        }
+        if(isset($unexpectedError))
+        {
+            echo '<div class="alert alert-success">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h4>Upozorenje!</h4>
+                    '.$unexpectedError.'
+                  </div>';
+        }
     ?>
     <h2>Postavite pitanje</h2>
-    <input type="text" placeholder="Ovdje unesite naslov pitanja" class="input-xxlarge">
-    <textarea id="editor" onload="createEditor();"></textarea>
+    <form action="<?php echo base_url('index.php/qawiki_c/askQuestion'); ?>" method="post">
+        <p><input type="text" name="title" placeholder="Ovdje unesite naslov pitanja" class="input-xxlarge"></p>
+        <p><textarea id="editor" name="editor"></textarea></p>
+        <p><input type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"></p>
+        <p><input type="submit" name="askQuestion" class="btn" value="Submit"></p>
+    </form>
     <?php 
     }
     ?>
