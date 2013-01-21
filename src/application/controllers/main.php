@@ -42,7 +42,11 @@ class Main extends CI_Controller
         $data['sessionData'] = $this->data;
         $this->load->view('login', $data);
     }
-    
+    /* qa_wiki() funkcija predstavlja stranicu gdje će biti wiki i question/answer stranice 
+     * $key parametar nam označava qa ili wiki, tj. da li je stranica question/answer ili wikipedia
+     * $ask parametar označava, kada smo u question/answer sekciji i ako je u pitanju ask sekcija, treba da nam se otvori
+     * sekcija gdje ćemo postavljati pitanje.
+     */
     public function qa_wiki($key, $ask = null)
     {
         $data['sessionData'] = $this->data;

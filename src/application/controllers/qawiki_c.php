@@ -2,6 +2,8 @@
 
 class Qawiki_c extends CI_Controller 
 {
+    /* Konstruktor klase Qawiki_c. On u sebi nasleđuje konstruktor iz klase CI_Controller, 
+     * poziva model login_m i general_m i globalnoj varijabli */
     public function __construct()
     {
         parent::__construct();
@@ -9,6 +11,8 @@ class Qawiki_c extends CI_Controller
         $this->load->model('login_m');
     }
     
+    /* askQuestion() funkcija nam omogućava unos pitanja. Pošto smo u question/answer sekciji i još u sekciji question, tj
+     * postavljamo pitanje, stranici moramo proslijediti podatak $ask da ne bi došlo do greške. */
     public function askQuestion()
     {
         if(isset($_POST['askQuestion']))
