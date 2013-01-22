@@ -6,10 +6,11 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </a>
-        <a class="brand" href="#">Knowledge Management System</a>
+        <a class="brand" href="<?php echo base_url('index.php/main/index'); ?>">Knowledge Management System</a>
         <div class="nav-collapse collapse">
           <p class="navbar-text pull-right">
-          <?php 
+          <?php
+          $sessionData = $this->login_m->isLoggedIn();
           if(!isset($sessionData))
           {
           ?>

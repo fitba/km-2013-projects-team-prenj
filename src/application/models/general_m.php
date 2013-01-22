@@ -107,13 +107,27 @@ class General_m extends CI_Model
         $count = $query->result_array();
         return $count[0]['Count'];
     }
+    
+    /* Globalna funkcija countRows() prihvata 3 parametra $table, $column i $where. 
+     * Funkcija broji broj redova u bazi za zadati id.
+     */
+    public function countRows($table, $column, $where)
+    {
+        $this->db->select('COUNT('.$column.') AS Count');
+        $this->db->where($where);
+        $query = $this->db->get($table);
+
+        $count = $query->result_array();
+        return $count[0]['Count'];
+    }
 
     /* Globalna funkcija getAll() prihvata 3 parametra $table, $orderBy i $config. 
      * Funkcija vraća sve podatke iz proslijeđene tabele.
      */
     public function getAll($table, $orderBy, $config = array())
     {
-        $this->db->order_by($orderBy, "asc");
+        if($orderBy != NULL)
+            $this->db->order_by($orderBy, "asc");
 
         if (isset($config['limit'])) 
         {

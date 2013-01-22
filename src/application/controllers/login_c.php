@@ -10,8 +10,8 @@ class Login_c extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('login_m');
         $this->data = $this->login_m->isLoggedIn();
+        $this->load->library('redirectpage');
     }
     
     /* loginUser() ima sledeće funkcionalnosti: Ako je korisnik logiran, ne može se vratiti opet na login stranicu. 
@@ -51,7 +51,8 @@ class Login_c extends CI_Controller
                         $_SESSION[$key] = $value;
                 }
                 session_write_close();
-                redirect('main/index');
+                $redirectPage = $this->redirectpage->getRedirectToPage();
+                redirect($redirectPage);
             }
             else
             {

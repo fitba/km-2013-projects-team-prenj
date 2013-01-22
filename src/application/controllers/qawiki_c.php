@@ -2,6 +2,7 @@
 
 class Qawiki_c extends CI_Controller 
 {
+    var $dataSession;
     /* Konstruktor klase Qawiki_c. On u sebi nasleđuje konstruktor iz klase CI_Controller, 
      * poziva model login_m i general_m i globalnoj varijabli */
     public function __construct()
@@ -9,6 +10,7 @@ class Qawiki_c extends CI_Controller
         parent::__construct();
         $this->load->model('general_m');
         $this->load->model('login_m');
+        $this->dataSession = $this->login_m->isLoggedIn();
     }
     
     /* askQuestion() funkcija nam omogućava unos pitanja. Pošto smo u question/answer sekciji i još u sekciji question, tj
@@ -37,15 +39,15 @@ class Qawiki_c extends CI_Controller
             }
             else
             {
-                $sessionData = $this->login_m->isLoggedIn();
+                $sessionData = $this->dataSession;
                 
-                $data = array( 'Title' => $_POST['title'],
+                $dataInsert = array( 'Title' => $_POST['title'],
                                'Question' => $_POST['editor'],
                                'Tags' => $_POST['tags'],
                                'UserID' => $sessionData['UserID']
                                );
                 
-                if($this->general_m->addData('questions', $data) == TRUE)
+                if($this->general_m->addData('questions', $dataInsert) == TRUE)
                 {
                     $data['isOk'] = 'Uspješno ste postavili pitanje.';
                 }

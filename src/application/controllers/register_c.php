@@ -9,7 +9,6 @@ class Register_c extends CI_Controller
     {
         parent::__construct();
         $this->load->model('general_m');
-        $this->load->model('login_m');
         if($this->login_m->isLoggedIn())
         {
             redirect('main/index');
