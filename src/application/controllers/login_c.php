@@ -73,6 +73,7 @@ class Login_c extends CI_Controller
     {
         session_start ();
         session_destroy ();
+        $_SESSION['redirect'] = null;
         //$this->session->sess_destroy();
         /*foreach ($session_data as $key => $value) 
         {

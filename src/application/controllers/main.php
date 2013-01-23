@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Main extends CI_Controller 
+class Main extends CI_Controller
 {
     var $data; // globalna varijabla - definisana je na nivou klase.
 
@@ -13,6 +13,7 @@ class Main extends CI_Controller
         parent::__construct();
         $this->load->library('redirectpage');
         $this->load->model('general_m');
+        $this->load->model('qawiki_m');
         $this->sessionData = $this->login_m->isLoggedIn();
     }
     
@@ -79,5 +80,11 @@ class Main extends CI_Controller
         {
             $this->load->view('wiki', $data);
         }
+    }
+    
+    public function question($question_id)
+    {
+        $data['question'] = $this->qawiki_m->getQuestionDataById($question_id);
+        $this->load->view('questions', $data);
     }
 }

@@ -9,9 +9,19 @@ class Qawiki_m extends CI_Model
         $this->load->database();
     }
 
-    /* Funkcija loginChech() prima listu podataka. Na osnovu te liste ona provjerava da li username odgovara unešenom username
-     * da li email odgovara unešenom emailu, da li lozinka odgovara unešenoj lozinci i da li je account potvrđen.
-     * Ako je sve ovo zadovoljeno, funkcija će vratiti UserID, u suprotnom vratiće false.
+    /* Funkcija getQuestionDataById() vraća sve podatke o određenom pitanju na osnovu njegovog id-a.
      */
+    public function getQuestionDataById($question_id)
+    {
+        $question_id = (int)$question_id;
+        $this->db->select('*');
+        $this->db->from('questions');
+        $this->db->join('users', 'questions.UserID = users.UserID');
+        $this->db->where('QuestionID', $question_id);
+        
+        $query = $this->db->get();
+        
+        return $query->row_array();
+    }
 }
 ?>

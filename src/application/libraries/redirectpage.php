@@ -16,7 +16,7 @@ class RedirectPage
         return $_SESSION['redirect'];
     }
     
-    public function unsetUserdata()
+    public function unsetRedirectData()
     {
         $_SESSION['redirect'] = NULL;
     }

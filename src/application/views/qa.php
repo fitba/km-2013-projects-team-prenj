@@ -1,6 +1,11 @@
 <?php 
-    $data['title'] = 'Home';
-    $this->load->view('static/header.php', $data); 
+    $data['title'] = 'Q/A sekcija';
+    $this->load->view('static/header.php', $data);
+    
+    if(isset($_SESSION['redirect']))
+    {
+        $this->redirectpage->unsetRedirectData();
+    }
 ?>
 <div class="hero-unit">
     <a class="btn" href="<?php echo base_url('index.php/main/qa_wiki/qa/ask'); ?>">Ask Question</a> 
@@ -62,6 +67,7 @@
                 {
                     $votes = $this->general_m->countRows('votes', 'VoteID', 'QuestionID = ' . $question['QuestionID']);
                     $answers = $this->general_m->countRows('answers', 'AnswerID', 'QuestionID = ' . $question['QuestionID']);
+                    $user = $this->general_m->selectSomeById('*', 'users', 'UserID', $question['UserID']);
             ?>
             <tr>
                 <td>
@@ -73,10 +79,11 @@
                         <center><?php echo '<b>' . $question['Views'] . '</b>'; ?> views</center>
                     </div>
                     <div class="questions">
-                        <p class="title"><a href="#"><?php echo $question['Title'] ?></a></p>
+                        <p class="title"><a href="<?php echo base_url('index.php/main/question/' . $question['QuestionID']); ?>"><?php echo $question['Title'] ?></a></p>
                         <p><?php echo $question['Question'] ?></p>
                         <p><?php echo $question['Tags'] ?></p>
                     </div>
+                    <div class="textRight">Pitanje postavio/la: <?php echo '<b>' . $user['FirstName'] . ' ' . $user['LastName'] . ' | '. $question['AskDate'] . '</b>'; ?></div>
                 </td>
             </tr>
             <?php

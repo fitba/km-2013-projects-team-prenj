@@ -44,7 +44,8 @@ class Qawiki_c extends CI_Controller
                 $dataInsert = array( 'Title' => $_POST['title'],
                                'Question' => $_POST['editor'],
                                'Tags' => $_POST['tags'],
-                               'UserID' => $sessionData['UserID']
+                               'UserID' => $sessionData['UserID'],
+                               'AskDate' => date("Y-m-d H:i:s")
                                );
                 
                 if($this->general_m->addData('questions', $dataInsert) == TRUE)

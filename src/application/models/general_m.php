@@ -54,7 +54,7 @@ class General_m extends CI_Model
         $this->db->where($where, $id);
         $query = $this->db->get($table);
 
-        return $query->result_array();
+        return $query->row_array();
     }
 
     /* Globalna funkcija deleteData() prihvata 3 parametra $column, $table, i $id. 

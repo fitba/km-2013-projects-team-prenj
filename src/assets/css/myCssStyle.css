@@ -21,3 +21,21 @@
     height: 80px;
     float: left;
 }
+
+.votes1
+{
+    background-color: #fff;
+    width: 70px;
+    height: 80px;
+    float: left;
+}
+
+.textRight
+{
+    text-align: right;
+}
+
+.comments
+{
+    font-size: 12px;
+}

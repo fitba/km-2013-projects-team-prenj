@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS `questions` (
   `Title` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
   `Tags` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
   `Question` text COLLATE utf8_unicode_ci NOT NULL,
+  `AskDate` datetime NOT NULL,
   `Views` int unsigned DEFAULT 0,
   `UserID` int(10) unsigned NOT NULL,
   PRIMARY KEY (`QuestionID`),
@@ -34,10 +35,24 @@ CREATE TABLE IF NOT EXISTS `answers` (
   `AnswerID` bigint unsigned NOT NULL AUTO_INCREMENT,
   `UserID` int unsigned NOT NULL,
   `QuestionID` bigint unsigned NOT NULL,
+  `AnswerDate` datetime NOT NULL,
   `Answer` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`AnswerID`),
   CONSTRAINT fk_answers_questions FOREIGN KEY(`QuestionID`) REFERENCES questions(`QuestionID`),
   CONSTRAINT fk_answers_users FOREIGN KEY(`UserID`) REFERENCES users(`UserID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `comments` (
+  `CommentID` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `Ordinal` bigint unsigned NOT NULL,
+  `CommentDate` datetime NOT NULL,
+  `UserID` int unsigned NOT NULL,
+  `QuestionID` bigint unsigned,
+  `AnswerID` bigint unsigned,
+  PRIMARY KEY (`CommentID`),
+  CONSTRAINT fk_comments_questions FOREIGN KEY(`QuestionID`) REFERENCES questions(`QuestionID`),
+  CONSTRAINT fk_comments_answers FOREIGN KEY(`AnswerID`) REFERENCES answers(`AnswerID`),
+  CONSTRAINT fk_comments_users FOREIGN KEY(`UserID`) REFERENCES users(`UserID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `votes` (
