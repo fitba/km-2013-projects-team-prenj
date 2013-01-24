@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `CommentID` bigint unsigned NOT NULL AUTO_INCREMENT,
   `Ordinal` bigint unsigned NOT NULL,
   `CommentDate` datetime NOT NULL,
+  `Comment` text COLLATE utf8_unicode_ci NOT NULL,
   `UserID` int unsigned NOT NULL,
   `QuestionID` bigint unsigned,
   `AnswerID` bigint unsigned,

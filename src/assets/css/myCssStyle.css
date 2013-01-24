@@ -39,3 +39,11 @@
 {
     font-size: 12px;
 }
+
+.commentsSize
+{
+    width: 50%;
+    max-width: 60%;
+    height: 100px;
+    max-height: 100px;
+}

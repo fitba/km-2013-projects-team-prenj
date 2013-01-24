@@ -82,9 +82,125 @@ class Main extends CI_Controller
         }
     }
     
-    public function question($question_id)
+    /* 
+     * question() funkcija predstavlja stranicu gdje se prikazuje određeno pitanje
+     * za to određeno pitanje se daju odgovori. Svak može da odgovori na pitanje. Takođe i korisnik koji je postavio pitanje
+     * može odgovoriti na nečiji odgovor
+     */
+    public function question($question_id = null)
     {
-        $data['question'] = $this->qawiki_m->getQuestionDataById($question_id);
-        $this->load->view('questions', $data);
+        if(isset($_SESSION['redirect']))
+        {
+            $this->redirectpage->unsetRedirectData();
+        }
+        if(isset($question_id))
+        {
+            $data['question'] = $this->qawiki_m->getQuestionDataById($question_id);
+            $data['question_id'] = $question_id;
+            
+            $sessionData = $this->sessionData;
+            
+            if(isset($_POST['submitAnswer']))
+            {
+                $errors = array();
+                $requiredFields = array($this->input->post('answer'));
+
+                foreach($requiredFields as $key => $value)
+                {
+                    if(empty($value))
+                    {
+                        $errors[] = 'Polje za odgovor je obavezno polje!';
+                        break 1;
+                    }
+                }
+
+                if($sessionData == NULL)
+                {
+                    $this->redirectpage->setRedirectToPage('main/question/' . $question_id);
+                    $errors[] = 'Morate se prijaviti da biste odgovorili na pitanje! Prijavite se <a href="'.  base_url('index.php/main/login').'">ovdje</a>';
+                }
+
+                if(!empty($errors))
+                {
+                    $data['errors'] = $this->general_m->displayErrors($errors);
+                    $data['question_id'] = $question_id;
+                }
+                else
+                {
+                    $dataInsert = array( 'Answer' => $_POST['answer'],
+                                   'UserID' => $sessionData['UserID'],
+                                   'QuestionID' => $question_id,
+                                   'AnswerDate' => date("Y-m-d H:i:s")
+                                   );
+
+                    if($this->general_m->addData('answers', $dataInsert) == TRUE)
+                    {
+                        $data['isOk'] = 'Uspješno ste odgovorili na pitanje.';
+                    }
+                    else
+                    {
+                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                    }
+                }
+            }
+            
+            if(isset($_POST['submitComment']))
+            {
+                $errors = array();
+                $requiredFields = array($this->input->post('comment'));
+
+                foreach($requiredFields as $key => $value)
+                {
+                    if(empty($value))
+                    {
+                        $errors[] = 'Polje za komentar je obavezno polje!';
+                        break 1;
+                    }
+                }
+                
+                if($sessionData == NULL)
+                {
+                    $this->redirectpage->setRedirectToPage('main/question/' . $question_id);
+                    $errors[] = 'Morate se prijaviti da biste postavili komentar! Prijavite se <a href="'.  base_url('index.php/main/login').'">ovdje</a>';
+                }
+
+                if(!empty($errors))
+                {
+                    $data['errorsComment'] = $this->general_m->displayErrors($errors);
+                    $data['question_id'] = $question_id;
+                }
+                else
+                {
+                    $lastOrdinal = $this->general_m->selectMax('Ordinal', 'comments', 'QuestionID = ' . $question_id);
+                    
+                    if($lastOrdinal['Last'] == null)
+                        $lastOrdinal['Last'] = 0;
+                    
+                    $dataInsert = array( 'Comment' => $_POST['comment'],
+                                   'UserID' => $sessionData['UserID'],
+                                   'QuestionID' => $question_id,
+                                   'CommentDate' => date("Y-m-d H:i:s"),
+                                   'Ordinal' => $lastOrdinal['Last'] + 1
+                                   );
+
+                    if($this->general_m->addData('comments', $dataInsert) == TRUE)
+                    {
+                        $data['isOkComment'] = 'Uspješno ste odgovorili na pitanje.';
+                    }
+                    else
+                    {
+                        $data['unexpectedErrorComment'] = 'Dogodila se nočekivana greška!';
+                    }
+                }
+            }
+            $data['answers'] = $this->qawiki_m->getAnswersDataById($question_id);
+            $data['comments'] = $this->qawiki_m->getCommentsDataById($question_id, NULL);
+            $this->load->view('questions', $data);
+        }
+        else
+        {
+            $data['message'] = 'Morate odabrati neko od pitanja da biste dobili njegove informacije! Vratite se na <a href="'.  base_url('index.php/main/qa_wiki/qa').'">pitanja.</a>';
+            $this->load->view('info/info_page', $data);
+        }
     }
 }
