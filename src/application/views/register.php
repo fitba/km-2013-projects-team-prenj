@@ -5,32 +5,6 @@
 <div class="hero-unit">
   <h2>Register page</h2>
   <hr/>
-  <?php 
-    if(isset($errors))
-    {
-        echo '<div class="alert alert-error">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h4>Upozorenje!</h4>
-                '.$errors.'
-              </div>';
-    }
-    if(isset($isOk))
-    {
-        echo '<div class="alert alert-success">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h4>Informacija!</h4>
-                '.$isOk.'
-              </div>';
-    }
-    if(isset($unexpectedError))
-    {
-        echo '<div class="alert alert-success">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h4>Upozorenje!</h4>
-                '.$unexpectedError.'
-              </div>';
-    }
-    ?> 
   <form class="form-horizontal" action="<?php echo base_url('index.php/register_c/registerUser'); ?>" method="post">
     <div class="control-group">
        <label class="control-label" for="firstName">First name:</label>
@@ -68,6 +42,18 @@
            <input type="text" name="email" id="email" placeholder="Email">
        </div>
     </div>
+    <div class="control-group">
+       <label class="control-label" for="email">Pol*:</label>
+       <div class="controls">
+           <select name="sex">
+               <option value="0"></option>
+               <option value="m">Muško</option>
+               <option value="f">Žensko</option>
+           </select>
+       </div>
+    </div>
+      <input type="hidden" name="registrationDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/>
+      <input type="hidden" name="key" value="<?php echo hash('sha256', uniqid()); ?>"/>
     <div class="form-actions">
         <button type="submit" name="registerUser" class="btn btn-primary">Submit</button>
         <button type="button" class="btn">Cancel</button>

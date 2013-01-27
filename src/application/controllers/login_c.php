@@ -56,13 +56,13 @@ class Login_c extends CI_Controller
             }
             else
             {
-                $data['error'] = 'Vaši unešeni podaci nisu tačni ili je moguće da niste još prijavljeni! Ako niste prijavili vaš nalog, molimo vas da prijavite vaš nalog klikom na link koji ste dobili putem mail-a.';
+                $data['errors'] = 'Vaši unešeni podaci nisu tačni ili je moguće da niste još prijavljeni! Ako niste prijavili vaš nalog, molimo vas da prijavite vaš nalog klikom na link koji ste dobili putem mail-a.';
                 $this->load->view('login', $data);
             }
         }
         else
         {
-            $this->load->view('login', $data);
+            $this->load->view('login');
         }
     }
     

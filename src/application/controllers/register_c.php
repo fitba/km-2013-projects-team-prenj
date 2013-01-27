@@ -35,6 +35,11 @@ class Register_c extends CI_Controller
                 $this->load->view('info/info_page', $data);
             }
         }
+        else
+        {
+            $data['message'] = 'Ovaj ključ nije isti kao onaj koji vam je poslat email-om!';
+            $this->load->view('info/info_page', $data);
+        }
     }
 
     /* registerUser() funkcija ima sledeće funkcionalnosti: Kada se pritisne dugme za registraciju, definišu se 
@@ -50,11 +55,11 @@ class Register_c extends CI_Controller
         if(isset($_POST['registerUser']))
         {
             $errors = array();
-            $requiredFields = array($this->input->post('username'), $this->input->post('password'), $this->input->post('email'));
+            $requiredFields = array($this->input->post('username'), $this->input->post('password'), $this->input->post('email'), $this->input->post('sex'));
             
             foreach($requiredFields as $key => $value)
 	    {
-	        if(empty($value))
+	        if(empty($value) || $value == '0')
 	        {
 	            $errors[] = 'Polja koja su označena sa * su obavezna!';
                     break 1;
@@ -97,18 +102,11 @@ class Register_c extends CI_Controller
             }
             else
             {
-                $key = md5(uniqid());
+                $this->load->library('insertdata');
                 
-                $data = array( 'FirstName' => $_POST['firstName'],
-                               'LastName' => $_POST['lastName'],
-                               'Username' => $_POST['username'],
-                               'Password' => md5($_POST['password']),
-                               'Email' => $_POST['email'],
-                               'RegistrationDate' => date("Y-m-d H:i:s"),
-                               'Key' => $key,
-                               'UserType' => 'user');
-                
-                if($this->general_m->addData('users', $data) == TRUE)
+                $dataInsert = $this->insertdata->dataForInsert('users', $_POST);
+
+                if($this->general_m->addData('users', $dataInsert) == TRUE)
                 {
                     $to      = $this->input->post('email');
                     $subject = 'Potvrdite vaš nalog';

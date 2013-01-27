@@ -33,12 +33,34 @@ class Qawiki_m extends CI_Model
         $this->db->from('answers');
         $this->db->join('users', 'answers.UserID = users.UserID');
         $this->db->where('QuestionID', $question_id);
+        $this->db->order_by('AnswerID');
         
         $query = $this->db->get();
         
         return $query->result_array();
     }
     
+    /* Funkcija getUserDataById() vraća sve podatke o korisnicima. Dakle sva pitanja koja je korisnik postavio, sve odgovore,
+     * komentare, glasove koje je dao na određena pitanja/odgovore itd.
+     */
+    public function getUserDataById($user_id)
+    {
+        $user_id = (int)$user_id;
+        $this->db->select('*, users.UserID AS UsersUserID');
+        $this->db->from('users');
+        $this->db->join('questions', 'users.UserID = questions.UserID', 'left');
+        $this->db->join('answers', 'users.UserID = answers.UserID', 'left');
+        $this->db->join('comments', 'users.UserID = comments.UserID', 'left');
+        $this->db->join('votes', 'users.UserID = votes.UserID', 'left');
+        $this->db->where('users.UserID', $user_id);
+        
+        $query = $this->db->get();
+        
+        return $query->row_array();
+    }
+    
+    /* Funkcija getCommentsDataById() vraća sve podatke o komentarima za neki odgovor ili pitanje.
+     */
     public function getCommentsDataById($question_id = NULL, $answer_id = NULL)
     {
         $question_id = (int)$question_id;
@@ -59,6 +81,8 @@ class Qawiki_m extends CI_Model
             $this->db->join('answers', 'comments.AnswerID = answers.AnswerID');
             $this->db->where('comments.AnswerID', $answer_id);
         }
+        
+        $this->db->order_by('comments.Ordinal');
         
         $query = $this->db->get();
         

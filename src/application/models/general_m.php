@@ -44,6 +44,16 @@ class General_m extends CI_Model
 
         return $query->row_array();
     }
+    
+    public function getColumnNames($table)
+    {
+        $this->db->select('*');
+        $this->db->from('INFORMATION_SCHEMA.COLUMNS');
+        $this->db->where('TABLE_NAME', $table);
+        $query = $this->db->get();
+        
+        return $query->result_array();
+    }
 
     /* Globalna funkcija selectSomeById() prihvata 4 parametra $column, $table, $where calusulu i $id. 
      * Funkcija vraća red koji na osnovu zadatog ID-a.

@@ -36,6 +36,8 @@
             editor = CKEDITOR.replace( 'editor', config );
         }
     </script>
+    <script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo base_url("assets/javascript/main.js"); ?>"></script>
     
   </head>
   <body onload="createEditor()">
@@ -48,3 +50,29 @@
         $this->load->view('static/side-bar-nav.php');
     ?>
         <div class="span9">
+<?php 
+   if(isset($errors))
+   {
+       echo '<div class="alert alert-error">
+               <button type="button" class="close" data-dismiss="alert">&times;</button>
+               <h4>Upozorenje!</h4>
+               '.$errors.'
+             </div>';
+   }
+   if(isset($isOk))
+   {
+        echo '<div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h4>Informacija!</h4>
+                '.$isOk.'
+              </div>';
+   }
+   if(isset($unexpectedError))
+   {
+        echo '<div class="alert alert-success">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h4>Upozorenje!</h4>
+                '.$unexpectedError.'
+              </div>';
+   }
+?> 

@@ -14,6 +14,12 @@
     margin-left: 80px;
 }
 
+.table tr
+{
+    min-height: 120px;
+    height: 120px;
+}
+
 .votes
 {
     background-color: #eeeeee;
@@ -46,4 +52,10 @@
     max-width: 60%;
     height: 100px;
     max-height: 100px;
+}
+
+.profilePicture
+{
+    height: 200px;
+    background-color: #fff;
 }

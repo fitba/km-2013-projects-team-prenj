@@ -1,5 +1,5 @@
 <?php 
-    $data['title'] = 'Home';
+    $data['title'] = 'Wikipedia';
     $this->load->view('static/header.php', $data); 
 ?>
 <div class="hero-unit">

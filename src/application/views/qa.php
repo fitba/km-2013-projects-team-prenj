@@ -15,31 +15,7 @@
 </div>
 <div class="row-fluid">
   <div class="span12">
-    <?php 
-    if(isset($errors))
-    {
-        echo '<div class="alert alert-error">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h4>Upozorenje!</h4>
-                '.$errors.'
-              </div>';
-    }
-    if(isset($isOk))
-    {
-        echo '<div class="alert alert-success">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h4>Informacija!</h4>
-                '.$isOk.'
-              </div>';
-    }
-    if(isset($unexpectedError))
-    {
-        echo '<div class="alert alert-success">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                <h4>Upozorenje!</h4>
-                '.$unexpectedError.'
-              </div>';
-    }
+    <?php
     if(isset($ask))
     {
         if($ask == 'ask')
@@ -48,8 +24,9 @@
     <h2>Postavite pitanje</h2>
     <form action="<?php echo base_url('index.php/qawiki_c/askQuestion'); ?>" method="post">
         <p><input type="text" name="title" placeholder="Ovdje unesite naslov pitanja" class="input-xxlarge"></p>
-        <p><textarea id="editor" name="editor"></textarea></p>
+        <p><textarea id="editor" name="question"></textarea></p>
         <p><input type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"></p>
+        <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>" /></p>
         <p><input type="submit" name="askQuestion" class="btn" value="Submit"></p>
     </form>
     <?php
@@ -83,7 +60,7 @@
                         <p><?php echo $question['Question'] ?></p>
                         <p><?php echo $question['Tags'] ?></p>
                     </div>
-                    <div class="textRight">Pitanje postavio/la: <?php echo '<b>' . $user['FirstName'] . ' ' . $user['LastName'] . ' | '. $question['AskDate'] . '</b>'; ?></div>
+                    <div class="textRight">Pitanje postavio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $question['UserID']) .'">' . $user['FirstName'] . ' ' . $user['LastName'] . '</a> | '. $this->formatdate->getFormatDate($question['AskDate']) . '</b>'; ?></div>
                 </td>
             </tr>
             <?php

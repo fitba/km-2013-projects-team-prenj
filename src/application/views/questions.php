@@ -19,7 +19,7 @@
                         <p><?php echo $question['Question'] ?></p>
                         <p><?php echo $question['Tags'] ?></p>
                     </div>
-                    <div class="textRight">Pitanje postavio/la: <?php echo '<b>' . $question['FirstName'] . ' ' . $question['LastName'] . ' | '. $question['AskDate'] .'</b>'; ?></div>
+                    <div class="textRight">Pitanje postavio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $question['UserID']) .'">' . $question['FirstName'] . ' ' . $question['LastName'] . '</a> | '. $this->formatdate->getFormatDate($question['AskDate']) .'</b>'; ?></div>
                 </td>
             </tr>
         </tbody>
@@ -31,46 +31,27 @@
             <td>
                 <div class="comments">
                     <?php 
-                    foreach($comments as $comment)
+                    foreach($commentsQuestion as $comment)
                     {
                     ?>
                     <div style="float: left">
                         <?php echo $comment['Ordinal']; ?>
                     </div>
                     <div style="margin-left: 30px">
-                        <?php echo $comment['Comment'] . ' - ' . $comment['FirstName'] . ' ' . $comment['LastName']; ?>
+                        <?php echo $comment['Comment'] . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['UserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
                     </div>
                     <hr/>
                     <?php
                     }
-                    if(isset($errorsComment))
-                    {
-                          echo '<div class="alert alert-error">
-                                  <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                  <h4>Upozorenje!</h4>
-                                  '.$errorsComment.'
-                                </div>';
-                    }
-                    if(isset($isOkComment))
-                    {
-                          echo '<div class="alert alert-success">
-                                  <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                  <h4>Informacija!</h4>
-                                  '.$isOkComment.'
-                                </div>';
-                    }
-                    if(isset($unexpectedErrorComment))
-                    {
-                          echo '<div class="alert alert-success">
-                                  <button type="button" class="close" data-dismiss="alert">&times;</button>
-                                  <h4>Upozorenje!</h4>
-                                  '.$unexpectedErrorComment.'
-                                </div>';
-                    }
                     ?>
                     <div style="margin-left: 30px">
                         <form action="<?php echo base_url('index.php/main/question/' . $question_id); ?>" method="post">
+                            <?php $lastOrdinal = $this->general_m->selectMax('Ordinal', 'comments', 'QuestionID = ' . $question_id); ?>
                             <p><textarea class="commentsSize" name="comment"></textarea></p>
+                            <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>"/></p>
+                            <p><input type="hidden" name="questionid" value="<?php echo base64_encode($question_id); ?>"/></p>
+                            <p><input type="hidden" name="commentDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
+                            <p><input type="hidden" name="ordinal" value="<?php if($lastOrdinal['Last'] == null) echo 1; else echo $lastOrdinal['Last'] + 1; ?>"/></p>
                             <p><input type="submit" name="submitComment" value="Komentariši" class="btn btn-primary"/></p>
                         </form>
                     </div>
@@ -101,7 +82,48 @@
                     <div class="questions">
                         <p><?php echo $answer['Answer'] ?></p>
                     </div>
-                    <div class="textRight">Odgovorio/la: <?php echo '<b>' . $answer['FirstName'] . ' ' . $answer['LastName'] . ' | '. $answer['AnswerDate'] .'</b>'; ?></div>
+                    <div class="textRight">Odgovorio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $answer['UserID']) .'">' . $answer['FirstName'] . ' ' . $answer['LastName'] . '</a> | '. $this->formatdate->getFormatDate($answer['AnswerDate']) .'</b>'; ?></div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <h5>Komentari</h5>
+                    <table class="table">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="comments">
+                                        <?php
+                                        $commentsAnswer = $this->qawiki_m->getCommentsDataById(NULL, $answer['AnswerID']);
+                                        foreach($commentsAnswer as $comment)
+                                        {
+                                        ?>
+                                        <div style="float: left">
+                                            <?php echo $comment['Ordinal']; ?>
+                                        </div>
+                                        <div style="margin-left: 30px">
+                                            <?php echo $comment['Comment'] . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['UserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
+                                        </div>
+                                        <hr/>
+                                        <?php
+                                        }
+                                        $lastOrdinal = $this->general_m->selectMax('Ordinal', 'comments', 'AnswerID = ' . $answer['AnswerID']);
+                                        ?>
+                                        <div style="margin-left: 30px">
+                                            <form action="<?php echo base_url('index.php/qawiki_c/postCommentOnAnswer/' . $question_id . '/' . $answer['AnswerID']); ?>" method="post">
+                                                <p><textarea class="commentsSize" name="comment"></textarea></p>
+                                                <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>"/></p>
+                                                <p><input type="hidden" name="answerid" value="<?php echo base64_encode($answer['AnswerID']); ?>"/></p>
+                                                <p><input type="hidden" name="commentDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
+                                                <p><input type="hidden" name="ordinal" value="<?php if($lastOrdinal['Last'] == null) echo 1; else echo $lastOrdinal['Last'] + 1; ?>"/></p>
+                                                <p><input type="submit" name="submitComment" value="Komentariši" class="btn btn-primary"/></p>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </td>
             </tr>
             <?php 
@@ -110,34 +132,12 @@
         </tbody>
     </table>
       <hr/>
-      <?php 
-      if(isset($errors))
-      {
-            echo '<div class="alert alert-error">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <h4>Upozorenje!</h4>
-                    '.$errors.'
-                  </div>';
-      }
-      if(isset($isOk))
-      {
-            echo '<div class="alert alert-success">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <h4>Informacija!</h4>
-                    '.$isOk.'
-                  </div>';
-      }
-      if(isset($unexpectedError))
-      {
-            echo '<div class="alert alert-success">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <h4>Upozorenje!</h4>
-                    '.$unexpectedError.'
-                  </div>';
-      }
-      ?>
+      
       <form action="<?php echo base_url('index.php/main/question/' . $question_id); ?>" method="post">
           <p><textarea id="editor" name="answer"></textarea></p>
+          <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>"/></p>
+          <p><input type="hidden" name="questionid" value="<?php echo base64_encode($question_id); ?>"/></p>
+          <p><input type="hidden" name="answerDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
           <p><input type="submit" name="submitAnswer" value="Odgovori" class="btn btn-primary"/></p>
       </form>
   </div>
