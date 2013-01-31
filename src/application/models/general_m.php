@@ -45,6 +45,7 @@ class General_m extends CI_Model
         return $query->row_array();
     }
     
+    /* Funkcija getColumnNames povlači iz baze imena svih tabela */
     public function getColumnNames($table)
     {
         $this->db->select('*');

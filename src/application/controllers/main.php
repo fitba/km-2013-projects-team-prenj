@@ -23,16 +23,6 @@ class Main extends CI_Controller
     {
         $this->load->view('main');
     }
-
-    /* register() funkcija predstavlja register stranicu na web prikazu */
-    public function register()
-    {
-        if($this->sessionData)
-        {
-            redirect('main/index');
-        }
-        $this->load->view('register');
-    }
     
     public function profile($user_id)
     {
@@ -100,64 +90,13 @@ class Main extends CI_Controller
             $this->load->view('profile', $data);
         }
     }
-    
-    /* login() funkcija predstavlja login stranicu na web prikazu */
-    public function login()
-    {
-        if($this->sessionData)
-        {
-            redirect('main/index');
-        }
-        $this->load->view('login');
-    }
-    /* qa_wiki() funkcija predstavlja stranicu gdje će biti wiki i question/answer stranice 
-     * $key parametar nam označava qa ili wiki, tj. da li je stranica question/answer ili wikipedia
-     * $ask parametar označava, kada smo u question/answer sekciji i ako je u pitanju ask sekcija, treba da nam se otvori
-     * sekcija gdje ćemo postavljati pitanje.
-     */
-    public function qa_wiki($key, $ask = null)
-    {
-        $data['key'] = $key;
-        $data['ask'] = $ask;
 
-        $data['sessionData'] = $this->sessionData;
-        
-        if(isset($ask))
-        {
-            if($ask == 'ask')
-            {
-                if($this->sessionData == false)
-                {
-                    $this->redirectpage->setRedirectToPage('main/qa_wiki/qa/ask');
-                    redirect('main/login');
-                }
-                else
-                {
-                    $this->load->view('qa', $data);
-                }
-            }
-            else if($ask == 'questions')
-            {
-                $data['questions'] = $this->general_m->getAll('questions', NULL);
-                $this->load->view('qa', $data);
-            }
-        }
-        else if($key == 'qa')
-        {
-            $this->load->view('qa', $data);
-        }
-        else if($key == 'wiki')
-        {
-            $this->load->view('wiki', $data);
-        }
-    }
-    
     /* 
      * question() funkcija predstavlja stranicu gdje se prikazuje određeno pitanje
      * za to određeno pitanje se daju odgovori. Svak može da odgovori na pitanje. Takođe i korisnik koji je postavio pitanje
      * može odgovoriti na nečiji odgovor. Za pitanje i odgovor korisnici mogu postavljati komentare.
      */
-    public function question($question_id = NULL)
+    public function question($question_id = NULL, $answer_id = NULL)
     {
         if(isset($_SESSION['redirect']))
         {
@@ -229,7 +168,7 @@ class Main extends CI_Controller
                 if($sessionData == NULL)
                 {
                     $this->redirectpage->setRedirectToPage('main/question/' . $question_id);
-                    $errors[] = 'Morate se prijaviti da biste postavili komentar! Prijavite se <a href="'.  base_url('index.php/main/login').'">ovdje</a>';
+                    $errors[] = 'Morate se prijaviti da biste postavili komentar! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
                 }
 
                 if(!empty($errors))
@@ -259,7 +198,7 @@ class Main extends CI_Controller
         }
         else
         {
-            $data['message'] = 'Morate odabrati neko od pitanja da biste dobili njegove informacije! Vratite se na <a href="'.  base_url('index.php/main/qa_wiki/qa').'">pitanja.</a>';
+            $data['message'] = 'Morate odabrati neko od pitanja da biste dobili njegove informacije! Vratite se na <a href="'.  base_url('index.php/qawiki_c/askQuestion/qa/questions').'">pitanja.</a>';
             $this->load->view('info/info_page', $data);
         }
     }

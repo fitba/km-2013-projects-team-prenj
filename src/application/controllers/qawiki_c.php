@@ -2,7 +2,7 @@
 
 class Qawiki_c extends CI_Controller 
 {
-    var $dataSession;
+    var $sessionData;
     /* Konstruktor klase Qawiki_c. On u sebi nasleđuje konstruktor iz klase CI_Controller, 
      * poziva model login_m i general_m i globalnoj varijabli */
     public function __construct()
@@ -13,51 +13,82 @@ class Qawiki_c extends CI_Controller
         $this->load->model('login_m');
         $this->load->library('redirectpage');
         $this->load->library('formatdate');
-        $this->dataSession = $this->login_m->isLoggedIn();
+        $this->sessionData = $this->login_m->isLoggedIn();
     }
     
     /* askQuestion() funkcija nam omogućava unos pitanja. Pošto smo u question/answer sekciji i još u sekciji question, tj
      * postavljamo pitanje, stranici moramo proslijediti podatak $ask da ne bi došlo do greške. */
-    public function askQuestion()
+    public function askQuestion($key, $ask = null)
     {
-        if(isset($_POST['askQuestion']))
+        $data['key'] = $key;
+        $data['ask'] = $ask;
+
+        $data['sessionData'] = $this->sessionData;
+        
+        if(isset($ask))
         {
-            $errors = array();
-            $requiredFields = array($this->input->post('title'), $this->input->post('question'), $this->input->post('tags'));
-            
-            foreach($requiredFields as $key => $value)
-	    {
-	        if(empty($value))
-	        {
-	            $errors[] = 'Polja koja su označena sa * su obavezna!';
-                    break 1;
-	        }
-	    }
-            $data['ask'] = 'ask';
-            
-            if(!empty($errors))
+            if($ask == 'ask')
             {
-                $data['errors'] = $this->general_m->displayErrors($errors);
-                $this->load->view('qa', $data);
-            }
-            else
-            {
-                $data['sessionData'] = $this->dataSession;
-                
-                $this->load->library('insertdata');
-                
-                $dataInsert = $this->insertdata->dataForInsert('questions', $_POST);
-                
-                if($this->general_m->addData('questions', $dataInsert) == TRUE)
+                if($this->sessionData == false)
                 {
-                    $data['isOk'] = 'Uspješno ste postavili pitanje.';
+                    $this->redirectpage->setRedirectToPage('main/qa_wiki/qa/ask');
+                    redirect('login_c/loginUser');
                 }
                 else
                 {
-                    $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                    if(isset($_POST['askQuestion']))
+                    {
+                        $errors = array();
+                        $requiredFields = array($this->input->post('title'), $this->input->post('question'), $this->input->post('tags'));
+
+                        foreach($requiredFields as $key => $value)
+                        {
+                            if(empty($value))
+                            {
+                                $errors[] = 'Polja koja su označena sa * su obavezna!';
+                                break 1;
+                            }
+                        }
+                        $data['ask'] = 'ask';
+
+                        if(!empty($errors))
+                        {
+                            $data['errors'] = $this->general_m->displayErrors($errors);
+                        }
+                        else
+                        {
+                            $data['sessionData'] = $this->sessionData;
+
+                            $this->load->library('insertdata');
+
+                            $dataInsert = $this->insertdata->dataForInsert('questions', $_POST);
+
+                            if($this->general_m->addData('questions', $dataInsert) == TRUE)
+                            {
+                                $data['isOk'] = 'Uspješno ste postavili pitanje.';
+                            }
+                            else
+                            {
+                                $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                            }
+                        }
+                    }
+                    $this->load->view('qa', $data);
                 }
+            }
+            else if($ask == 'questions')
+            {
+                $data['questions'] = $this->general_m->getAll('questions', NULL);
                 $this->load->view('qa', $data);
             }
+        }
+        else if($key == 'qa')
+        {
+            $this->load->view('qa', $data);
+        }
+        else if($key == 'wiki')
+        {
+            $this->load->view('wiki', $data);
         }
     }
     
@@ -67,7 +98,7 @@ class Qawiki_c extends CI_Controller
         {
             $this->redirectpage->unsetRedirectData();
         }
-        $data['sessionData'] = $sessionData = $this->dataSession;
+        $data['sessionData'] = $sessionData = $this->sessionData;
         if(isset($answer_id, $question_id))
         {
             if(isset($_POST['submitComment']))
@@ -87,7 +118,7 @@ class Qawiki_c extends CI_Controller
                 if($sessionData == NULL)
                 {
                     $this->redirectpage->setRedirectToPage('main/question/' . $question_id);
-                    $errors[] = 'Morate se prijaviti da biste postavili komentar! Prijavite se <a href="'.  base_url('index.php/main/login').'">ovdje</a>';
+                    $errors[] = 'Morate se prijaviti da biste postavili komentar! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
                 }
 
                 if(!empty($errors))

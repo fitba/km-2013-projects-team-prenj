@@ -16,15 +16,15 @@
                         <center>0 views</center>
                     </div>
                     <div class="questions">
-                        <p><?php echo $question['Question'] ?></p>
-                        <p><?php echo $question['Tags'] ?></p>
+                        <p><?php echo $question['Question']; $userid = $question['UserID']; ?></p>
+                        <p><?php  ?></p>
                     </div>
                     <div class="textRight">Pitanje postavio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $question['UserID']) .'">' . $question['FirstName'] . ' ' . $question['LastName'] . '</a> | '. $this->formatdate->getFormatDate($question['AskDate']) .'</b>'; ?></div>
                 </td>
             </tr>
         </tbody>
     </table>
-<h5>Komentari</h5>
+<h5>Komentari (<?php echo count($commentsQuestion); ?>)</h5>
 <table class="table">
     <tbody>
         <tr>
@@ -35,10 +35,10 @@
                     {
                     ?>
                     <div style="float: left">
-                        <?php echo $comment['Ordinal']; ?>
+                        <?php echo $comment['Ordinal']; $comuserid = $comment['CommentsUserID']; ?>
                     </div>
                     <div style="margin-left: 30px">
-                        <?php echo $comment['Comment'] . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['UserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
+                        <?php echo $comment['Comment'] . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['CommentsUserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
                     </div>
                     <hr/>
                     <?php
@@ -63,7 +63,7 @@
 </div>
 <div class="row-fluid">
   <div class="span12">
-      <h3>Odgovori</h3>
+      <h3>Odgovori (<?php echo count($answers); ?>)</h3>
       <table class="table">
         <tbody>
             <?php 
@@ -80,9 +80,9 @@
                         <center>0 views</center>
                     </div>
                     <div class="questions">
-                        <p><?php echo $answer['Answer'] ?></p>
+                        <p><?php echo $answer['Answer']; $ansuserid = $answer['UserID']; ?></p>
                     </div>
-                    <div class="textRight">Odgovorio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $answer['UserID']) .'">' . $answer['FirstName'] . ' ' . $answer['LastName'] . '</a> | '. $this->formatdate->getFormatDate($answer['AnswerDate']) .'</b>'; ?></div>
+                    <div class="textRight">Odgovorio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $answer['AnswersUserID']) .'">' . $answer['FirstName'] . ' ' . $answer['LastName'] . '</a> | '. $this->formatdate->getFormatDate($answer['AnswerDate']) .'</b>'; ?></div>
                 </td>
             </tr>
             <tr>
@@ -99,10 +99,10 @@
                                         {
                                         ?>
                                         <div style="float: left">
-                                            <?php echo $comment['Ordinal']; ?>
+                                            <?php echo $comment['Ordinal']; $commmuserid = $comment['UserID']; ?>
                                         </div>
                                         <div style="margin-left: 30px">
-                                            <?php echo $comment['Comment'] . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['UserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
+                                            <?php echo $comment['Comment'] . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['CommentsUserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
                                         </div>
                                         <hr/>
                                         <?php

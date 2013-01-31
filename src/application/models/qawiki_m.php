@@ -29,7 +29,7 @@ class Qawiki_m extends CI_Model
     public function getAnswersDataById($question_id)
     {
         $question_id = (int)$question_id;
-        $this->db->select('*');
+        $this->db->select('*, answers.UserID AS AnswersUserID');
         $this->db->from('answers');
         $this->db->join('users', 'answers.UserID = users.UserID');
         $this->db->where('QuestionID', $question_id);
@@ -66,7 +66,7 @@ class Qawiki_m extends CI_Model
         $question_id = (int)$question_id;
         $answer_id = (int)$answer_id;
         
-        $this->db->select('*');
+        $this->db->select('*, comments.UserID AS CommentsUserID');
         $this->db->from('comments');
         $this->db->join('users', 'comments.UserID = users.UserID');
         
@@ -83,6 +83,20 @@ class Qawiki_m extends CI_Model
         }
         
         $this->db->order_by('comments.Ordinal');
+        
+        $query = $this->db->get();
+        
+        return $query->result_array();
+    }
+    
+    public function getTagsForQuestion($question_id)
+    {
+        $question_id = (int)$question_id;
+        $this->db->select('*');
+        $this->db->from('tags');
+        $this->db->join('question_tags', 'tags.TagID = question_tags.TagID');
+        $this->db->join('questions', 'question_tags.QuestionID = questions.QuestionID');
+        $this->db->where('question_tags.QuestionID', $question_id);
         
         $query = $this->db->get();
         

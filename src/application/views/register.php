@@ -5,7 +5,7 @@
 <div class="hero-unit">
   <h2>Register page</h2>
   <hr/>
-  <form class="form-horizontal" action="<?php echo base_url('index.php/register_c/registerUser'); ?>" method="post">
+  <form class="form-horizontal" action="<?php echo base_url('index.php/register_c/register'); ?>" method="post">
     <div class="control-group">
        <label class="control-label" for="firstName">First name:</label>
        <div class="controls">

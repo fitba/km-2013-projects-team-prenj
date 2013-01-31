@@ -14,21 +14,21 @@
           if(!isset($sessionData))
           {
           ?>
-            <a href="<?php echo base_url('index.php/main/login') ?>" >Login &NegativeMediumSpace;</a>
-            <a href="<?php echo base_url('index.php/main/register') ?>" >Register</a>
+            <a href="<?php echo base_url('index.php/login_c/loginUser') ?>" >Login</a>
+            <a href="<?php echo base_url('index.php/register_c/register') ?>" >Register</a>
           <?php 
           }
           else
           {
-              echo 'Welcome &NegativeMediumSpace;<a href="#">'.$sessionData['FirstName'].' '.$sessionData['LastName'].' &NegativeMediumSpace;</a>';
+              echo 'Welcome <a href="#">'.$sessionData['FirstName'].' '.$sessionData['LastName'].'</a>';
               echo '<a href="'.base_url('index.php/login_c/logout').'">Logout</a>';
           }
           ?>
             &NegativeThickSpace;
           </p>
           <ul class="nav">
-              <li><a href="<?php echo base_url('index.php/main/qa_wiki/qa'); ?>">Q/A section</a></li>
-            <li><a href="<?php echo base_url('index.php/main/qa_wiki/wiki'); ?>">Wiki section</a></li>
+              <li><a href="<?php echo base_url('index.php/qawiki_c/askQuestion/qa'); ?>">Q/A section</a></li>
+            <li><a href="<?php echo base_url('index.php/qawiki_c/askQuestion/wiki'); ?>">Wiki section</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

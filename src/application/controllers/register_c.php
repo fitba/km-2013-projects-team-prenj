@@ -50,8 +50,9 @@ class Register_c extends CI_Controller
      * definisanje podataka za unos. To su oni podaci koje ste unijeli u formi. Ako je sve u redu, prelazi se na slanje
      * e-maila korisniku. Na kraju ostaje samo potvrda accounta koji je objašnjen funkcijom confirmAccount($key)
      */
-    public function registerUser()
+    public function register()
     {
+        $data[''] = '';
         if(isset($_POST['registerUser']))
         {
             $errors = array();
@@ -98,7 +99,6 @@ class Register_c extends CI_Controller
             if(!empty($errors))
             {
                 $data['errors'] = $this->general_m->displayErrors($errors);
-                $this->load->view('register', $data);
             }
             else
             {
@@ -133,12 +133,8 @@ class Register_c extends CI_Controller
                 {
                     $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
                 }
-                $this->load->view('register', $data);
             }
         }
-        else
-        {
-            redirect('main/register');
-        }
+        $this->load->view('register', $data);
     }
 }

@@ -38,7 +38,7 @@
     </script>
     <script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo base_url("assets/javascript/main.js"); ?>"></script>
-    
+    <script type="text/javascript" src="<?php echo base_url("bootstrap/js/bootstrap.js"); ?>"></script>
   </head>
   <body onload="createEditor()">
 <?php 

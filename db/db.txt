@@ -69,3 +69,44 @@ CREATE TABLE IF NOT EXISTS `votes` (
   CONSTRAINT fk_votes_users FOREIGN KEY(`UserID`) REFERENCES users(`UserID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
+CREATE TABLE IF NOT EXISTS `guests` (
+  `GuestID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `Name` varchar(50) NOT NULL,
+  `IPAddress` varchar(20) NOT NULL,
+  PRIMARY KEY (`GuestID`),
+  UNIQUE KEY `Name` (`Name`),
+  UNIQUE KEY `IPAddress` (`IPAddress`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `tags` (
+  `TagID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `Name` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Description` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`TagID`),
+  UNIQUE KEY `Name` (`Name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `question_tags` (
+  `QuestionID` bigint(20) unsigned NOT NULL,
+  `TagID` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`QuestionID`,`TagID`),
+  KEY `QuestionID` (`QuestionID`),
+  KEY `TagID` (`TagID`),
+  CONSTRAINT `question_tags_ibfk_2` FOREIGN KEY (`TagID`) REFERENCES `tags` (`TagID`),
+  CONSTRAINT `question_tags_ibfk_1` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `views` (
+  `ViewID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `UserID` int(10) unsigned,
+  `QuestionID` bigint(20) unsigned NOT NULL,
+  `GuestID` int(11) unsigned,
+  PRIMARY KEY (`ViewID`),
+  KEY `UserID` (`UserID`),
+  KEY `QuestionID` (`QuestionID`),
+  KEY `GuestID` (`GuestID`),
+  CONSTRAINT `views_ibfk_3` FOREIGN KEY (`GuestID`) REFERENCES `guests` (`GuestID`),
+  CONSTRAINT `views_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`),
+  CONSTRAINT `views_ibfk_2` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+

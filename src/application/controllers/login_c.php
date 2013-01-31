@@ -25,6 +25,7 @@ class Login_c extends CI_Controller
         {
             redirect('main/index');
         }
+        $data[''] = '';
         if(isset($_POST['login']))
         {
             $data['email_username'] = $this->input->post('email_username');
@@ -57,13 +58,9 @@ class Login_c extends CI_Controller
             else
             {
                 $data['errors'] = 'Vaši unešeni podaci nisu tačni ili je moguće da niste još prijavljeni! Ako niste prijavili vaš nalog, molimo vas da prijavite vaš nalog klikom na link koji ste dobili putem mail-a.';
-                $this->load->view('login', $data);
             }
         }
-        else
-        {
-            $this->load->view('login');
-        }
+        $this->load->view('login', $data);
     }
     
     /* logout() označava prekidanje svih sesija koje se nalaze u sistemu. To znači da korisnika automatski 
