@@ -16,22 +16,22 @@
               $guest = 'Guest_';
               $guest .= rand(1, 9999999);
           ?>
-            Welcome <a href="#" ><?php echo $guest; ?></a>
             <a href="<?php echo base_url('index.php/login_c/loginUser') ?>" >Login</a>
             <a href="<?php echo base_url('index.php/register_c/register') ?>" >Register</a>
           <?php 
           }
           else
           {
-              echo 'Welcome <a href="#">'.$sessionData['FirstName'].' '.$sessionData['LastName'].'</a>';
-              echo '<a href="'.base_url('index.php/login_c/logout').'">Logout</a>';
+              echo 'Welcome <a class="navbar-link" href="#">'.$sessionData['FirstName'].' '.$sessionData['LastName'].'</a>';
+              echo ' <a href="'.base_url('index.php/login_c/logout').'">Logout</a>';   
           }
           ?>
             &NegativeThickSpace;
           </p>
           <ul class="nav">
               <li><a href="<?php echo base_url('index.php/qawiki_c/askQuestion/qa'); ?>">Q/A section</a></li>
-            <li><a href="<?php echo base_url('index.php/qawiki_c/askQuestion/wiki'); ?>">Wiki section</a></li>
+              <li><a href="<?php echo base_url('index.php/qawiki_c/askQuestion/wiki'); ?>">Wiki section</a></li>
+              <li><input class="input-xxlarge" type="text" placeholder=".input-xxlarge" /></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
