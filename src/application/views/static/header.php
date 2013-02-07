@@ -26,6 +26,11 @@
       }
     </style>
     <script type="text/javascript" src="<?php echo base_url("ckeditor/ckeditor.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo base_url("assets/javascript/main.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo base_url("bootstrap/js/bootstrap.js"); ?>"></script>
+    <script type="text/javascript" src="<?php echo base_url("bootstrap/js/popover.js"); ?>"></script>
+    
     <script type="text/javascript"> 
         var editor, html = '';
         function createEditor() 
@@ -35,10 +40,22 @@
             config.entities = true;
             editor = CKEDITOR.replace( 'editor', config );
         }
+        /* Skripta za pamćenje pozicije scroll-a. Ovo je mnogo korisno u sledećem slučaju: 
+         * Kada pritisnemo dugme submit, a negdje smo na dno stranice, stranica se refrešuje 
+         * i scroll se podesi na vrh stranice. Da se to ne bi dešavalo, sa ovom skriptom pamtimo scroll poziciju
+         * i stavićemo tu poziciju da nam bude i posle refrešovanaj stranice.
+         * */
+        function saveScrollPositions(theForm) 
+        {
+            if(theForm) 
+            {
+                var scrolly = typeof window.pageYOffset != 'undefined' ? window.pageYOffset : document.documentElement.scrollTop;
+                var scrollx = typeof window.pageXOffset != 'undefined' ? window.pageXOffset : document.documentElement.scrollLeft;
+                theForm.scrollx.value = scrollx;
+                theForm.scrolly.value = scrolly;
+            }
+        }
     </script>
-    <script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery.js"); ?>"></script>
-    <script type="text/javascript" src="<?php echo base_url("assets/javascript/main.js"); ?>"></script>
-    <script type="text/javascript" src="<?php echo base_url("bootstrap/js/bootstrap.js"); ?>"></script>
   </head>
   <body onload="createEditor()">
 <?php 
@@ -74,5 +91,50 @@
                 <h4>Upozorenje!</h4>
                 '.$unexpectedError.'
               </div>';
+   }
+   
+   $phpSelfFile = $_SERVER['PHP_SELF'];
+
+   $link = explode('/', $phpSelfFile);
+   $linkForRedirect = '';
+   
+   if(!isset($_SESSION['nameOfFunction']))
+   {
+        foreach ($link as $key => $value) 
+        {
+            if($key != 0 && $key != 1 && $key != 2 && $key != 3)
+            {
+                if(($key + 1) == count($link))
+                {
+                    $linkForRedirect .= $value;
+                }
+                else
+                {
+                    $linkForRedirect .= $value . '/';
+                }
+            }
+        }
+        $_SESSION['redirect'] = $linkForRedirect;
+   }
+   else
+   {
+       if($link[count($link) - 1] != $_SESSION['nameOfFunction'])
+       {
+            foreach ($link as $key => $value) 
+             {
+                 if($key != 0 && $key != 1 && $key != 2 && $key != 3)
+                 {
+                     if(($key + 1) == count($link))
+                     {
+                         $linkForRedirect .= $value;
+                     }
+                     else
+                     {
+                         $linkForRedirect .= $value . '/';
+                     }
+                 }
+             }
+             $_SESSION['redirect'] = $linkForRedirect;
+       }
    }
 ?> 

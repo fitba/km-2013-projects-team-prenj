@@ -3,7 +3,6 @@
 class Login_c extends CI_Controller 
 {   
     var $data; // globalna varijabla - definisana je na nivou klase.
-    
     /* Konstruktor klase Login_c. On u sebi nasleđuje konstruktor iz klase CI_Controller, 
      * poziva model login_m i globalnoj varijabli $data prosleđuje funkciju isLoggedIn()
      * koja je definisana u modelu login_m */
@@ -11,7 +10,6 @@ class Login_c extends CI_Controller
     {
         parent::__construct();
         $this->data = $this->login_m->isLoggedIn();
-        $this->load->library('redirectpage');
     }
     
     /* loginUser() ima sledeće funkcionalnosti: Ako je korisnik logiran, ne može se vratiti opet na login stranicu. 
@@ -21,6 +19,7 @@ class Login_c extends CI_Controller
      */
     public function loginUser()
     {
+        $_SESSION['nameOfFunction'] = __FUNCTION__;
         if($this->data)
         {
             redirect('main/index');
@@ -52,7 +51,7 @@ class Login_c extends CI_Controller
                         $_SESSION[$key] = $value;
                 }
                 session_write_close();
-                $redirectPage = $this->redirectpage->getRedirectToPage();
+                $redirectPage = $_SESSION['redirect'];
                 redirect($redirectPage);
             }
             else

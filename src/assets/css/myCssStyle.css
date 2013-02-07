@@ -59,3 +59,22 @@
     height: 200px;
     background-color: #fff;
 }
+
+.formatPicture
+{
+    float: left;
+    box-shadow: 3px 3px 3px #888;
+    margin-right: 7px;
+}
+
+.bubble
+{
+    display: none;
+    position: relative;
+    margin-top: 2px;
+    padding: 0 10px;
+    border-radius: 2px;
+    background-color: #999999;
+    box-shadow: 1px 1px 5px rgba(0,0,0,.2);
+    color: #ffffff;
+}

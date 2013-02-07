@@ -31,7 +31,7 @@ class Register_c extends CI_Controller
             
             if($this->general_m->updateData('users', $data, 'Key', $key) == TRUE)
             {
-                $data['message'] = 'Uspješno ste potvrdili vašu registraciju. Idite na <a href="'. base_url('index.php/main/login').'">Log in</a> stranicu kako biste se prijavili na sistem.';
+                $data['message'] = 'Uspješno ste potvrdili vašu registraciju. Idite na <a href="'. base_url('index.php/login_c/loginUser').'">Log in</a> stranicu kako biste se prijavili na sistem.';
                 $this->load->view('info/info_page', $data);
             }
         }

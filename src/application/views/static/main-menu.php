@@ -13,7 +13,10 @@
           $sessionData = $this->login_m->isLoggedIn();
           if(!isset($sessionData))
           {
+              $guest = 'Guest_';
+              $guest .= rand(1, 9999999);
           ?>
+            Welcome <a href="#" ><?php echo $guest; ?></a>
             <a href="<?php echo base_url('index.php/login_c/loginUser') ?>" >Login</a>
             <a href="<?php echo base_url('index.php/register_c/register') ?>" >Register</a>
           <?php 

@@ -44,6 +44,7 @@
                     <?php 
                     if($userData['Sex'] == 'f')
                     {
+                        $locationPicture = base_url('pictures/default_female.gif');
                     ?>
                         <img src="<?php echo base_url('pictures/default_female.gif'); ?>" height="202" width="200"/>
                     <?php 
@@ -51,7 +52,8 @@
                 }
                 else
                 {
-                    echo '<img src="'.$baseLocation . '/' . $userData['ProfilePicture'] .'" height="202" width="200"/>';
+                    $locationPicture = $baseLocation . '/' . $userData['ProfilePicture'];
+                    echo '<img src="'. $locationPicture .'" height="202" width="200"/>';
                 }
                 ?>
                         <hr/>

@@ -1,17 +1,13 @@
 <?php 
     $data['title'] = 'Q/A sekcija';
     $this->load->view('static/header.php', $data);
-    
-    if(isset($_SESSION['redirect']))
-    {
-        $this->redirectpage->unsetRedirectData();
-    }
 ?>
 <div class="hero-unit">
     <a class="btn" href="<?php echo base_url('index.php/qawiki_c/askQuestion/qa/ask'); ?>">Ask Question</a> 
     <a class="btn" href="<?php echo base_url('index.php/qawiki_c/askQuestion/qa/questions'); ?>">Questions</a>
-    <a class="btn">Tags</a> <a class="btn">Users</a>
-    <a class="btn">Badges</a> <a class="btn">Unanswered</a>
+    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/askQuestion/qa/tags'); ?>">Tags</a> 
+    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/askQuestion/qa/users'); ?>">Users</a>
+    <a class="btn">Badges</a> 
 </div>
 <div class="row-fluid">
   <div class="span12">
@@ -27,6 +23,7 @@
         <p><textarea id="editor" name="question"></textarea></p>
         <p><input type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"></p>
         <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>" /></p>
+        <p><input type="hidden" name="askDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
         <p><input type="submit" name="askQuestion" class="btn" value="Submit"></p>
     </form>
     <?php
@@ -42,17 +39,20 @@
             {
                 foreach ($questions as $question)
                 {
-                    $votes = $this->general_m->countRows('votes', 'VoteID', 'QuestionID = ' . $question['QuestionID']);
+                    $negative = $this->general_m->countRows('votes', 'VoteID', "QuestionID = " . $question['QuestionID'] . " AND Positive = '0'");
+                    $positive = $this->general_m->countRows('votes', 'VoteID', "QuestionID = " . $question['QuestionID'] . " AND Positive = '1'");
                     $answers = $this->general_m->countRows('answers', 'AnswerID', 'QuestionID = ' . $question['QuestionID']);
-                    $user = $this->general_m->selectSomeById('*', 'users', 'UserID', $question['UserID']);
+                    $user = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $question['UserID']);
                     $views = $this->general_m->countRows('views', 'ViewID', 'QuestionID = ' . $question['QuestionID']);
                     $tags = $this->qawiki_m->getTagsForQuestion($question['QuestionID']);
+                    
+                    $resultOfVotes = ($positive - $negative);
             ?>
             <tr>
                 <td>
                     <div class="votes">
                         <center>
-                            <?php echo '<b>' . $votes . '</b>'; ?><br/> votes<br/>
+                            <?php echo '<b>' . $resultOfVotes . '</b>'; ?><br/> votes<br/>
                             <?php echo '<b>' . $answers . '</b>'; ?><br/> answers
                         </center>
                         <center><?php echo $views;  ?> views</center>
@@ -62,17 +62,9 @@
                         <p><?php echo $question['Question'] ?></p>
                         <p>
                         <?php
-                        foreach ($tags as $key => $tag) 
+                        foreach ($tags as $tag)
                         {
-                            $count = count($tags);
-                            if(($key + 1) == $count)
-                            {
-                                echo $tag['Name'];
-                            }
-                            else
-                            {
-                                echo $tag['Name'] . ', ';
-                            }
+                            echo '<span class="label">'.$tag['Name'].'</span>' . ' ';
                         }
                         ?>
                         </p>
@@ -86,6 +78,90 @@
             ?>
         </tbody>
     </table>
+    <?php
+        }
+        else if($ask == 'tags')
+        {
+    ?>
+    <h2>Tags</h2>
+    <table class="table">
+        <tbody>
+            <?php
+            $iterate = 0;
+            for ($i = 0; $i < count($tags); $i++)
+            {
+                echo '<tr>';
+                for ($j = 0; $j < 4; $j++)
+                {
+                    if($iterate != count($tags))
+                    {
+                        echo '<td>
+                                <a href="#" class="hoverEffect" id="'.$iterate.'">
+                                    <span class="label">'.$tags[$iterate]['Name']. '</span>
+                                </a>
+                                <p class="bubble" id="bubble'.$iterate.'">'.$tags[$iterate]['Description'].'</p>
+                                <br/>' . $tags[$iterate]['Description'] . '
+                              </td>';
+                        $iterate++;
+                    }
+                }
+                $i = $iterate - 1;
+                echo '</tr>';
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
+    <?php
+        }
+        else if($ask == 'users')
+        {
+    ?>
+            <h2>Korisnici</h2>
+            <table class="table">
+                <tbody>
+                    <?php
+                    $iterate = 0;
+                    for ($i = 0; $i < count($users); $i++)
+                    {
+                        echo '<tr>';
+                        for ($j = 0; $j < 4; $j++)
+                        {
+                            if($iterate != count($users))
+                            {
+                                $nameOfFolder = 'pictures/' . $users[$iterate]['UserID'];
+                                $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname(dirname($_SERVER['PHP_SELF'])))).'/'.$nameOfFolder);
+                                $locationOfPicutre = $baseLocation . '/' . $users[$iterate]['ProfilePicture'];
+                                echo '<td><div class="formatPicture">';
+                                        if($users[$iterate]['ProfilePicture'] != NULL)
+                                        {
+                                            echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. $locationOfPicutre .'" height="61" width="60"/></a>';
+                                        }
+                                        else
+                                        {
+                                            if($users[$iterate]['Sex'] == 'm')
+                                            {
+                                                echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. base_url('pictures/default_male.gif') .'" height="61" width="60"/></a>';
+                                            }
+                                            else
+                                            {
+                                                echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. base_url('pictures/default_female.gif') .'" height="61" width="60"/></a>';
+                                            }
+                                        }
+                                echo '</div>
+                                      <div>
+                                        <a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'">' . $users[$iterate]['FirstName'] . ' ' . $users[$iterate]['LastName'] . '</a>
+                                      </div>
+                                     </td>';
+                                $iterate++;
+                            }
+                        }
+                        $i = $iterate - 1;
+                        echo '</tr>';
+                    }
+                    ?>
+                </tbody>
+            </table>
     <?php
         }
     }

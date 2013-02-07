@@ -59,10 +59,10 @@ class General_m extends CI_Model
     /* Globalna funkcija selectSomeById() prihvata 4 parametra $column, $table, $where calusulu i $id. 
      * Funkcija vraća red koji na osnovu zadatog ID-a.
      */
-    public function selectSomeById($column, $table, $where, $id)
+    public function selectSomeById($column, $table, $where)
     {
         $this->db->select($column);
-        $this->db->where($where, $id);
+        $this->db->where($where);
         $query = $this->db->get($table);
 
         return $query->row_array();
