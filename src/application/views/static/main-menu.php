@@ -29,9 +29,9 @@
             &NegativeThickSpace;
           </p>
           <ul class="nav">
-              <li><a href="<?php echo base_url('index.php/qawiki_c/askQuestion/qa'); ?>">Q/A section</a></li>
-              <li><a href="<?php echo base_url('index.php/qawiki_c/askQuestion/wiki'); ?>">Wiki section</a></li>
-              <li><input class="input-xxlarge" type="text" placeholder=".input-xxlarge" /></li>
+              <li><a href="<?php echo base_url('index.php/qawiki_c/qa'); ?>">Q/A sekcija</a></li>
+              <li><a href="<?php echo base_url('index.php/qawiki_c/wiki'); ?>">Wiki sekcija</a></li>
+              <li><a href="<?php echo base_url('index.php/main/changes'); ?>">Izmjene</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>

@@ -3,7 +3,7 @@
     $this->load->view('static/header.php', $data); 
 ?>
 <div class="hero-unit" style="font-size: 16px;">
-<h3>Pitanje</h3>
+<h3><?php echo $question['Title'];?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/main/question/' . $question_id . '?editQuestion=true'); ?>">[promijeni]</a></h3>
   <table class="table">
         <tbody>
             <tr>
@@ -16,8 +16,25 @@
                         </center>
                     </div>
                     <div class="questions">
-                        <p><?php echo $question['Question'];?></p>
-                        <p><?php  ?></p>
+                        <p>
+                        <?php
+                        if(isset($_GET['editQuestion']) && $_GET['editQuestion'] == 'true')
+                        {
+                            echo '<form action="'.  base_url('index.php/main/question/' . $question_id) .'" method="post" onsubmit="return saveScrollPositions(this);">
+                                    <p><input type="text" name="newtitle" class="input-xxlarge" value="'.$question['Title'].'"/></p>
+                                    <p><textarea id="editor" name="newContent">'.$question['Question'].'</textarea></p>
+                                    <p><input type="hidden" name="userid" value="'.base64_encode($sessionData['UserID']).'"/></p>
+                                    <p><input type="hidden" name="questionid" value="'.base64_encode($question_id).'"/></p>
+                                    <p><input type="hidden" name="logDate" value="'.date("Y-m-d H:i:s").'"/></p>
+                                    <p><input type="submit" name="submitEditQuestion" value="Promijeni" class="btn btn-primary"/></p>
+                                 </form>';
+                        }
+                        else
+                        {
+                            echo $question['Question'];
+                        }
+                        ?>
+                        </p>
                     </div>
                     <div class="textRight">Pitanje postavio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $question['UserID']) .'">' . $question['FirstName'] . ' ' . $question['LastName'] . '</a> | '. $this->formatdate->getFormatDate($question['AskDate']) .'</b>'; ?></div>
                 </td>
@@ -71,7 +88,7 @@
       <table class="table">
         <tbody>
             <?php 
-            foreach($answers as $answer)
+            foreach($answers as $key => $answer)
             {
                 $negativeAnswer = $this->general_m->countRows('votes', 'VoteID', "AnswerID = " . $answer['AnswerID'] . " AND Positive = '0'");
                 $positiveAnswer = $this->general_m->countRows('votes', 'VoteID', "AnswerID = " . $answer['AnswerID']. " AND Positive = '1'");
@@ -85,11 +102,30 @@
                             <?php echo $resultOfVotesForAnswer; ?><br/> votes
                             <div><a href="<?php echo base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID'] . '/' . 0); ?>"><img src="<?php echo base_url('assets/images/bottom_arrow.png'); ?>"/></a></div>
                         </center>
+                        <div><a href="<?php echo base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID'] . '?editAnswer=true'); ?>">[promijeni]</a></div>
                     </div>
                     <div class="questions">
-                        <p><?php echo $answer['Answer'];?></p>
+                        <p>
+                        <?php
+                        if(isset($answer_id) && $answer_id == $answer['AnswerID'] && isset($_GET['editAnswer']) && $_GET['editAnswer'] == 'true')
+                        {
+                            echo '<form action="'.  base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
+                                    <p><textarea id="editor" name="newContent">'.$answer['Answer'].'</textarea></p>
+                                    <p><input type="hidden" name="userid" value="'.base64_encode($sessionData['UserID']).'"/></p>
+                                    <p><input type="hidden" name="answerid" value="'.base64_encode($answer['AnswerID']).'"/></p>
+                                    <p><input type="hidden" name="logDate" value="'.date("Y-m-d H:i:s").'"/></p>
+                                    <p><input type="submit" name="submitEditAnswer" value="Promijeni" class="btn btn-primary"/></p>
+                                 </form>';
+                        }
+                        else
+                        {
+                            echo $answer['Answer'];
+                        }
+                        ?>
+                        </p>
                     </div>
                     <div class="textRight">Odgovorio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $answer['AnswersUserID']) .'">' . $answer['FirstName'] . ' ' . $answer['LastName'] . '</a> | '. $this->formatdate->getFormatDate($answer['AnswerDate']) .'</b>'; ?></div>
+                    
                 </td>
             </tr>
             <tr>
@@ -143,7 +179,10 @@
         </tbody>
     </table>
       <hr/>
-      
+      <?php 
+      if(!(isset($_GET['editAnswer'])) || !(isset($_GET['editQuestion'])))
+      {
+      ?>
       <form action="<?php echo base_url('index.php/main/question/' . $question_id); ?>" method="post" onsubmit="return saveScrollPositions(this);">
           <p><textarea id="editor" name="answer"></textarea></p>
           <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>"/></p>
@@ -155,6 +194,9 @@
           
           <p><input type="submit" name="submitAnswer" value="Odgovori" class="btn btn-primary"/></p>
       </form>
+      <?php 
+      }
+      ?>
   </div>
 </div>
 <?php 

@@ -5,11 +5,8 @@ class Search_c extends CI_Controller
     function __construct() 
     {
         parent::__construct();
-        $this->load->library('zend', 'Zend/Feed');   
-        $this->load->library('zend', 'Zend/Search/Lucene');   
         $this->load->library('zend');   
-        $this->zend->load('Zend/Feed');   
-        $this->zend->load('Zend/Search/Lucene');
+        $this->load->library('zend', 'Zend/Search/Lucene');   
     }
     
     public function search()
@@ -21,6 +18,8 @@ class Search_c extends CI_Controller
         /* Ubacivanje podataka u taj dokument */
         
         $doc = new Zend_Search_Lucene_Document();
+        
+        
         $doc->addField(Zend_Search_Lucene_Field::unIndexed('title', 'Item number 1'));
         $doc->addField(Zend_Search_Lucene_Field::text('contents', 'cow elephant dog hamster'));
         $index->addDocument($doc);

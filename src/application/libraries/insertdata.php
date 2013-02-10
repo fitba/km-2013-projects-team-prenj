@@ -29,6 +29,10 @@ class InsertData
                         $valuePost = base64_decode($valuePost);
                     if(strtolower($name) == 'questionid')
                         $valuePost = base64_decode($valuePost);
+                    if(strtolower($name) == 'articleid')
+                        $valuePost = base64_decode($valuePost);
+                    if(strtolower($name) == 'subtitleid')
+                        $valuePost = base64_decode($valuePost);
                     $insertData[$name] = $valuePost;
                     break;
                 }

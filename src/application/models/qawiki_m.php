@@ -24,6 +24,32 @@ class Qawiki_m extends CI_Model
         return $query->row_array();
     }
     
+    public function getArticleDataById($article_id)
+    {
+        $article_id = (int)$article_id;
+        $this->db->select('*');
+        $this->db->from('articles');
+        $this->db->join('users', 'articles.UserID = users.UserID');
+        $this->db->where('ArticleID', $article_id);
+        
+        $query = $this->db->get();
+        
+        return $query->row_array();
+    }
+    
+    public function getPodContentDataByArticleId($article_id)
+    {
+        $article_id = (int)$article_id;
+        $this->db->select('*');
+        $this->db->from('subtitles');
+        $this->db->join('articles', 'articles.ArticleID = subtitles.ArticleID');
+        $this->db->where('subtitles.ArticleID', $article_id);
+        
+        $query = $this->db->get();
+        
+        return $query->result_array();
+    }
+    
     /* Funkcija getAnswersDataById() vraća sve podatke o odgovorima na određeno pitanje.
      */
     public function getAnswersDataById($question_id)
@@ -97,6 +123,20 @@ class Qawiki_m extends CI_Model
         $this->db->join('question_tags', 'tags.TagID = question_tags.TagID');
         $this->db->join('questions', 'question_tags.QuestionID = questions.QuestionID');
         $this->db->where('question_tags.QuestionID', $question_id);
+        
+        $query = $this->db->get();
+        
+        return $query->result_array();
+    }
+    
+    public function getTagsForArticle($article_id)
+    {
+        $article_id = (int)$article_id;
+        $this->db->select('*');
+        $this->db->from('tags');
+        $this->db->join('article_tags', 'tags.TagID = article_tags.TagID');
+        $this->db->join('articles', 'article_tags.ArticleID = articles.ArticleID');
+        $this->db->where('article_tags.ArticleID', $article_id);
         
         $query = $this->db->get();
         
