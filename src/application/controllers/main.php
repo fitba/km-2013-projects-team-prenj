@@ -216,7 +216,7 @@ class Main extends CI_Controller
             if(isset($_POST['submitEditQuestion']))
             {
                 $errors = array();
-                $requiredFields = array($this->input->post('title'), $this->input->post('newContent'));
+                $requiredFields = array($this->input->post('newtitle'), $this->input->post('newContent'));
 
                 foreach($requiredFields as $key => $value)
                 {
@@ -425,6 +425,15 @@ class Main extends CI_Controller
             
             $data['answers'] = $answers = $this->qawiki_m->getAnswersDataById($question_id);
             $data['commentsQuestion'] = $this->qawiki_m->getCommentsDataById($question_id, NULL);
+            
+            $joinQuestion = array('questions' => 'questions.QuestionID = logs.QuestionID',
+                                                 'users' => 'users.UserID = logs.UserID');
+            
+            $whereQuestion = 'logs.QuestionID = ' . $question_id . ' AND logs.LogID = (SELECT MAX(LogID)
+                                                                                      FROM logs
+                                                                                      WHERE QuestionID = '.$question_id.')';
+            $data['lastChangeQuestion'] = $this->logs_m->getLogsBy('*', $joinQuestion, $whereQuestion);
+            
             $this->load->view('questions', $data);
         }
         else
@@ -524,7 +533,7 @@ class Main extends CI_Controller
                     $errors[] = 'Morate se prijaviti da biste promijenili članak! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
                 }
                 
-                $requiredFields = array($this->input->post('title'), $this->input->post('newContent'));
+                $requiredFields = array($this->input->post('newtitle'), $this->input->post('newContent'));
                 foreach($requiredFields as $key => $value)
                 {
                     if(empty($value))
@@ -562,7 +571,7 @@ class Main extends CI_Controller
                     $errors[] = 'Morate se prijaviti da biste promijenili oblast članka! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
                 }
 
-                $requiredFields = array($this->input->post('title'), $this->input->post('newContent'));
+                $requiredFields = array($this->input->post('newtitle'), $this->input->post('newContent'));
                 foreach($requiredFields as $key => $value)
                 {
                     if(empty($value))
@@ -597,7 +606,7 @@ class Main extends CI_Controller
             {
                 if($sessionData == NULL)
                 {
-                    $errors[] = 'Morate se prijaviti da biste promijenili oblast članka! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                    $errors[] = 'Morate se prijaviti da biste dodali oblast članka! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
                 }
 
                 $requiredFields = array($this->input->post('subtitle'), $this->input->post('subtitleContent'));
@@ -633,6 +642,14 @@ class Main extends CI_Controller
             
             $negativeQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id . " AND Positive = '0'");
             $positiveQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id. " AND Positive = '1'");
+            
+            $joinArticle = array('articles' => 'articles.ArticleID = logs.ArticleID',
+                                               'users' => 'users.UserID = logs.UserID');
+            
+            $whereArticle = 'logs.ArticleID = ' . $article_id . ' AND logs.LogID = (SELECT MAX(LogID)
+                                                                                    FROM logs
+                                                                                    WHERE ArticleID = '.$article_id.')';
+            $data['lastChangeArticle'] = $this->logs_m->getLogsBy('*', $joinArticle, $whereArticle);
             
             $data['subtitles'] = $this->qawiki_m->getPodContentDataByArticleId($article_id);
             $data['resultOfVotesForQuestion'] = ($positiveQuestion - $negativeQuestion);

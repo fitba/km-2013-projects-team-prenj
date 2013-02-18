@@ -19,7 +19,7 @@ class CI_Zend
         }  
     }
 
-    function load($class)  
+    function load($class)
     {   
         require_once (string) $class . EXT;   
         log_message('debug', "Zend Class $class Loaded");  

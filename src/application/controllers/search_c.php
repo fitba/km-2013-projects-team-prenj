@@ -2,47 +2,37 @@
 
 class Search_c extends CI_Controller 
 {
+    var $search_index;
     function __construct() 
     {
         parent::__construct();
         $this->load->library('zend');   
-        $this->load->library('zend', 'Zend/Search/Lucene');   
+        $this->load->library('zend', 'Zend/Search/Lucene');
+        $this->zend->load('Zend/Search/Lucene');
+        $appPath = dirname(dirname(dirname(__FILE__)));
+        $this->search_index = $appPath . '\search\index';
+        //error_reporting(0);
     }
     
-    public function search()
+    public function index()
     {
-        $dirForSearch = dirname(dirname(__FILE__));
-        $dirForSearch = str_replace('\application', '', $dirForSearch);
-        $index = Zend_Search_Lucene($dirForSearch . '\search', true);
- 
-        /* Ubacivanje podataka u taj dokument */
-        
-        $doc = new Zend_Search_Lucene_Document();
-        
-        
-        $doc->addField(Zend_Search_Lucene_Field::unIndexed('title', 'Item number 1'));
-        $doc->addField(Zend_Search_Lucene_Field::text('contents', 'cow elephant dog hamster'));
-        $index->addDocument($doc);
+        // Create empty array, in case there are no results.
+        $data['results'] = array();
 
-        $doc->addField(Zend_Search_Lucene_Field::unIndexed('title', 'Item number 2'));
-        $doc->addField(Zend_Search_Lucene_Field::text('contents', 'cow aardvark dog hamster'));
-        $index->addDocument($doc);
-
-        $doc->addField(Zend_Search_Lucene_Field::unIndexed('title', 'Item number 3'));
-        $doc->addField(Zend_Search_Lucene_Field::text('contents', 'cow elephant dog esquilax elephant'));
-        $index->addDocument($doc);
-
-        $index->commit();
-        /* Ubacivanje podataka u taj dokument */
-        
-        
-        // Pretraga podataka iz dokumenta
-        /*$index   = Zend_Search_Lucene::open('D:\xampp\htdocs\ZendLuceneSearch\search');
-        $results = $index->find('contents:elephant');
-
-        foreach ( $results as $result ) 
+        // If a search_query parameter has been posted, search the index.
+        if ($_GET['pretraga'])
         {
-            echo $result->score, ' :: ', $result->title . '<br/>';
-        }*/
+            if(file_exists($this->search_index))
+            {
+                $index = Zend_Search_Lucene::open($this->search_index);
+                $index->optimize();
+
+                // Get results.
+                $data['results'] = $index->find($_GET['pretraga']);
+            }
+        }
+
+        // Load view, and populate with results.
+        $this->load->view('search', $data);
     }
 }

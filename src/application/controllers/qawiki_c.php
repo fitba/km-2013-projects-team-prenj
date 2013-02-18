@@ -52,7 +52,7 @@ class Qawiki_c extends CI_Controller
                         if(preg_match('/^[A-Za-z ]+$/', $inputTags))
                         {
                             $explodeTags = explode(' ', trim($inputTags));
-                            foreach ($explodeTags as $key => $value) 
+                            foreach ($explodeTags as $key => $value)
                             {
                                 if(!empty($value))
                                 {
@@ -81,10 +81,34 @@ class Qawiki_c extends CI_Controller
                             {
                                 $dataInsertTags['QuestionID'] = mysql_insert_id();
                                 
+                                $this->load->library('zend');
+                                $this->load->library('zend', 'Zend/Search/Lucene');
+                                $this->zend->load('Zend/Search/Lucene');
+                                $appPath = dirname(dirname(dirname(__FILE__))) . '\search\index';
+                                $index = '';
+                                
+                                if(!file_exists($appPath))
+                                {
+                                    $index = Zend_Search_Lucene::create($appPath, true);
+                                }
+                                else
+                                {
+                                    $index = Zend_Search_Lucene::open($appPath);
+                                }
+                                
+                                $doc = new Zend_Search_Lucene_Document();
+                                $doc->addField(Zend_Search_Lucene_Field::Text('title', $_POST['title']));
+                                $doc->addField(Zend_Search_Lucene_Field::Text('contents', $_POST['question']));
+                                $doc->addField(Zend_Search_Lucene_Field::unIndexed('keyword', 'question'));
+                                $doc->addField(Zend_Search_Lucene_Field::unIndexed('myid', $dataInsertTags['QuestionID']));
+                                $tagsForSearch = '';
+                                
                                 foreach ($tags as $value)
                                 {
+                                    $tagsForSearch .= $value . ' ';
                                     $tag_id = $this->general_m->selectSomeById('TagID', 'tags', "Name = '".$value."'");
                                     $count = count($tag_id);
+                                    
                                     if($count > 0)
                                     {
                                         $dataInsertTags['TagID'] = $tag_id['TagID'];
@@ -96,11 +120,13 @@ class Qawiki_c extends CI_Controller
                                         $this->general_m->addData('tags', $dataInsertTagsName);
 
                                         $dataInsertTags['TagID'] = mysql_insert_id();
-
                                         $this->general_m->addData('question_tags', $dataInsertTags);
                                     }
                                 }
                                 $data['isOk'] = 'Uspješno ste postavili pitanje.';
+                                $doc->addField(Zend_Search_Lucene_Field::text('tags', $tagsForSearch));
+                                $index->addDocument($doc);
+                                $index->commit();
                             }
                             else
                             {
@@ -202,9 +228,32 @@ class Qawiki_c extends CI_Controller
                             {
                                 $dataInsertSubtitles['ArticleID'] = mysql_insert_id();
                                 $dataInsertTags['ArticleID'] = mysql_insert_id();
-
+                                
+                                $this->load->library('zend');
+                                $this->load->library('zend', 'Zend/Search/Lucene');
+                                $this->zend->load('Zend/Search/Lucene');
+                                $appPath = dirname(dirname(dirname(__FILE__))) . '\search\index';
+                                $index = '';
+                                
+                                if(!file_exists($appPath))
+                                {
+                                    $index = Zend_Search_Lucene::create($appPath, true);
+                                }
+                                else
+                                {
+                                    $index = Zend_Search_Lucene::open($appPath);
+                                }
+                                
+                                $doc = new Zend_Search_Lucene_Document();
+                                $doc->addField(Zend_Search_Lucene_Field::Text('title', $_POST['title']));
+                                $doc->addField(Zend_Search_Lucene_Field::Text('contents', $_POST['article']));
+                                $doc->addField(Zend_Search_Lucene_Field::unIndexed('keyword', 'article'));
+                                $doc->addField(Zend_Search_Lucene_Field::unIndexed('myid', $dataInsertTags['ArticleID']));
+                                $tagsForSearch = '';
+                                
                                 foreach ($tags as $value)
                                 {
+                                    $tagsForSearch .= $value . ' ';
                                     $tag_id = $this->general_m->selectSomeById('TagID', 'tags', "Name = '".$value."'");
                                     $count = count($tag_id);
                                     if($count > 0)
@@ -218,22 +267,30 @@ class Qawiki_c extends CI_Controller
                                         $this->general_m->addData('tags', $dataInsertTagsName);
 
                                         $dataInsertTags['TagID'] = mysql_insert_id();
-
                                         $this->general_m->addData('article_tags', $dataInsertTags);
                                     }
                                 }
-
-                                for ($index = 1; $index <= $_SESSION['numberOfSubtitles']; $index++)
+                                
+                                $subtitlesForSearch = '';
+                                if(isset($_SESSION['numberOfSubtitles']))
                                 {
-                                    if(!empty($_POST['subtitle'. $index]) && !empty($_POST['articleSubtitleContent' . $index]))
+                                    for ($index = 1; $index <= $_SESSION['numberOfSubtitles']; $index++)
                                     {
-                                        $dataInsertSubtitles['Subtitle'] = $_POST['subtitle'. $index];
-                                        $dataInsertSubtitles['SubtitleContent'] = $_POST['articleSubtitleContent' . $index];
+                                        if(!empty($_POST['subtitle'. $index]) && !empty($_POST['articleSubtitleContent' . $index]))
+                                        {
+                                            $subtitlesForSearch .= $_POST['subtitle'. $index] . ' ';
+                                            $dataInsertSubtitles['Subtitle'] = $_POST['subtitle'. $index];
+                                            $dataInsertSubtitles['SubtitleContent'] = $_POST['articleSubtitleContent' . $index];
 
-                                        $this->general_m->addData('subtitles', $dataInsertSubtitles);
+                                            $this->general_m->addData('subtitles', $dataInsertSubtitles);
+                                        }
                                     }
                                 }
                                 $data['isOk'] = 'Uspješno ste postavili pitanje.';
+                                $doc->addField(Zend_Search_Lucene_Field::text('tags', $tagsForSearch));
+                                $doc->addField(Zend_Search_Lucene_Field::unStored('subtitles', $subtitlesForSearch));
+                                $index->addDocument($doc);
+                                $index->commit();
                             }
                             else
                             {

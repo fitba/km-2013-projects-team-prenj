@@ -2,12 +2,6 @@
     $data['title'] = 'Wikipedia';
     $this->load->view('static/header.php', $data); 
 ?>
-<div class="hero-unit">
-    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/wiki/postArticles'); ?>">Postavite članak</a>
-    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/wiki/articles'); ?>">Članci</a>
-    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/tags'); ?>">Tagovi</a>
-    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/users'); ?>">Korisnici</a>
-</div>
 <div class="row-fluid">
     <div class="span12">
         <?php 
@@ -48,7 +42,7 @@
                         {
                             foreach ($articles as $article) 
                             {
-                                $tags = $this->qawiki_m->getTagsForQuestion($article['ArticleID']);
+                                $tags = $this->qawiki_m->getTagsForArticle($article['ArticleID']);
                                 $user = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $article['UserID']);
                                 $negative = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article['ArticleID'] . " AND Positive = '0'");
                                 $positive = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article['ArticleID'] . " AND Positive = '1'");
@@ -71,7 +65,7 @@
                                             <?php
                                             foreach ($tags as $tag)
                                             {
-                                                echo '<span class="label">'.$tag['Name'].'</span>' . ' ';
+                                                echo '<span class="label"><a style="color:#FFF" href="'.base_url('index.php/tag_c/index/' . $tag['Name']).'">'.$tag['Name'].'</a></span>' . ' ';
                                             }
                                             ?>
                                             </p>

@@ -2,12 +2,6 @@
     $data['title'] = 'Q/A sekcija';
     $this->load->view('static/header.php', $data);
 ?>
-<div class="hero-unit">
-    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/qa/ask'); ?>">Postavite pitanje</a>
-    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/qa/questions'); ?>">Pitanja</a>
-    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/tags'); ?>">Tagovi</a>
-    <a class="btn" href="<?php echo base_url('index.php/qawiki_c/users'); ?>">Korisnici</a>
-</div>
 <div class="row-fluid">
   <div class="span12">
     <?php
@@ -63,7 +57,7 @@
                         <?php
                         foreach ($tags as $tag)
                         {
-                            echo '<span class="label">'.$tag['Name'].'</span>' . ' ';
+                            echo '<span class="label"><a style="color:#FFF" href="'.base_url('index.php/tag_c/index/' . $tag['Name']).'">'.$tag['Name'].'</a></span>' . ' ';
                         }
                         ?>
                         </p>

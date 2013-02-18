@@ -43,6 +43,7 @@ class Qawiki_m extends CI_Model
         $this->db->select('*');
         $this->db->from('subtitles');
         $this->db->join('articles', 'articles.ArticleID = subtitles.ArticleID');
+        $this->db->join('users', 'users.UserID = subtitles.UserID', 'left');
         $this->db->where('subtitles.ArticleID', $article_id);
         
         $query = $this->db->get();

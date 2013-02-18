@@ -2,6 +2,15 @@ CREATE DATABASE kms;
 
 USE kms;
 
+CREATE TABLE IF NOT EXISTS `tags` (
+  `TagID` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `Name` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `Description` text CHARACTER SET utf8 COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`TagID`),
+  UNIQUE KEY `Name` (`Name`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+
 CREATE TABLE IF NOT EXISTS `users` (
   `UserID` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `FirstName` varchar(50) COLLATE utf8_unicode_ci NOT NULL,
@@ -9,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `Username` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `Password` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
   `Email` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `ProfilePicture` varchar(100) COLLATE utf8_unicode_ci,
+  `ProfilePicture` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `Sex` enum('m','f') COLLATE utf8_unicode_ci NOT NULL,
   `RegistrationDate` datetime NOT NULL,
   `Key` varchar(64) COLLATE utf8_unicode_ci NOT NULL,
@@ -22,131 +31,135 @@ CREATE TABLE IF NOT EXISTS `users` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `questions` (
-  `QuestionID` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `QuestionID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `Title` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
-  `Tags` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
   `Question` text COLLATE utf8_unicode_ci NOT NULL,
   `AskDate` datetime NOT NULL,
-  `Views` int unsigned DEFAULT 0,
   `UserID` int(10) unsigned NOT NULL,
   PRIMARY KEY (`QuestionID`),
-  CONSTRAINT fk_questions_users FOREIGN KEY(UserID) REFERENCES users(UserID)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+  CONSTRAINT `fk_questions_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1;
 
 CREATE TABLE IF NOT EXISTS `answers` (
-  `AnswerID` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `UserID` int unsigned NOT NULL,
-  `QuestionID` bigint unsigned NOT NULL,
+  `AnswerID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `UserID` int(10) unsigned NOT NULL,
+  `QuestionID` bigint(20) unsigned NOT NULL,
   `AnswerDate` datetime NOT NULL,
   `Answer` text COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`AnswerID`),
-  CONSTRAINT fk_answers_questions FOREIGN KEY(`QuestionID`) REFERENCES questions(`QuestionID`),
-  CONSTRAINT fk_answers_users FOREIGN KEY(`UserID`) REFERENCES users(`UserID`)
+  CONSTRAINT `fk_answers_questions` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`),
+  CONSTRAINT `fk_answers_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+
+CREATE TABLE IF NOT EXISTS `articles` (
+  `ArticleID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `Title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
+  `Content` text COLLATE utf8_unicode_ci NOT NULL,
+  `UserID` int(10) unsigned NOT NULL,
+  `PostDate` datetime NOT NULL,
+  PRIMARY KEY (`ArticleID`),
+  CONSTRAINT `fk_articles_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
+
+
+
+CREATE TABLE IF NOT EXISTS `article_tags` (
+  `ArticleID` bigint(20) unsigned NOT NULL,
+  `TagID` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`ArticleID`,`TagID`),
+  CONSTRAINT `fk_article_tags_articles` FOREIGN KEY (`ArticleID`) REFERENCES `articles` (`ArticleID`),
+  CONSTRAINT `fk_article_tags_tags` FOREIGN KEY (`TagID`) REFERENCES `tags` (`TagID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
 
 CREATE TABLE IF NOT EXISTS `comments` (
-  `CommentID` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `Ordinal` bigint unsigned NOT NULL,
+  `CommentID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `Ordinal` bigint(20) unsigned NOT NULL,
   `CommentDate` datetime NOT NULL,
   `Comment` text COLLATE utf8_unicode_ci NOT NULL,
-  `UserID` int unsigned NOT NULL,
-  `QuestionID` bigint unsigned,
-  `AnswerID` bigint unsigned,
+  `UserID` int(10) unsigned NOT NULL,
+  `QuestionID` bigint(20) unsigned DEFAULT NULL,
+  `AnswerID` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`CommentID`),
-  CONSTRAINT fk_comments_questions FOREIGN KEY(`QuestionID`) REFERENCES questions(`QuestionID`),
-  CONSTRAINT fk_comments_answers FOREIGN KEY(`AnswerID`) REFERENCES answers(`AnswerID`),
-  CONSTRAINT fk_comments_users FOREIGN KEY(`UserID`) REFERENCES users(`UserID`)
+  CONSTRAINT `fk_comments_answers` FOREIGN KEY (`AnswerID`) REFERENCES `answers` (`AnswerID`),
+  CONSTRAINT `fk_comments_questions` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`),
+  CONSTRAINT `fk_comments_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-CREATE TABLE IF NOT EXISTS `votes` (
-  `VoteID` bigint unsigned NOT NULL AUTO_INCREMENT,
-  `UserID` int unsigned NOT NULL,
-  `QuestionID` bigint unsigned,
-  `AnswerID` bigint unsigned,
-  `Positive` ENUM('0', '1') NOT NULL,
-  PRIMARY KEY (`VoteID`),
-  CONSTRAINT fk_votes_questions FOREIGN KEY(`QuestionID`) REFERENCES questions(`QuestionID`),
-  CONSTRAINT fk_votes_answers FOREIGN KEY(`AnswerID`) REFERENCES answers(`AnswerID`),
-  CONSTRAINT fk_votes_users FOREIGN KEY(`UserID`) REFERENCES users(`UserID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
-CREATE TABLE IF NOT EXISTS `tags` (
-  `TagID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `Name` varchar(50) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `Description` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  PRIMARY KEY (`TagID`),
-  UNIQUE KEY `Name` (`Name`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
-CREATE TABLE IF NOT EXISTS `question_tags` (
-  `QuestionID` bigint(20) unsigned NOT NULL,
-  `TagID` int(11) unsigned NOT NULL,
-  PRIMARY KEY (`QuestionID`,`TagID`),
-  KEY `QuestionID` (`QuestionID`),
-  KEY `TagID` (`TagID`),
-  CONSTRAINT `question_tags_ibfk_2` FOREIGN KEY (`TagID`) REFERENCES `tags` (`TagID`),
-  CONSTRAINT `question_tags_ibfk_1` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
 CREATE TABLE IF NOT EXISTS `follow_tags` (
   `UserID` int(10) unsigned NOT NULL,
   `TagID` int(11) unsigned NOT NULL,
   PRIMARY KEY (`UserID`,`TagID`),
-  KEY `UserID` (`UserID`),
-  KEY `TagID` (`TagID`),
-  CONSTRAINT `users_tags_ibfk_2` FOREIGN KEY (`TagID`) REFERENCES `tags` (`TagID`),
-  CONSTRAINT `users_tags_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
-CREATE TABLE IF NOT EXISTS `views` (
-  `ViewID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `UserID` int(10) unsigned,
-  `QuestionID` bigint(20) unsigned NOT NULL,
-  `IPAddress` varchar(15),
-  PRIMARY KEY (`ViewID`),
-  KEY `UserID` (`UserID`),
-  KEY `QuestionID` (`QuestionID`),
-  CONSTRAINT `views_ibfk_1` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`),
-  CONSTRAINT `views_ibfk_2` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
-CREATE TABLE IF NOT EXISTS `articles` (
-  `ArticleID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `Title` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `Picture` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `Content` text COLLATE utf8_unicode_ci NOT NULL,
-  `UserID` int(10) unsigned NOT NULL,
-  `PostDate` datetime NOT NULL,
-  PRIMARY KEY (`ArticleID`),
-  KEY `UserID` (`UserID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
-
-CREATE TABLE IF NOT EXISTS `article_tags` (
-  `ArticleID` int(10) unsigned NOT NULL,
-  `TagID` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`ArticleID`,`TagID`),
-  KEY `TagID` (`TagID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-CREATE TABLE IF NOT EXISTS `article_votes` (
-  `VoteID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `UserID` int(10) unsigned NOT NULL,
-  `ArticleID` int(10) unsigned NOT NULL,
-  `Positive` enum('0','1') NOT NULL,
-  PRIMARY KEY (`VoteID`),
-  KEY `UserID` (`UserID`,`ArticleID`),
-  KEY `ArticleID` (`ArticleID`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
+  CONSTRAINT `fk_follow_tags_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`),
+  CONSTRAINT `fk_follow_tags_tags` FOREIGN KEY (`TagID`) REFERENCES `tags` (`TagID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `subtitles` (
   `SubtitleID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `ArticleID` int(10) unsigned NOT NULL,
+  `ArticleID` bigint(20) unsigned NOT NULL,
   `Subtitle` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
   `SubtitleContent` text COLLATE utf8_unicode_ci NOT NULL,
+  `AddDate` datetime DEFAULT NULL,
+  `UserID` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`SubtitleID`),
-  KEY `ArticleID` (`ArticleID`),
-  KEY `ArticleID_2` (`ArticleID`)
+  CONSTRAINT `fk_subtitles_articles` FOREIGN KEY (`ArticleID`) REFERENCES `articles` (`ArticleID`),
+  CONSTRAINT `fk_subtitles_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
+CREATE TABLE IF NOT EXISTS `logs` (
+  `LogID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `UserID` int(10) unsigned NOT NULL,
+  `LogDate` datetime NOT NULL,
+  `AnswerID` bigint(20) unsigned DEFAULT NULL,
+  `QuestionID` bigint(20) unsigned DEFAULT NULL,
+  `ArticleID` bigint(20) unsigned DEFAULT NULL,
+  `SubtitleID` bigint(20) unsigned DEFAULT NULL,
+  `NewTitle` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `NewContent` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`LogID`),
+  CONSTRAINT `fk_logs_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`),
+  CONSTRAINT `fk_logs_answers` FOREIGN KEY (`AnswerID`) REFERENCES `answers` (`AnswerID`),
+  CONSTRAINT `fk_logs_articles` FOREIGN KEY (`ArticleID`) REFERENCES `articles` (`ArticleID`),
+  CONSTRAINT `fk_logs_subtitles` FOREIGN KEY (`SubtitleID`) REFERENCES `subtitles` (`SubtitleID`),
+  CONSTRAINT `fk_logs_questions` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
+
+
+CREATE TABLE IF NOT EXISTS `question_tags` (
+  `QuestionID` bigint(20) unsigned NOT NULL,
+  `TagID` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`QuestionID`,`TagID`),
+  CONSTRAINT `fk_question_tags_questions` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`),
+  CONSTRAINT `fk_question_tags_tags` FOREIGN KEY (`TagID`) REFERENCES `tags` (`TagID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE IF NOT EXISTS `views` (
+  `ViewID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `UserID` int(10) unsigned DEFAULT NULL,
+  `QuestionID` bigint(20) unsigned DEFAULT NULL,
+  `ArticleID` bigint(20) unsigned DEFAULT NULL,
+  `IPAddress` varchar(15) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`ViewID`),
+  CONSTRAINT `fk_views_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`),
+  CONSTRAINT `fk_views_questions` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`),
+  CONSTRAINT `fk_views_articles` FOREIGN KEY (`ArticleID`) REFERENCES `articles` (`ArticleID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
+
+
+CREATE TABLE IF NOT EXISTS `votes` (
+  `VoteID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `UserID` int(10) unsigned NOT NULL,
+  `QuestionID` bigint(20) unsigned DEFAULT NULL,
+  `AnswerID` bigint(20) unsigned DEFAULT NULL,
+  `ArticleID` bigint(20) unsigned DEFAULT NULL,
+  `Positive` enum('0','1') COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`VoteID`),
+  CONSTRAINT `fk_votes_answers` FOREIGN KEY (`AnswerID`) REFERENCES `answers` (`AnswerID`),
+  CONSTRAINT `fk_votes_questions` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`),
+  CONSTRAINT `fk_votes_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`),
+  CONSTRAINT `fk_votes_articles` FOREIGN KEY (`ArticleID`) REFERENCES `articles` (`ArticleID`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
