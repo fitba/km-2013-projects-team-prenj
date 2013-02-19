@@ -274,13 +274,13 @@ class Qawiki_c extends CI_Controller
                                 $subtitlesForSearch = '';
                                 if(isset($_SESSION['numberOfSubtitles']))
                                 {
-                                    for ($index = 1; $index <= $_SESSION['numberOfSubtitles']; $index++)
+                                    for ($i = 1; $i <= $_SESSION['numberOfSubtitles']; $i++)
                                     {
-                                        if(!empty($_POST['subtitle'. $index]) && !empty($_POST['articleSubtitleContent' . $index]))
+                                        if(!empty($_POST['subtitle'. $i]) && !empty($_POST['articleSubtitleContent' . $i]))
                                         {
-                                            $subtitlesForSearch .= $_POST['subtitle'. $index] . ' ';
-                                            $dataInsertSubtitles['Subtitle'] = $_POST['subtitle'. $index];
-                                            $dataInsertSubtitles['SubtitleContent'] = $_POST['articleSubtitleContent' . $index];
+                                            $subtitlesForSearch .= $_POST['subtitle'. $i] . ' ';
+                                            $dataInsertSubtitles['Subtitle'] = $_POST['subtitle'. $i];
+                                            $dataInsertSubtitles['SubtitleContent'] = $_POST['articleSubtitleContent' . $i];
 
                                             $this->general_m->addData('subtitles', $dataInsertSubtitles);
                                         }

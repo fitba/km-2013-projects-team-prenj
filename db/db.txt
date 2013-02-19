@@ -118,8 +118,6 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `QuestionID` bigint(20) unsigned DEFAULT NULL,
   `ArticleID` bigint(20) unsigned DEFAULT NULL,
   `SubtitleID` bigint(20) unsigned DEFAULT NULL,
-  `NewTitle` varchar(200) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
-  `NewContent` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`LogID`),
   CONSTRAINT `fk_logs_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`),
   CONSTRAINT `fk_logs_answers` FOREIGN KEY (`AnswerID`) REFERENCES `answers` (`AnswerID`),

@@ -47,7 +47,7 @@ class Logs_m extends CI_Model
         
         $query = $this->db->get();
         
-        return $query->row_array();
+        return $query->result_array();
     }
 }
 ?>

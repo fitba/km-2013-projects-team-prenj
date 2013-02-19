@@ -3,7 +3,7 @@
     $this->load->view('static/header.php', $data); 
 ?>
 <div class="hero-unit" style="font-size: 16px;">
-<h3><?php if(count($lastChangeQuestion) > 0) { echo $lastChangeQuestion['NewTitle']; } else { echo $question['Title']; }?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/main/question/' . $question_id . '?editQuestion=true'); ?>">[promijeni]</a></h3>
+<h3><?php echo $question['Title']; ?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/main/question/' . $question_id . '?editQuestion=true'); ?>">[promijeni]</a></h3>
   <table class="table">
         <tbody>
             <tr>
@@ -20,50 +20,42 @@
                         <?php
                         if(isset($_GET['editQuestion']) && $_GET['editQuestion'] == 'true')
                         {
-                            if(count($lastChangeQuestion) > 0)
+                            $tagsForEdit = '';
+                            foreach ($tags as $tag)
                             {
-                                echo '<form action="'.  base_url('index.php/main/question/' . $question_id) .'" method="post" onsubmit="return saveScrollPositions(this);">
-                                        <p><input type="text" name="newtitle" class="input-xxlarge" value="'.$lastChangeQuestion['NewTitle'].'"/></p>
-                                        <p><textarea id="editor" name="newContent">'.$lastChangeQuestion['NewContent'].'</textarea></p>
-                                        <p><input type="hidden" name="userid" value="'.base64_encode($sessionData['UserID']).'"/></p>
-                                        <p><input type="hidden" name="questionid" value="'.base64_encode($question_id).'"/></p>
-                                        <p><input type="hidden" name="logDate" value="'.date("Y-m-d H:i:s").'"/></p>
-                                        <p><input type="submit" name="submitEditQuestion" value="Promijeni" class="btn btn-primary"/></p>
-                                     </form>';
+                                $tagsForEdit .= $tag['Name']. ' ';
                             }
-                            else
-                            {
-                                echo '<form action="'.  base_url('index.php/main/question/' . $question_id) .'" method="post" onsubmit="return saveScrollPositions(this);">
-                                        <p><input type="text" name="newtitle" class="input-xxlarge" value="'.$question['Title'].'"/></p>
-                                        <p><textarea id="editor" name="newContent">'.$question['Question'].'</textarea></p>
-                                        <p><input type="hidden" name="userid" value="'.base64_encode($sessionData['UserID']).'"/></p>
-                                        <p><input type="hidden" name="questionid" value="'.base64_encode($question_id).'"/></p>
-                                        <p><input type="hidden" name="logDate" value="'.date("Y-m-d H:i:s").'"/></p>
-                                        <p><input type="submit" name="submitEditQuestion" value="Promijeni" class="btn btn-primary"/></p>
-                                     </form>';
-                            }
+                            echo '<form action="'.  base_url('index.php/main/question/' . $question_id) .'" method="post" onsubmit="return saveScrollPositions(this);">
+                                    <p><input type="text" name="title" class="input-xxlarge" value="'.$question['Title'].'"/></p>
+                                    <p><textarea id="editor" name="question">'.$question['Question'].'</textarea></p>
+                                    <p><input type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge" value="'.$tagsForEdit.'"></p>
+                                    <p><input type="submit" name="submitEditQuestion" value="Promijeni" class="btn btn-primary"/></p>
+                                 </form>';
                         }
                         else
                         {
-                            if(count($lastChangeQuestion) > 0)
-                            {
-                                echo $lastChangeQuestion['NewContent'];
-                            }
-                            else
-                            {
-                                echo $question['Question'];
-                            }   
+                            echo $question['Question'];
+                        ?>
+                        </p>
+                        <p>
+                        <?php
+                        foreach ($tags as $tag)
+                        {
+                            echo '<span class="label"><a style="color:#FFF" href="'.base_url('index.php/tag_c/index/' . $tag['Name']).'">'.$tag['Name'].'</a></span>' . ' ';
                         }
                         ?>
                         </p>
+                        <?php
+                        }
+                        ?>
                     </div>
                     <div class="textRight">
                         Pitanje postavio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $question['UserID']) .'">' . $question['FirstName'] . ' ' . $question['LastName'] . '</a> | '. $this->formatdate->getFormatDate($question['AskDate']) .'</b>'; ?>
                         <br/>
                         <?php 
-                        if(count($lastChangeQuestion) > 0)
+                        foreach($lastChangeQuestion as $changedQuestion)
                         {
-                            echo 'Pitanje promijenio/la <b><a href="'. base_url('index.php/main/profile/' . $lastChangeQuestion['UserID']) .'">' . $lastChangeQuestion['FirstName'] . ' ' . $lastChangeQuestion['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($lastChangeQuestion['LogDate']) .'</b>';
+                            echo 'Pitanje promijenio/la <b><a href="'. base_url('index.php/main/profile/' . $changedQuestion['UserID']) .'">' . $changedQuestion['FirstName'] . ' ' . $changedQuestion['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($changedQuestion['LogDate']) .'</b><br/>';
                         }
                         ?>
                     </div>
@@ -127,9 +119,7 @@
                 $joinAnswer = array('answers' => 'answers.AnswerID = logs.AnswerID',
                                                    'users' => 'users.UserID = logs.UserID');
             
-                $whereAnswer = 'logs.AnswerID = ' . $answer['AnswerID'] . ' AND logs.LogID = (SELECT MAX(LogID)
-                                                                                              FROM logs
-                                                                                              WHERE AnswerID = '.$answer['AnswerID'].')';
+                $whereAnswer = 'logs.AnswerID = ' . $answer['AnswerID'];
                 $lastChangeAnswer = $this->logs_m->getLogsBy('*', $joinAnswer, $whereAnswer);
             ?>
             <tr>
@@ -147,37 +137,14 @@
                         <?php
                         if(isset($answer_id) && $answer_id == $answer['AnswerID'] && isset($_GET['editAnswer']) && $_GET['editAnswer'] == 'true')
                         {
-                            if(count($lastChangeAnswer) > 0)
-                            {
-                                echo '<form action="'.  base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
-                                        <p><textarea id="editor" name="newContent">'.$lastChangeAnswer['NewContent'].'</textarea></p>
-                                        <p><input type="hidden" name="userid" value="'.base64_encode($sessionData['UserID']).'"/></p>
-                                        <p><input type="hidden" name="answerid" value="'.base64_encode($answer['AnswerID']).'"/></p>
-                                        <p><input type="hidden" name="logDate" value="'.date("Y-m-d H:i:s").'"/></p>
-                                        <p><input type="submit" name="submitEditAnswer" value="Promijeni" class="btn btn-primary"/></p>
-                                     </form>';
-                            }
-                            else
-                            {
-                                echo '<form action="'.  base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
-                                        <p><textarea id="editor" name="newContent">'.$answer['Answer'].'</textarea></p>
-                                        <p><input type="hidden" name="userid" value="'.base64_encode($sessionData['UserID']).'"/></p>
-                                        <p><input type="hidden" name="answerid" value="'.base64_encode($answer['AnswerID']).'"/></p>
-                                        <p><input type="hidden" name="logDate" value="'.date("Y-m-d H:i:s").'"/></p>
-                                        <p><input type="submit" name="submitEditAnswer" value="Promijeni" class="btn btn-primary"/></p>
-                                     </form>';
-                            }
+                            echo '<form action="'.  base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
+                                    <p><textarea id="editor" name="answer">'.$answer['Answer'].'</textarea></p>
+                                    <p><input type="submit" name="submitEditAnswer" value="Promijeni" class="btn btn-primary"/></p>
+                                 </form>';
                         }
                         else
                         {
-                            if(count($lastChangeAnswer) > 0)
-                            {
-                                echo $lastChangeAnswer['NewContent'];
-                            }
-                            else
-                            {
-                                echo $answer['Answer'];
-                            }
+                            echo $answer['Answer'];
                         }
                         ?>
                         </p>
@@ -186,9 +153,9 @@
                         Odgovorio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $answer['AnswersUserID']) .'">' . $answer['FirstName'] . ' ' . $answer['LastName'] . '</a> | '. $this->formatdate->getFormatDate($answer['AnswerDate']) .'</b>'; ?>
                         <br/>
                         <?php 
-                        if(count($lastChangeAnswer) > 0 && $lastChangeAnswer != null)
+                        foreach($lastChangeAnswer as $changedAnswer)
                         {
-                            echo 'Promijenio/la <b><a href="'. base_url('index.php/main/profile/' . $lastChangeAnswer['UserID']) .'">' . $lastChangeAnswer['FirstName'] . ' ' . $lastChangeAnswer['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($lastChangeAnswer['LogDate']) .'</b>';
+                            echo 'Promijenio/la <b><a href="'. base_url('index.php/main/profile/' . $changedAnswer['UserID']) .'">' . $changedAnswer['FirstName'] . ' ' . $changedAnswer['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($changedAnswer['LogDate']) .'</b><br/>';
                         }
                         ?>
                     </div>

@@ -100,7 +100,7 @@ class Main extends CI_Controller
     {
         if(isset($question_id))
         {
-            $data['question'] = $this->qawiki_m->getQuestionDataById($question_id);
+            
             $data['question_id'] = $question_id;
             $data['sessionData'] = $sessionData = $this->sessionData;
             
@@ -216,7 +216,7 @@ class Main extends CI_Controller
             if(isset($_POST['submitEditQuestion']))
             {
                 $errors = array();
-                $requiredFields = array($this->input->post('newtitle'), $this->input->post('newContent'));
+                $requiredFields = array($this->input->post('title'), $this->input->post('question'), $this->input->post('tags'));
 
                 foreach($requiredFields as $key => $value)
                 {
@@ -225,6 +225,24 @@ class Main extends CI_Controller
                         $errors[] = 'Polja koja su označena sa * su obavezna!';
                         break 1;
                     }
+                }
+                
+                $tags = array();
+                $inputTags = $_POST['tags'];
+                if(preg_match('/^[A-Za-z ]+$/', $inputTags))
+                {
+                    $explodeTags = explode(' ', trim($inputTags));
+                    foreach ($explodeTags as $key => $value)
+                    {
+                        if(!empty($value))
+                        {
+                            $tags[$key] = $value;
+                        }
+                    }
+                }
+                else
+                {
+                    $errors[] = 'Tagove morate odvojiti samo razmakom!';
                 }
                 
                 if($sessionData == NULL)
@@ -241,11 +259,69 @@ class Main extends CI_Controller
                 {
                     $this->load->library('insertdata');
                 
-                    $dataInsert = $this->insertdata->dataForInsert('logs', $_POST);
+                    $dataUpdate = $this->insertdata->dataForInsert('questions', $_POST);
 
-                    if($this->general_m->addData('logs', $dataInsert) == TRUE)
+                    if($this->general_m->updateData('questions', $dataUpdate, 'QuestionID', $question_id) == TRUE)
                     {
+                        $dataInsertTags['QuestionID'] = $question_id;
+                        
+                        $logDataInsert = array('UserID' => $sessionData['UserID'],
+                                               'LogDate' => date("Y-m-d H:i:s"),
+                                               'QuestionID' => $question_id);
+                        
+                        $this->general_m->addData('logs', $logDataInsert);
+                        
+                        $this->load->library('zend');
+                        $this->load->library('zend', 'Zend/Search/Lucene');
+                        $this->zend->load('Zend/Search/Lucene');
+                        $appPath = dirname(dirname(dirname(__FILE__))) . '\search\index';
+                        $index = '';
+
+                        if(!file_exists($appPath))
+                        {
+                            $index = Zend_Search_Lucene::create($appPath, true);
+                        }
+                        else
+                        {
+                            $index = Zend_Search_Lucene::open($appPath);
+                            $index->optimize();
+                        }
+
+                        $doc = new Zend_Search_Lucene_Document();
+                        $doc->addField(Zend_Search_Lucene_Field::Text('title', $_POST['title']));
+                        $doc->addField(Zend_Search_Lucene_Field::Text('contents', $_POST['question']));
+                        $doc->addField(Zend_Search_Lucene_Field::unIndexed('keyword', 'question'));
+                        $doc->addField(Zend_Search_Lucene_Field::unIndexed('myid', $dataInsertTags['QuestionID']));
+                        $tagsForSearch = '';
+
+                        foreach ($tags as $value)
+                        {
+                            $tagsForSearch .= $value . ' ';
+                            $tag_id = $this->general_m->selectSomeById('TagID', 'tags', "Name = '".$value."'");
+                            $count = count($tag_id);
+
+                            if($count > 0)
+                            {
+                                $tag = $this->general_m->selectSomeById('TagID', 'question_tags', "TagID = ".$tag_id['TagID']." AND QuestionID = " . $question_id);
+                                if(count($tag) == 0)
+                                {
+                                    $dataInsertTags['TagID'] = $tag_id['TagID'];
+                                    $this->general_m->addData('question_tags', $dataInsertTags);
+                                }
+                            }
+                            else
+                            {
+                                $dataInsertTagsName['Name'] = $value;
+                                $this->general_m->addData('tags', $dataInsertTagsName);
+
+                                $dataInsertTags['TagID'] = mysql_insert_id();
+                                $this->general_m->addData('question_tags', $dataInsertTags);
+                            }
+                        }
                         $data['isOk'] = 'Uspješno ste promijenili pitanje.';
+                        $doc->addField(Zend_Search_Lucene_Field::text('tags', $tagsForSearch));
+                        $index->addDocument($doc);
+                        $index->commit();
                     }
                     else
                     {
@@ -261,7 +337,7 @@ class Main extends CI_Controller
                 if(isset($_POST['submitEditAnswer']))
                 {
                     $errors = array();
-                    $requiredFields = array($this->input->post('newContent'));
+                    $requiredFields = array($this->input->post('answer'));
 
                     foreach($requiredFields as $key => $value)
                     {
@@ -285,10 +361,16 @@ class Main extends CI_Controller
                     {
                         $this->load->library('insertdata');
 
-                        $dataInsert = $this->insertdata->dataForInsert('logs', $_POST);
+                        $dataUpdate = $this->insertdata->dataForInsert('answers', $_POST);
 
-                        if($this->general_m->addData('logs', $dataInsert) == TRUE)
+                        if($this->general_m->updateData('answers', $dataUpdate, 'AnswerID', $answer_id) == TRUE)
                         {
+                            $logDataInsert = array('UserID' => $sessionData['UserID'],
+                                                   'LogDate' => date("Y-m-d H:i:s"),
+                                                   'AnswerID' => $answer_id);
+                        
+                            $this->general_m->addData('logs', $logDataInsert);
+                            
                             $data['isOk'] = 'Uspješno ste promijenili odgovor.';
                         }
                         else
@@ -417,7 +499,7 @@ class Main extends CI_Controller
                     }
                 }
             }
-            
+            $data['question'] = $this->qawiki_m->getQuestionDataById($question_id);
             $negativeQuestion = $this->general_m->countRows('votes', 'VoteID', "QuestionID = " . $question_id . " AND Positive = '0'");
             $positiveQuestion = $this->general_m->countRows('votes', 'VoteID', "QuestionID = " . $question_id. " AND Positive = '1'");
             
@@ -425,13 +507,12 @@ class Main extends CI_Controller
             
             $data['answers'] = $answers = $this->qawiki_m->getAnswersDataById($question_id);
             $data['commentsQuestion'] = $this->qawiki_m->getCommentsDataById($question_id, NULL);
+            $data['tags'] = $this->qawiki_m->getTagsForQuestion($question_id);
             
             $joinQuestion = array('questions' => 'questions.QuestionID = logs.QuestionID',
                                                  'users' => 'users.UserID = logs.UserID');
             
-            $whereQuestion = 'logs.QuestionID = ' . $question_id . ' AND logs.LogID = (SELECT MAX(LogID)
-                                                                                      FROM logs
-                                                                                      WHERE QuestionID = '.$question_id.')';
+            $whereQuestion = 'logs.QuestionID = ' . $question_id;
             $data['lastChangeQuestion'] = $this->logs_m->getLogsBy('*', $joinQuestion, $whereQuestion);
             
             $this->load->view('questions', $data);
@@ -448,7 +529,7 @@ class Main extends CI_Controller
         if(isset($article_id))
         {
             $errors = array();
-            $data['article'] = $this->qawiki_m->getArticleDataById($article_id);
+            
             $data['article_id'] = $article_id;
             $data['sessionData'] = $sessionData = $this->sessionData;
             
@@ -533,7 +614,7 @@ class Main extends CI_Controller
                     $errors[] = 'Morate se prijaviti da biste promijenili članak! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
                 }
                 
-                $requiredFields = array($this->input->post('newtitle'), $this->input->post('newContent'));
+                $requiredFields = array($this->input->post('title'), $this->input->post('content'));
                 foreach($requiredFields as $key => $value)
                 {
                     if(empty($value))
@@ -541,6 +622,24 @@ class Main extends CI_Controller
                         $errors[] = 'Polja koja su označena sa * su obavezna!';
                         break 1;
                     }
+                }
+                
+                $tags = array();
+                $inputTags = $_POST['tags'];
+                if(preg_match('/^[A-Za-z ]+$/', $inputTags))
+                {
+                    $explodeTags = explode(' ', trim($inputTags));
+                    foreach ($explodeTags as $key => $value)
+                    {
+                        if(!empty($value))
+                        {
+                            $tags[$key] = $value;
+                        }
+                    }
+                }
+                else
+                {
+                    $errors[] = 'Tagove morate odvojiti samo razmakom!';
                 }
 
                 if(!empty($errors))
@@ -551,11 +650,68 @@ class Main extends CI_Controller
                 {
                     $this->load->library('insertdata');
 
-                    $dataInsert = $this->insertdata->dataForInsert('logs', $_POST);
+                    $dataUpdate = $this->insertdata->dataForInsert('articles', $_POST);
 
-                    if($this->general_m->addData('logs', $dataInsert) == TRUE)
+                    if($this->general_m->updateData('articles', $dataUpdate, 'ArticleID', $article_id) == TRUE)
                     {
+                        $dataInsertTags['ArticleID'] = $article_id;
+                        $logDataInsert = array('UserID' => $sessionData['UserID'],
+                                               'LogDate' => date("Y-m-d H:i:s"),
+                                               'ArticleID' => $article_id);
+                        
+                        $this->general_m->addData('logs', $logDataInsert);
+                        
+                        $this->load->library('zend');
+                        $this->load->library('zend', 'Zend/Search/Lucene');
+                        $this->zend->load('Zend/Search/Lucene');
+                        $appPath = dirname(dirname(dirname(__FILE__))) . '\search\index';
+                        $index = '';
+                        
+                        if(!file_exists($appPath))
+                        {
+                            $index = Zend_Search_Lucene::create($appPath, true);
+                        }
+                        else
+                        {
+                            $index = Zend_Search_Lucene::open($appPath);
+                            $index->optimize();
+                        }
+                        
+                        $doc = new Zend_Search_Lucene_Document();
+                        $doc->addField(Zend_Search_Lucene_Field::Text('title', $_POST['title']));
+                        $doc->addField(Zend_Search_Lucene_Field::Text('contents', $_POST['content']));
+                        $doc->addField(Zend_Search_Lucene_Field::unIndexed('keyword', 'article'));
+                        $doc->addField(Zend_Search_Lucene_Field::unIndexed('myid', $article_id));
+                        $tagsForSearch = '';
+                        
+                        foreach ($tags as $value)
+                        {
+                            $tagsForSearch .= $value . ' ';
+                            $tag_id = $this->general_m->selectSomeById('TagID', 'tags', "Name = '".$value."'");
+                            $count = count($tag_id);
+
+                            if($count > 0)
+                            {
+                                $tag = $this->general_m->selectSomeById('TagID', 'article_tags', "TagID = ".$tag_id['TagID']." AND ArticleID = " . $article_id);
+                                if(count($tag) == 0)
+                                {
+                                    $dataInsertTags['TagID'] = $tag_id['TagID'];
+                                    $this->general_m->addData('article_tags', $dataInsertTags);
+                                }
+                            }
+                            else
+                            {
+                                $dataInsertTagsName['Name'] = $value;
+                                $this->general_m->addData('tags', $dataInsertTagsName);
+
+                                $dataInsertTags['TagID'] = mysql_insert_id();
+                                $this->general_m->addData('article_tags', $dataInsertTags);
+                            }
+                        }
                         $data['isOk'] = 'Uspješno ste promijenili članak.';
+                        $doc->addField(Zend_Search_Lucene_Field::text('tags', $tagsForSearch));
+                        $index->addDocument($doc);
+                        $index->commit();
                     }
                     else
                     {
@@ -571,7 +727,7 @@ class Main extends CI_Controller
                     $errors[] = 'Morate se prijaviti da biste promijenili oblast članka! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
                 }
 
-                $requiredFields = array($this->input->post('newtitle'), $this->input->post('newContent'));
+                $requiredFields = array($this->input->post('subtitle'), $this->input->post('subtitleContent'));
                 foreach($requiredFields as $key => $value)
                 {
                     if(empty($value))
@@ -589,17 +745,23 @@ class Main extends CI_Controller
                 {
                     $this->load->library('insertdata');
 
-                    $dataInsert = $this->insertdata->dataForInsert('logs', $_POST);
+                    $dataUpdate = $this->insertdata->dataForInsert('subtitles', $_POST);
 
-                    if($this->general_m->addData('logs', $dataInsert) == TRUE)
+                    if($this->general_m->updateData('subtitles', $dataUpdate, 'SubtitleID', $subtitle_id) == TRUE)
                     {
+                        $logDataInsert = array('UserID' => $sessionData['UserID'],
+                                               'LogDate' => date("Y-m-d H:i:s"),
+                                               'SubtitleID' => $subtitle_id);
+                        
+                        $this->general_m->addData('logs', $logDataInsert);
+                        
                         $data['isOk'] = 'Uspješno ste promijenili oblast članka.';
                     }
                     else
                     {
                         $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
                     }
-                } 
+                }
             }
             
             if(isset($_POST['submitAddNewSubtitle']))
@@ -639,17 +801,16 @@ class Main extends CI_Controller
                     }
                 } 
             }
-            
+            $data['article'] = $this->qawiki_m->getArticleDataById($article_id);
             $negativeQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id . " AND Positive = '0'");
             $positiveQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id. " AND Positive = '1'");
             
             $joinArticle = array('articles' => 'articles.ArticleID = logs.ArticleID',
                                                'users' => 'users.UserID = logs.UserID');
             
-            $whereArticle = 'logs.ArticleID = ' . $article_id . ' AND logs.LogID = (SELECT MAX(LogID)
-                                                                                    FROM logs
-                                                                                    WHERE ArticleID = '.$article_id.')';
+            $whereArticle = 'logs.ArticleID = ' . $article_id;
             $data['lastChangeArticle'] = $this->logs_m->getLogsBy('*', $joinArticle, $whereArticle);
+            $data['tags'] = $this->qawiki_m->getTagsForArticle($article_id);
             
             $data['subtitles'] = $this->qawiki_m->getPodContentDataByArticleId($article_id);
             $data['resultOfVotesForQuestion'] = ($positiveQuestion - $negativeQuestion);
