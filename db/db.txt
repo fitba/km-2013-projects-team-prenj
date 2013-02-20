@@ -98,18 +98,6 @@ CREATE TABLE IF NOT EXISTS `follow_tags` (
   CONSTRAINT `fk_follow_tags_tags` FOREIGN KEY (`TagID`) REFERENCES `tags` (`TagID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `subtitles` (
-  `SubtitleID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
-  `ArticleID` bigint(20) unsigned NOT NULL,
-  `Subtitle` varchar(100) COLLATE utf8_unicode_ci NOT NULL,
-  `SubtitleContent` text COLLATE utf8_unicode_ci NOT NULL,
-  `AddDate` datetime DEFAULT NULL,
-  `UserID` int(10) unsigned DEFAULT NULL,
-  PRIMARY KEY (`SubtitleID`),
-  CONSTRAINT `fk_subtitles_articles` FOREIGN KEY (`ArticleID`) REFERENCES `articles` (`ArticleID`),
-  CONSTRAINT `fk_subtitles_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
-
 CREATE TABLE IF NOT EXISTS `logs` (
   `LogID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `UserID` int(10) unsigned NOT NULL,
@@ -117,12 +105,10 @@ CREATE TABLE IF NOT EXISTS `logs` (
   `AnswerID` bigint(20) unsigned DEFAULT NULL,
   `QuestionID` bigint(20) unsigned DEFAULT NULL,
   `ArticleID` bigint(20) unsigned DEFAULT NULL,
-  `SubtitleID` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`LogID`),
   CONSTRAINT `fk_logs_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`),
   CONSTRAINT `fk_logs_answers` FOREIGN KEY (`AnswerID`) REFERENCES `answers` (`AnswerID`),
   CONSTRAINT `fk_logs_articles` FOREIGN KEY (`ArticleID`) REFERENCES `articles` (`ArticleID`),
-  CONSTRAINT `fk_logs_subtitles` FOREIGN KEY (`SubtitleID`) REFERENCES `subtitles` (`SubtitleID`),
   CONSTRAINT `fk_logs_questions` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1;
 

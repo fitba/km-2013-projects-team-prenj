@@ -52,7 +52,7 @@
                     </div>
                     <div class="questions">
                         <p class="title"><a href="<?php echo base_url('index.php/main/question/' . $question['QuestionID']); ?>"><?php echo $question['Title'] ?></a></p>
-                        <p><?php echo $question['Question'] ?></p>
+                        <p><?php echo html_entity_decode($question['Question']) ?></p>
                         <p>
                         <?php
                         foreach ($tags as $tag)

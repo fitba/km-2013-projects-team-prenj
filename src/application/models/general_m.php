@@ -18,7 +18,7 @@ class General_m extends CI_Model
         $dataInsert = array();
         foreach($data as $key => $value)
         {
-            $dataInsert[$key] = strip_tags(stripslashes($value));
+            $dataInsert[$key] = htmlentities($value, ENT_NOQUOTES);
         }
         $this->db->insert($table, $dataInsert);
 
@@ -95,7 +95,7 @@ class General_m extends CI_Model
         $dataUpdate = array();
         foreach($data as $key => $value)
         {
-            $dataUpdate[$key] = strip_tags(stripslashes($value));
+            $dataUpdate[$key] = htmlentities($value, ENT_NOQUOTES);
         }
         $this->db->where($where, $id);
         $this->db->update($table, $dataUpdate);

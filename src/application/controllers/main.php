@@ -287,11 +287,21 @@ class Main extends CI_Controller
                             $index->optimize();
                         }
 
+                        $myid = new Zend_Search_Lucene_Index_Term($question_id, 'myid');
+                        $docIds  = $index->termDocs($myid);
+                        foreach ($docIds as $id) 
+                        {
+                            $doc = $index->getDocument($id);
+                            $keyword = $doc->keyword;
+                            if($keyword == 'question')
+                                $index->delete($id);
+                        }
+
                         $doc = new Zend_Search_Lucene_Document();
                         $doc->addField(Zend_Search_Lucene_Field::Text('title', $_POST['title']));
                         $doc->addField(Zend_Search_Lucene_Field::Text('contents', $_POST['question']));
                         $doc->addField(Zend_Search_Lucene_Field::unIndexed('keyword', 'question'));
-                        $doc->addField(Zend_Search_Lucene_Field::unIndexed('myid', $dataInsertTags['QuestionID']));
+                        $doc->addField(Zend_Search_Lucene_Field::keyword('myid', $dataInsertTags['QuestionID']));
                         $tagsForSearch = '';
 
                         foreach ($tags as $value)
@@ -524,7 +534,7 @@ class Main extends CI_Controller
         }
     }
     
-    public function article($article_id = null, $subtitle_id = null, $positive = NULL)
+    public function article($article_id = null, $positive = NULL)
     {
         if(isset($article_id))
         {
@@ -559,51 +569,41 @@ class Main extends CI_Controller
                     $this->general_m->addData('views', $dataInsert);
                 }
             }
-            
-            if(isset($subtitle_id))
+
+            if(isset($positive))
             {
-                if($subtitle_id == 0)
+                if($sessionData == NULL)
                 {
-                    if(isset($positive))
-                    {
-                        if($sessionData == NULL)
-                        {
-                            $errors[] = 'Morate se prijaviti da biste ocijenili članak! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
-                        }
-                        else
-                        {
-                            $where = "UserID = " . $sessionData['UserID'] . " AND ArticleID = " . $article_id . " AND Positive = '".$positive."'";
-                            $count = $this->general_m->exists('votes', 'VoteID', $where);
-
-                            if($count > 0)
-                            {
-                                $errors[] = 'Već ste ocijenili taj članak!';
-                            }
-                        }
-                        if(!empty($errors))
-                        {
-                            $data['errors'] = $this->general_m->displayErrors($errors);
-                        }
-                        else
-                        {
-                            $dataInsert = array('UserID' => $sessionData['UserID'],
-                                                'ArticleID' => $article_id,
-                                                'Positive' => $positive);
-
-                            if($this->general_m->addData('votes', $dataInsert) == TRUE)
-                            {
-                                $data['isOk'] = 'Uspješno ste ocijenili odgovor.';
-                            }
-                            else
-                            {
-                                $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
-                            }
-                        }
-                    }
+                    $errors[] = 'Morate se prijaviti da biste ocijenili članak! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
                 }
                 else
                 {
-                    $data['subtitle_id'] = $subtitle_id;
+                    $where = "UserID = " . $sessionData['UserID'] . " AND ArticleID = " . $article_id . " AND Positive = '".$positive."'";
+                    $count = $this->general_m->exists('votes', 'VoteID', $where);
+
+                    if($count > 0)
+                    {
+                        $errors[] = 'Već ste ocijenili taj članak!';
+                    }
+                }
+                if(!empty($errors))
+                {
+                    $data['errors'] = $this->general_m->displayErrors($errors);
+                }
+                else
+                {
+                    $dataInsert = array('UserID' => $sessionData['UserID'],
+                                        'ArticleID' => $article_id,
+                                        'Positive' => $positive);
+
+                    if($this->general_m->addData('votes', $dataInsert) == TRUE)
+                    {
+                        $data['isOk'] = 'Uspješno ste ocijenili članak.';
+                    }
+                    else
+                    {
+                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                    }
                 }
             }
             
@@ -666,7 +666,7 @@ class Main extends CI_Controller
                         $this->zend->load('Zend/Search/Lucene');
                         $appPath = dirname(dirname(dirname(__FILE__))) . '\search\index';
                         $index = '';
-                        
+
                         if(!file_exists($appPath))
                         {
                             $index = Zend_Search_Lucene::create($appPath, true);
@@ -676,12 +676,22 @@ class Main extends CI_Controller
                             $index = Zend_Search_Lucene::open($appPath);
                             $index->optimize();
                         }
+
+                        $myid = new Zend_Search_Lucene_Index_Term($question_id, 'myid');
+                        $docIds  = $index->termDocs($myid);
+                        foreach ($docIds as $id) 
+                        {
+                            $doc = $index->getDocument($id);
+                            $keyword = $doc->keyword;
+                            if($keyword == 'article')
+                                $index->delete($id);
+                        }
                         
                         $doc = new Zend_Search_Lucene_Document();
                         $doc->addField(Zend_Search_Lucene_Field::Text('title', $_POST['title']));
                         $doc->addField(Zend_Search_Lucene_Field::Text('contents', $_POST['content']));
                         $doc->addField(Zend_Search_Lucene_Field::unIndexed('keyword', 'article'));
-                        $doc->addField(Zend_Search_Lucene_Field::unIndexed('myid', $article_id));
+                        $doc->addField(Zend_Search_Lucene_Field::keyword('myid', $article_id));
                         $tagsForSearch = '';
                         
                         foreach ($tags as $value)
@@ -720,87 +730,6 @@ class Main extends CI_Controller
                 } 
             }
             
-            if(isset($_POST['submitEditSubtitle']))
-            {
-                if($sessionData == NULL)
-                {
-                    $errors[] = 'Morate se prijaviti da biste promijenili oblast članka! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
-                }
-
-                $requiredFields = array($this->input->post('subtitle'), $this->input->post('subtitleContent'));
-                foreach($requiredFields as $key => $value)
-                {
-                    if(empty($value))
-                    {
-                        $errors[] = 'Polja koja su označena sa * su obavezna!';
-                        break 1;
-                    }
-                }
-
-                if(!empty($errors))
-                {
-                    $data['errors'] = $this->general_m->displayErrors($errors);
-                }
-                else
-                {
-                    $this->load->library('insertdata');
-
-                    $dataUpdate = $this->insertdata->dataForInsert('subtitles', $_POST);
-
-                    if($this->general_m->updateData('subtitles', $dataUpdate, 'SubtitleID', $subtitle_id) == TRUE)
-                    {
-                        $logDataInsert = array('UserID' => $sessionData['UserID'],
-                                               'LogDate' => date("Y-m-d H:i:s"),
-                                               'SubtitleID' => $subtitle_id);
-                        
-                        $this->general_m->addData('logs', $logDataInsert);
-                        
-                        $data['isOk'] = 'Uspješno ste promijenili oblast članka.';
-                    }
-                    else
-                    {
-                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
-                    }
-                }
-            }
-            
-            if(isset($_POST['submitAddNewSubtitle']))
-            {
-                if($sessionData == NULL)
-                {
-                    $errors[] = 'Morate se prijaviti da biste dodali oblast članka! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
-                }
-
-                $requiredFields = array($this->input->post('subtitle'), $this->input->post('subtitleContent'));
-                foreach($requiredFields as $key => $value)
-                {
-                    if(empty($value))
-                    {
-                        $errors[] = 'Polja koja su označena sa * su obavezna!';
-                        break 1;
-                    }
-                }
-
-                if(!empty($errors))
-                {
-                    $data['errors'] = $this->general_m->displayErrors($errors);
-                }
-                else
-                {
-                    $this->load->library('insertdata');
-
-                    $dataInsert = $this->insertdata->dataForInsert('subtitles', $_POST);
-
-                    if($this->general_m->addData('subtitles', $dataInsert) == TRUE)
-                    {
-                        $data['isOk'] = 'Uspješno ste dodali oblast članka.';
-                    }
-                    else
-                    {
-                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
-                    }
-                } 
-            }
             $data['article'] = $this->qawiki_m->getArticleDataById($article_id);
             $negativeQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id . " AND Positive = '0'");
             $positiveQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id. " AND Positive = '1'");
@@ -812,7 +741,6 @@ class Main extends CI_Controller
             $data['lastChangeArticle'] = $this->logs_m->getLogsBy('*', $joinArticle, $whereArticle);
             $data['tags'] = $this->qawiki_m->getTagsForArticle($article_id);
             
-            $data['subtitles'] = $this->qawiki_m->getPodContentDataByArticleId($article_id);
             $data['resultOfVotesForQuestion'] = ($positiveQuestion - $negativeQuestion);
             $this->load->view('articles', $data);
         }

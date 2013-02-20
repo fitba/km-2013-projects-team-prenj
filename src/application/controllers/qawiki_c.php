@@ -94,13 +94,14 @@ class Qawiki_c extends CI_Controller
                                 else
                                 {
                                     $index = Zend_Search_Lucene::open($appPath);
+                                    $index->optimize();
                                 }
                                 
                                 $doc = new Zend_Search_Lucene_Document();
                                 $doc->addField(Zend_Search_Lucene_Field::Text('title', $_POST['title']));
                                 $doc->addField(Zend_Search_Lucene_Field::Text('contents', $_POST['question']));
                                 $doc->addField(Zend_Search_Lucene_Field::unIndexed('keyword', 'question'));
-                                $doc->addField(Zend_Search_Lucene_Field::unIndexed('myid', $dataInsertTags['QuestionID']));
+                                $doc->addField(Zend_Search_Lucene_Field::keyword('myid', $dataInsertTags['QuestionID']));
                                 $tagsForSearch = '';
                                 
                                 foreach ($tags as $value)
@@ -177,12 +178,8 @@ class Qawiki_c extends CI_Controller
                 {
                     if(isset($_POST['postArticle']))
                     {
-                        unset($_SESSION['titleArticle']);
-                        unset($_SESSION['article']);
-                        unset($_SESSION['tagsArticle']);
-
                         $errors = array();
-                        $requiredFields = array($this->input->post('title'), $this->input->post('article'), $this->input->post('tags'));
+                        $requiredFields = array($this->input->post('title'), $this->input->post('content'), $this->input->post('tags'));
 
                         foreach($requiredFields as $key => $value)
                         {
@@ -219,10 +216,9 @@ class Qawiki_c extends CI_Controller
                         {
                             $sessionData = $this->sessionData;
 
-                            $dataInsert = array('Title' => $_POST['title'],
-                                                'Content' => $_POST['article'],
-                                                'UserID' => $sessionData['UserID'],
-                                                'PostDate' => date("Y-m-d H:i:s"));
+                            $this->load->library('insertdata');
+                            $test = $_POST;
+                            $dataInsert = $this->insertdata->dataForInsert('articles', $_POST);
 
                             if($this->general_m->addData('articles', $dataInsert) == TRUE)
                             {
@@ -242,13 +238,14 @@ class Qawiki_c extends CI_Controller
                                 else
                                 {
                                     $index = Zend_Search_Lucene::open($appPath);
+                                    $index->optimize();
                                 }
-                                
+                                    
                                 $doc = new Zend_Search_Lucene_Document();
                                 $doc->addField(Zend_Search_Lucene_Field::Text('title', $_POST['title']));
-                                $doc->addField(Zend_Search_Lucene_Field::Text('contents', $_POST['article']));
+                                $doc->addField(Zend_Search_Lucene_Field::Text('contents', $_POST['content']));
                                 $doc->addField(Zend_Search_Lucene_Field::unIndexed('keyword', 'article'));
-                                $doc->addField(Zend_Search_Lucene_Field::unIndexed('myid', $dataInsertTags['ArticleID']));
+                                $doc->addField(Zend_Search_Lucene_Field::keyword('myid', $dataInsertTags['ArticleID']));
                                 $tagsForSearch = '';
                                 
                                 foreach ($tags as $value)
@@ -271,24 +268,8 @@ class Qawiki_c extends CI_Controller
                                     }
                                 }
                                 
-                                $subtitlesForSearch = '';
-                                if(isset($_SESSION['numberOfSubtitles']))
-                                {
-                                    for ($i = 1; $i <= $_SESSION['numberOfSubtitles']; $i++)
-                                    {
-                                        if(!empty($_POST['subtitle'. $i]) && !empty($_POST['articleSubtitleContent' . $i]))
-                                        {
-                                            $subtitlesForSearch .= $_POST['subtitle'. $i] . ' ';
-                                            $dataInsertSubtitles['Subtitle'] = $_POST['subtitle'. $i];
-                                            $dataInsertSubtitles['SubtitleContent'] = $_POST['articleSubtitleContent' . $i];
-
-                                            $this->general_m->addData('subtitles', $dataInsertSubtitles);
-                                        }
-                                    }
-                                }
-                                $data['isOk'] = 'Uspješno ste postavili pitanje.';
+                                $data['isOk'] = 'Uspješno ste postavili članak.';
                                 $doc->addField(Zend_Search_Lucene_Field::text('tags', $tagsForSearch));
-                                $doc->addField(Zend_Search_Lucene_Field::unStored('subtitles', $subtitlesForSearch));
                                 $index->addDocument($doc);
                                 $index->commit();
                             }
@@ -296,27 +277,6 @@ class Qawiki_c extends CI_Controller
                             {
                                 $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
                             }
-                        }
-                        unset($_SESSION['numberOfSubtitles']);
-                    }
-                    if(isset($_POST['numberOfSubtitles']) && !empty($_POST['numberOfSubtitles']))
-                    {
-                        $numberOfSubtitles = $_POST['numberOfSubtitles'];
-                        $_SESSION['numberOfSubtitles'] = $_POST['numberOfSubtitles'];
-
-                        if(isset($_POST['title']))
-                            $_SESSION['titleArticle'] = $_POST['title'];
-
-                        if(isset($_POST['article']))
-                            $_SESSION['article'] = $_POST['article'];
-
-                        if(isset($_POST['tags']))
-                            $_SESSION['tagsArticle'] = $_POST['tags'];
-
-                        for ($i = 1; $i <= $numberOfSubtitles ; $i++)
-                        {
-                            $data['subtitlesTags'] .= '<p><input type="text" name="subtitle'.$i.'" placeholder="Ovdje unesite pod naslov članka" class="input-xxlarge"></p>
-                                                       <textarea id="editor" name="articleSubtitleContent'.$i.'" class="textareaSize"></textarea>';
                         }
                     }
                 }

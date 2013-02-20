@@ -3,7 +3,7 @@
 class Search_c extends CI_Controller 
 {
     var $search_index;
-    function __construct() 
+    function __construct()
     {
         parent::__construct();
         $this->load->library('zend');   
@@ -11,17 +11,16 @@ class Search_c extends CI_Controller
         $this->zend->load('Zend/Search/Lucene');
         $appPath = dirname(dirname(dirname(__FILE__)));
         $this->search_index = $appPath . '\search\index';
-        //error_reporting(0);
+        error_reporting(0);
     }
     
     public function index()
     {
-        // Create empty array, in case there are no results.
-        $data['results'] = array();
-
         // If a search_query parameter has been posted, search the index.
         if ($_GET['pretraga'])
         {
+            // Create empty array, in case there are no results.
+            $data['results'] = array();
             if(file_exists($this->search_index))
             {
                 $index = Zend_Search_Lucene::open($this->search_index);

@@ -27,14 +27,14 @@
                             }
                             echo '<form action="'.  base_url('index.php/main/question/' . $question_id) .'" method="post" onsubmit="return saveScrollPositions(this);">
                                     <p><input type="text" name="title" class="input-xxlarge" value="'.$question['Title'].'"/></p>
-                                    <p><textarea id="editor" name="question">'.$question['Question'].'</textarea></p>
+                                    <p><textarea id="editor" name="question">'.html_entity_decode($question['Question']).'</textarea></p>
                                     <p><input type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge" value="'.$tagsForEdit.'"></p>
                                     <p><input type="submit" name="submitEditQuestion" value="Promijeni" class="btn btn-primary"/></p>
                                  </form>';
                         }
                         else
                         {
-                            echo $question['Question'];
+                            echo html_entity_decode($question['Question']);
                         ?>
                         </p>
                         <p>
@@ -77,7 +77,7 @@
                         <?php echo $comment['Ordinal'];?>
                     </div>
                     <div style="margin-left: 30px">
-                        <?php echo $comment['Comment'] . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['CommentsUserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
+                        <?php echo html_entity_decode($comment['Comment']) . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['CommentsUserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
                     </div>
                     <hr/>
                     <?php
@@ -138,13 +138,13 @@
                         if(isset($answer_id) && $answer_id == $answer['AnswerID'] && isset($_GET['editAnswer']) && $_GET['editAnswer'] == 'true')
                         {
                             echo '<form action="'.  base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
-                                    <p><textarea id="editor" name="answer">'.$answer['Answer'].'</textarea></p>
+                                    <p><textarea id="editor" name="answer">'.html_entity_decode($answer['Answer']).'</textarea></p>
                                     <p><input type="submit" name="submitEditAnswer" value="Promijeni" class="btn btn-primary"/></p>
                                  </form>';
                         }
                         else
                         {
-                            echo $answer['Answer'];
+                            echo html_entity_decode($answer['Answer']);
                         }
                         ?>
                         </p>
@@ -179,7 +179,7 @@
                                             <?php echo $comment['Ordinal'];?>
                                         </div>
                                         <div style="margin-left: 30px">
-                                            <?php echo $comment['Comment'] . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['CommentsUserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
+                                            <?php echo html_entity_decode($comment['Comment']) . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['CommentsUserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
                                         </div>
                                         <hr/>
                                         <?php

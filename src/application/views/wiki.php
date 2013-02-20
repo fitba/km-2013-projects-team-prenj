@@ -13,22 +13,13 @@
         <h2>Postavite članak</h2>
         <hr/>
         <form action="<?php echo base_url('index.php/qawiki_c/wiki/' . $key); ?>" method="post">
-            <p><input type="text" name="title" placeholder="Ovdje unesite naslov članka" class="input-xxlarge" value="<?php if(isset($_SESSION['titleArticle'])) echo $_SESSION['titleArticle'] ?>"></p>
-            <p><textarea id="editor" name="article"><?php if(isset($_SESSION['article'])) echo $_SESSION['article']; ?></textarea></p>
-            <p><input type="text" id="tagsArticle" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge" value="<?php if(isset($_SESSION['tagsArticle'])) echo $_SESSION['tagsArticle'] ?>"> [<i>Tagove odvojte praznim poljem (razmakom)</i>]</p>
-            Ovdje odredite koliko želite pod naslova da navedete za vaš članak. Za svaki pod naslov morate napisati sadržaj.
-            Ako ne želite da navedete nijedan pod naslov samo kliknite na polje unosa članka.
-            <input style="height: 17px;" type="number" name="numberOfSubtitles" class="input-small"/>
-            <input style="margin-bottom: 10px; height: 27px;" type="submit" name="subtitleSubmit" class="btn" value="Potvrdi">
-            <?php 
-            if(isset($subtitlesTags))
-            {
-                echo $subtitlesTags; 
-            }
-            ?>
+            <p><input type="text" name="title" placeholder="Ovdje unesite naslov članka" class="input-xxlarge" /></p>
+            <p><textarea id="editor" name="content"></textarea></p>
+            <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>" /></p>
+            <p><input type="hidden" name="postDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
+            <p><input type="text" id="tagsArticle" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"> [<i>Tagove odvojte praznim poljem (razmakom)</i>]</p>
             <p><input type="submit" name="postArticle" class="btn" value="Submit"></p>
         </form>
-        
         <?php
             }
             else if($key == 'articles')
@@ -60,7 +51,7 @@
                                         </div>
                                         <div class="questions">
                                             <p class="title"><a href="<?php echo base_url('index.php/main/article/' . $article['ArticleID']); ?>"><?php echo $article['Title'] ?></a></p>
-                                            <p><?php echo $article['Content'] ?></p>
+                                            <p><?php echo html_entity_decode($article['Content']) ?></p>
                                             <p>
                                             <?php
                                             foreach ($tags as $tag)

@@ -25,8 +25,11 @@
             <td><a href="<?php echo base_url('index.php/main/changes/' . $change['LogID']); ?>">Prikaži</a></td>
             <td><?php echo $change['LogDate']; ?></td>
             <td><?php echo $change['FirstName'] . ' ' . $change['LastName']; ?></td>
-            <td><?php echo $change['NewTitle']; ?></td>
-            <td><?php echo '<textarea disabled="disabled" class="textareaFixed">' . $change['NewContent'] . '</textarea>'; ?></td>
+            <td>
+            <?php 
+                
+            ?>
+            </td>
         </tr>
       <?php
       }
