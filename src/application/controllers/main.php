@@ -730,6 +730,46 @@ class Main extends CI_Controller
                 } 
             }
             
+            if(isset($_POST['submitComment']))
+            {
+                $errors = array();
+                $requiredFields = array($this->input->post('comment'));
+
+                foreach($requiredFields as $key => $value)
+                {
+                    if(empty($value))
+                    {
+                        $errors[] = 'Polje za komentar je obavezno polje!';
+                        break 1;
+                    }
+                }
+                
+                if($sessionData == NULL)
+                {
+                    $errors[] = 'Morate se prijaviti da biste postavili komentar! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                }
+
+                if(!empty($errors))
+                {
+                    $data['errors'] = $this->general_m->displayErrors($errors);
+                }
+                else
+                {
+                    $this->load->library('insertdata');
+                
+                    $dataInsert = $this->insertdata->dataForInsert('comments', $_POST);
+
+                    if($this->general_m->addData('comments', $dataInsert) == TRUE)
+                    {
+                        $data['isOk'] = 'Uspješno ste postavili komentar.';
+                    }
+                    else
+                    {
+                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                    }
+                }
+            }
+            
             $data['article'] = $this->qawiki_m->getArticleDataById($article_id);
             $negativeQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id . " AND Positive = '0'");
             $positiveQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id. " AND Positive = '1'");
@@ -739,6 +779,7 @@ class Main extends CI_Controller
             
             $whereArticle = 'logs.ArticleID = ' . $article_id;
             $data['lastChangeArticle'] = $this->logs_m->getLogsBy('*', $joinArticle, $whereArticle);
+            $data['commentsArticles'] = $this->qawiki_m->getCommentsDataById(NULL, NULL, $article_id);
             $data['tags'] = $this->qawiki_m->getTagsForArticle($article_id);
             
             $data['resultOfVotesForQuestion'] = ($positiveQuestion - $negativeQuestion);
@@ -757,8 +798,7 @@ class Main extends CI_Controller
         $joins = array('users' => 'users.UserID = logs.UserID',
                        'answers' => 'answers.AnswerID = logs.AnswerID',
                        'questions' => 'questions.QuestionID = logs.QuestionID',
-                       'articles' => 'articles.ArticleID = logs.ArticleID',
-                       'subtitles' => 'subtitles.SubtitleID = logs.SubtitleID');
+                       'articles' => 'articles.ArticleID = logs.ArticleID');
         
         $data['changes'] = $this->logs_m->getLogs($select, $joins);
         

@@ -63,6 +63,46 @@
             </tr>
         </tbody>
     </table>
+<h5>Komentari</h5>
+<table class="table">
+    <tbody>
+        <tr>
+            <td>
+                <div class="comments">
+                    <?php 
+                    foreach($commentsArticles as $comment)
+                    {
+                    ?>
+                    <div style="float: left">
+                        <?php echo $comment['Ordinal'];?>
+                    </div>
+                    <div style="margin-left: 30px">
+                        <?php echo html_entity_decode($comment['Comment']) . ' - <b><a href="'. base_url('index.php/main/profile/' . $comment['CommentsUserID']) .'">' . $comment['FirstName'] . ' ' . $comment['LastName'] . '</a> | ' . $this->formatdate->getFormatDate($comment['CommentDate']) . '</b>'; ?>
+                    </div>
+                    <hr/>
+                    <?php
+                    }
+                    ?>
+                    <div style="margin-left: 30px">
+                        <form action="<?php echo base_url('index.php/main/article/' . $article_id); ?>" method="post" onsubmit="return saveScrollPositions(this);">
+                            <?php $lastOrdinal = $this->general_m->selectMax('Ordinal', 'comments', 'ArticleID = ' . $article_id); ?>
+                            <p><textarea class="commentsSize" name="comment"></textarea></p>
+                            <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>"/></p>
+                            <p><input type="hidden" name="articleid" value="<?php echo base64_encode($article_id); ?>"/></p>
+                            <p><input type="hidden" name="commentDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
+                            <p><input type="hidden" name="ordinal" value="<?php if($lastOrdinal['Last'] == null) echo 1; else echo $lastOrdinal['Last'] + 1; ?>"/></p>
+                            
+                            <input type="hidden" name="scrollx" id="scrollx" value="0" />
+                            <input type="hidden" name="scrolly" id="scrolly" value="0" />
+                            
+                            <p><input type="submit" name="submitComment" value="Komentariši" class="btn btn-primary"/></p>
+                        </form>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>
 </div>
 <?php 
     $this->load->view('static/footer.php');

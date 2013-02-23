@@ -88,7 +88,7 @@ class Qawiki_m extends CI_Model
     
     /* Funkcija getCommentsDataById() vraća sve podatke o komentarima za neki odgovor ili pitanje.
      */
-    public function getCommentsDataById($question_id = NULL, $answer_id = NULL)
+    public function getCommentsDataById($question_id = NULL, $answer_id = NULL, $article_id = NULL)
     {
         $question_id = (int)$question_id;
         $answer_id = (int)$answer_id;
@@ -107,6 +107,12 @@ class Qawiki_m extends CI_Model
         {
             $this->db->join('answers', 'comments.AnswerID = answers.AnswerID');
             $this->db->where('comments.AnswerID', $answer_id);
+        }
+        
+        if($article_id != null)
+        {
+            $this->db->join('articles', 'comments.ArticleID = articles.ArticleID');
+            $this->db->where('comments.ArticleID', $article_id);
         }
         
         $this->db->order_by('comments.Ordinal');

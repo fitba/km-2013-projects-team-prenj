@@ -82,9 +82,11 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `UserID` int(10) unsigned NOT NULL,
   `QuestionID` bigint(20) unsigned DEFAULT NULL,
   `AnswerID` bigint(20) unsigned DEFAULT NULL,
+  `ArticleID` bigint(20) unsigned DEFAULT NULL,
   PRIMARY KEY (`CommentID`),
   CONSTRAINT `fk_comments_answers` FOREIGN KEY (`AnswerID`) REFERENCES `answers` (`AnswerID`),
   CONSTRAINT `fk_comments_questions` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`),
+  CONSTRAINT `fk_comments_articles` FOREIGN KEY (`ArticleID`) REFERENCES `articles` (`ArticleID`),
   CONSTRAINT `fk_comments_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci AUTO_INCREMENT=1 ;
 
