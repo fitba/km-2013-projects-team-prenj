@@ -46,6 +46,7 @@ CREATE TABLE IF NOT EXISTS `answers` (
   `QuestionID` bigint(20) unsigned NOT NULL,
   `AnswerDate` datetime NOT NULL,
   `Answer` text COLLATE utf8_unicode_ci NOT NULL,
+  `Best` enum('0','1') DEFAULT 0 NOT NULL,
   PRIMARY KEY (`AnswerID`),
   CONSTRAINT `fk_answers_questions` FOREIGN KEY (`QuestionID`) REFERENCES `questions` (`QuestionID`),
   CONSTRAINT `fk_answers_users` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`)

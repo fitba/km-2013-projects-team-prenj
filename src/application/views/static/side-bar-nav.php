@@ -58,8 +58,18 @@
                 ?>
                         <hr/>
                         <form action="<?php echo base_url('index.php/main/profile/' . $user_id) ?>" method="post" enctype="multipart/form-data">
-                            <input type="file" name="profilePicture" class="btn"/>
-                            <input type="submit" name="uploadPicture" value="Upload" class="btn btn-primary"/>
+                            <div>
+                                <input type="file" name="profilePicture" class="btn"/>
+                                <?php 
+                                if($userData['UsersUserID'] === $sessionData['UserID'])
+                                {
+                                ?>
+                                <input type="submit" name="uploadPicture" value="Upload" class="btn btn-primary"/>
+                                <input type="submit" name="deletePicture" value="Obriši" class="btn btn-primary"/>
+                                <?php 
+                                }
+                                ?>
+                            </div>
                         </form>
                 </center>
             </li>

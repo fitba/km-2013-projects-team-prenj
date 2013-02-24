@@ -2,7 +2,7 @@
     $data['title'] = 'Nedavne izmjene';
     $this->load->view('static/header.php', $data); 
 ?>
-<div class="hero-unit">
+<div>
   <h3>Izmjene</h3>
   <p></p>
   <p></p>
@@ -17,21 +17,24 @@
             <th>Novi naslov</th>
             <th>Novi sadržaj</th>
         </tr>
-      <?php 
-      foreach ($changes as $change)
-      {
-      ?>
-        <tr>
-            <td><a href="<?php echo base_url('index.php/main/changes/' . $change['LogID']); ?>">Prikaži</a></td>
-            <td><?php echo $change['LogDate']; ?></td>
-            <td><?php echo $change['FirstName'] . ' ' . $change['LastName']; ?></td>
-            <td>
-            <?php 
-                
-            ?>
-            </td>
-        </tr>
       <?php
+      if(isset($changes))
+      {
+        foreach ($changes as $change)
+        {
+        ?>
+          <tr>
+              <td><a href="<?php echo base_url('index.php/main/changes/' . $change['LogID']); ?>">Prikaži</a></td>
+              <td><?php echo $change['LogDate']; ?></td>
+              <td><?php echo $change['FirstName'] . ' ' . $change['LastName']; ?></td>
+              <td>
+              <?php 
+
+              ?>
+              </td>
+          </tr>
+        <?php
+        }
       }
       ?>
      </table>

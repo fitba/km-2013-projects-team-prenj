@@ -5,7 +5,7 @@ class Logs_m extends CI_Model
      * poziva funkciju database() koja će se koristiti kroz ovu klasu. */
     public function __construct()
     {
-        parent::__construct ();
+        parent::__construct();
         $this->load->database();
     }
     
@@ -13,18 +13,25 @@ class Logs_m extends CI_Model
     {
         $this->db->select($select);
         $this->db->from('logs');
-        
+
         if(isset($join))
         {
             foreach($join as $key => $value)
             {
-                $test = $this->db->join($key, $value, 'left');
+                $this->db->join($key, $value, 'left');
             }
         }
         $this->db->order_by('logs.LogDate', 'DESC');
         $query = $this->db->get();
         
-        return $query->result_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
     }
     
     public function getLogsBy($select, $join = array(), $where = null)
@@ -47,7 +54,14 @@ class Logs_m extends CI_Model
         
         $query = $this->db->get();
         
-        return $query->result_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
     }
 }
 ?>

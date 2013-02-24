@@ -28,6 +28,7 @@ class Main extends CI_Controller
     {
         if(isset($user_id))
         {
+            $data['sessionData'] = $this->sessionData;
             $data['user_id'] = $user_id;
             $data['userData'] = $userData = $this->qawiki_m->getUserDataById($user_id);
             $nameOfFolder = 'pictures/' . $userData['UsersUserID'];
@@ -35,8 +36,12 @@ class Main extends CI_Controller
             
             if(isset($_POST['uploadPicture']))
             {
-                
                 $errors = array();
+                
+                if($this->sessionData == NULL)
+                {
+                    $errors[] = 'Morate se prijaviti da biste postavili profil sliku! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                }
                 
                 if(!empty($_FILES['profilePicture']['name']) && isset($_FILES['profilePicture']))
 		{
@@ -70,7 +75,7 @@ class Main extends CI_Controller
                     {
                         $dataUpdate = array('ProfilePicture' => $slika);
 
-                        if($this->general_m->updateData('users', $dataUpdate, 'UserID', $user_id) == TRUE)
+                        if($this->general_m->updateData('users', $dataUpdate, 'UserID', $user_id) === TRUE)
                         {
                             if(!file_exists($folder))
                             {
@@ -83,10 +88,47 @@ class Main extends CI_Controller
                         {
                             $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
                         }
-                        
                     }
 		}
             }
+            
+            if(isset($_POST['deletePicture']))
+            {
+                $errors = array();
+                
+                if($this->sessionData == NULL)
+                {
+                    $errors[] = 'Morate se prijaviti da biste obrisali profil sliku! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                }
+                
+                if(!empty($errors))
+                {
+                    $data['errors'] = $this->general_m->displayErrors($errors);
+                }
+                else
+                {
+                    $dataUpdate = array('ProfilePicture' => NULL);
+
+                    if($this->general_m->updateData('users', $dataUpdate, 'UserID', $user_id) === TRUE)
+                    {
+                        $picture = $_SERVER['DOCUMENT_ROOT'].dirname(dirname(dirname(dirname($_SERVER['PHP_SELF'])))).'/'.$nameOfFolder . '/' . $userData['ProfilePicture'];
+                        $folder = $_SERVER['DOCUMENT_ROOT'].dirname(dirname(dirname(dirname($_SERVER['PHP_SELF'])))).'/'.$nameOfFolder;
+                        if(file_exists($picture) && file_exists($folder))
+                        {
+                            unlink($picture);
+                            rmdir($folder);
+                            $data['isOk'] = 'Uspješno ste obrisali profil sliku.';
+                        }
+                    }
+                    else
+                    {
+                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                    }
+                }
+            }
+            
+            $data['userData'] = $this->qawiki_m->getUserDataById($user_id);
+            
             $this->load->view('profile', $data);
         }
     }
@@ -161,7 +203,7 @@ class Main extends CI_Controller
                 
                     $dataInsert = $this->insertdata->dataForInsert('answers', $_POST);
 
-                    if($this->general_m->addData('answers', $dataInsert) == TRUE)
+                    if($this->general_m->addData('answers', $dataInsert) === TRUE)
                     {
                         $data['isOk'] = 'Uspješno ste odgovorili na pitanje.';
                     }
@@ -202,7 +244,7 @@ class Main extends CI_Controller
                 
                     $dataInsert = $this->insertdata->dataForInsert('comments', $_POST);
 
-                    if($this->general_m->addData('comments', $dataInsert) == TRUE)
+                    if($this->general_m->addData('comments', $dataInsert) === TRUE)
                     {
                         $data['isOk'] = 'Uspješno ste postavili komentar.';
                     }
@@ -261,7 +303,7 @@ class Main extends CI_Controller
                 
                     $dataUpdate = $this->insertdata->dataForInsert('questions', $_POST);
 
-                    if($this->general_m->updateData('questions', $dataUpdate, 'QuestionID', $question_id) == TRUE)
+                    if($this->general_m->updateData('questions', $dataUpdate, 'QuestionID', $question_id) === TRUE)
                     {
                         $dataInsertTags['QuestionID'] = $question_id;
                         
@@ -289,7 +331,7 @@ class Main extends CI_Controller
 
                         $myid = new Zend_Search_Lucene_Index_Term($question_id, 'myid');
                         $docIds  = $index->termDocs($myid);
-                        foreach ($docIds as $id) 
+                        foreach ($docIds as $id)
                         {
                             $doc = $index->getDocument($id);
                             $keyword = $doc->keyword;
@@ -316,7 +358,10 @@ class Main extends CI_Controller
                                 if(count($tag) == 0)
                                 {
                                     $dataInsertTags['TagID'] = $tag_id['TagID'];
-                                    $this->general_m->addData('question_tags', $dataInsertTags);
+                                    if($this->general_m->addData('question_tags', $dataInsertTags) === FALSE)
+                                    {
+                                        $data['unexpectedError'] = 'Dogodila se nočekivana greška prilikom unosa tagova!';
+                                    }
                                 }
                             }
                             else
@@ -325,7 +370,10 @@ class Main extends CI_Controller
                                 $this->general_m->addData('tags', $dataInsertTagsName);
 
                                 $dataInsertTags['TagID'] = mysql_insert_id();
-                                $this->general_m->addData('question_tags', $dataInsertTags);
+                                if($this->general_m->addData('question_tags', $dataInsertTags) === FALSE)
+                                {
+                                    $data['unexpectedError'] = 'Dogodila se nočekivana greška prilikom unosa tagova!';
+                                }
                             }
                         }
                         $data['isOk'] = 'Uspješno ste promijenili pitanje.';
@@ -373,7 +421,7 @@ class Main extends CI_Controller
 
                         $dataUpdate = $this->insertdata->dataForInsert('answers', $_POST);
 
-                        if($this->general_m->updateData('answers', $dataUpdate, 'AnswerID', $answer_id) == TRUE)
+                        if($this->general_m->updateData('answers', $dataUpdate, 'AnswerID', $answer_id) === TRUE)
                         {
                             $logDataInsert = array('UserID' => $sessionData['UserID'],
                                                    'LogDate' => date("Y-m-d H:i:s"),
@@ -419,7 +467,7 @@ class Main extends CI_Controller
 
                         $dataInsert = $this->insertdata->dataForInsert('comments', $_POST);
 
-                        if($this->general_m->addData('comments', $dataInsert) == TRUE)
+                        if($this->general_m->addData('comments', $dataInsert) === TRUE)
                         {
                             $data['isOk'] = 'Uspješno ste postavili komentar.';
                         }
@@ -458,7 +506,7 @@ class Main extends CI_Controller
                                                 'QuestionID' => $question_id,
                                                 'Positive' => $positive);
 
-                            if($this->general_m->addData('votes', $dataInsert) == TRUE)
+                            if($this->general_m->addData('votes', $dataInsert) === TRUE)
                             {
                                 $data['isOk'] = 'Uspješno ste ocijenili pitanje.';
                             }
@@ -497,7 +545,7 @@ class Main extends CI_Controller
                                                 'AnswerID' => $answer_id,
                                                 'Positive' => $positive);
 
-                            if($this->general_m->addData('votes', $dataInsert) == TRUE)
+                            if($this->general_m->addData('votes', $dataInsert) === TRUE)
                             {
                                 $data['isOk'] = 'Uspješno ste ocijenili odgovor.';
                             }
@@ -509,21 +557,76 @@ class Main extends CI_Controller
                     }
                 }
             }
-            $data['question'] = $this->qawiki_m->getQuestionDataById($question_id);
+            $question = $this->qawiki_m->getQuestionDataById($question_id);
+            
+            if($question === FALSE)
+            {
+                $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja pitanja iz baze.';
+                $data['question'] = '';
+            }
+            else
+            {
+                $data['question'] = $question;
+            }
             $negativeQuestion = $this->general_m->countRows('votes', 'VoteID', "QuestionID = " . $question_id . " AND Positive = '0'");
             $positiveQuestion = $this->general_m->countRows('votes', 'VoteID', "QuestionID = " . $question_id. " AND Positive = '1'");
             
-            $data['resultOfVotesForQuestion'] = ($positiveQuestion - $negativeQuestion);
+            if($negativeQuestion !== FALSE && $positiveQuestion !== FALSE)
+            {
+                $data['resultOfVotesForQuestion'] = ($positiveQuestion - $negativeQuestion);
+            }
             
-            $data['answers'] = $answers = $this->qawiki_m->getAnswersDataById($question_id);
-            $data['commentsQuestion'] = $this->qawiki_m->getCommentsDataById($question_id, NULL);
-            $data['tags'] = $this->qawiki_m->getTagsForQuestion($question_id);
+            $answers = $this->qawiki_m->getAnswersDataById($question_id);
+            
+            if($answers === FALSE)
+            {
+                $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja odgovora iz baze.';
+                $data['answers'] = '';
+            }
+            else
+            {
+                $data['answers'] = $answers;
+            }
+            
+            $commentsQuestion = $this->qawiki_m->getCommentsDataById($question_id, NULL);
+            
+            if($commentsQuestion === FALSE)
+            {
+                $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja komentara za odgovore iz baze.';
+                $data['commentsQuestion'] = '';
+            }
+            else
+            {
+                $data['commentsQuestion'] = $commentsQuestion;
+            }
+            
+            $tags = $this->qawiki_m->getTagsForQuestion($question_id);
+            
+            if($tags === FALSE)
+            {
+                $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja tagova za pitanja iz baze.';
+                $data['tags'] = '';
+            }
+            else
+            {
+                $data['tags'] = $tags;
+            }
             
             $joinQuestion = array('questions' => 'questions.QuestionID = logs.QuestionID',
                                                  'users' => 'users.UserID = logs.UserID');
             
             $whereQuestion = 'logs.QuestionID = ' . $question_id;
-            $data['lastChangeQuestion'] = $this->logs_m->getLogsBy('*', $joinQuestion, $whereQuestion);
+            $lastChangeQuestion = $this->logs_m->getLogsBy('*', $joinQuestion, $whereQuestion);
+            
+            if($lastChangeQuestion === FALSE)
+            {
+                $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja poslednjeg promijenjenog pitanja iz baze.';
+                $data['lastChangeQuestion'] = '';
+            }
+            else
+            {
+                $data['lastChangeQuestion'] = $lastChangeQuestion;
+            }
             
             $this->load->view('questions', $data);
         }
@@ -596,7 +699,7 @@ class Main extends CI_Controller
                                         'ArticleID' => $article_id,
                                         'Positive' => $positive);
 
-                    if($this->general_m->addData('votes', $dataInsert) == TRUE)
+                    if($this->general_m->addData('votes', $dataInsert) === TRUE)
                     {
                         $data['isOk'] = 'Uspješno ste ocijenili članak.';
                     }
@@ -652,7 +755,7 @@ class Main extends CI_Controller
 
                     $dataUpdate = $this->insertdata->dataForInsert('articles', $_POST);
 
-                    if($this->general_m->updateData('articles', $dataUpdate, 'ArticleID', $article_id) == TRUE)
+                    if($this->general_m->updateData('articles', $dataUpdate, 'ArticleID', $article_id) === TRUE)
                     {
                         $dataInsertTags['ArticleID'] = $article_id;
                         $logDataInsert = array('UserID' => $sessionData['UserID'],
@@ -700,10 +803,10 @@ class Main extends CI_Controller
                             $tag_id = $this->general_m->selectSomeById('TagID', 'tags', "Name = '".$value."'");
                             $count = count($tag_id);
 
-                            if($count > 0)
+                            if($count > 0 && $tag_id !== FALSE)
                             {
                                 $tag = $this->general_m->selectSomeById('TagID', 'article_tags', "TagID = ".$tag_id['TagID']." AND ArticleID = " . $article_id);
-                                if(count($tag) == 0)
+                                if(count($tag) == 0 && $tag !== FALSE)
                                 {
                                     $dataInsertTags['TagID'] = $tag_id['TagID'];
                                     $this->general_m->addData('article_tags', $dataInsertTags);
@@ -715,7 +818,10 @@ class Main extends CI_Controller
                                 $this->general_m->addData('tags', $dataInsertTagsName);
 
                                 $dataInsertTags['TagID'] = mysql_insert_id();
-                                $this->general_m->addData('article_tags', $dataInsertTags);
+                                if($this->general_m->addData('article_tags', $dataInsertTags) === FALSE)
+                                {
+                                    $data['unexpectedError'] = 'Dogodila se nočekivana greška prilikom unosa tagova!';
+                                }
                             }
                         }
                         $data['isOk'] = 'Uspješno ste promijenili članak.';
@@ -759,7 +865,7 @@ class Main extends CI_Controller
                 
                     $dataInsert = $this->insertdata->dataForInsert('comments', $_POST);
 
-                    if($this->general_m->addData('comments', $dataInsert) == TRUE)
+                    if($this->general_m->addData('comments', $dataInsert) === TRUE)
                     {
                         $data['isOk'] = 'Uspješno ste postavili komentar.';
                     }
@@ -770,7 +876,18 @@ class Main extends CI_Controller
                 }
             }
             
-            $data['article'] = $this->qawiki_m->getArticleDataById($article_id);
+            $article = $this->qawiki_m->getArticleDataById($article_id);
+            
+            if($article === FALSE)
+            {
+                $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja članaka iz baze.';
+                $data['article'] = '';
+            }
+            else
+            {
+                $data['article'] = $article;
+            }
+            
             $negativeQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id . " AND Positive = '0'");
             $positiveQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id. " AND Positive = '1'");
             
@@ -778,11 +895,47 @@ class Main extends CI_Controller
                                                'users' => 'users.UserID = logs.UserID');
             
             $whereArticle = 'logs.ArticleID = ' . $article_id;
-            $data['lastChangeArticle'] = $this->logs_m->getLogsBy('*', $joinArticle, $whereArticle);
-            $data['commentsArticles'] = $this->qawiki_m->getCommentsDataById(NULL, NULL, $article_id);
-            $data['tags'] = $this->qawiki_m->getTagsForArticle($article_id);
+            $lastChangeArticle = $this->logs_m->getLogsBy('*', $joinArticle, $whereArticle);
             
-            $data['resultOfVotesForQuestion'] = ($positiveQuestion - $negativeQuestion);
+            if($lastChangeArticle === FALSE)
+            {
+                $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja poslednjeg promijenjenog članka iz baze.';
+                $data['lastChangeArticle'] = '';
+            }
+            else
+            {
+                $data['lastChangeArticle'] = $lastChangeArticle;
+            }
+            
+            $commentsArticles = $this->qawiki_m->getCommentsDataById(NULL, NULL, $article_id);
+            
+            if($commentsArticles === FALSE)
+            {
+                $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja komentara za članke iz baze.';
+                $data['commentsArticles'] = '';
+            }
+            else
+            {
+                $data['commentsArticles'] = $commentsArticles;
+            }
+            
+            $tags = $this->qawiki_m->getTagsForArticle($article_id);
+            
+            if($tags === FALSE)
+            {
+                $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja tagova za članke iz baze.';
+                $data['tags'] = '';
+            }
+            else
+            {
+                $data['tags'] = $tags;
+            }
+            
+            if($negativeQuestion !== FALSE && $positiveQuestion !== FALSE)
+            {
+                $data['resultOfVotesForQuestion'] = ($positiveQuestion - $negativeQuestion);
+            }
+            
             $this->load->view('articles', $data);
         }
         else
@@ -800,7 +953,16 @@ class Main extends CI_Controller
                        'questions' => 'questions.QuestionID = logs.QuestionID',
                        'articles' => 'articles.ArticleID = logs.ArticleID');
         
-        $data['changes'] = $this->logs_m->getLogs($select, $joins);
+        $changes = $this->logs_m->getLogs($select, $joins);
+        
+        if($changes === FALSE)
+        {
+            $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja podataka iz baze.';
+        }
+        else
+        {
+            $data['changes'] = $changes;
+        }
         
         $this->load->view('changes', $data);
     }

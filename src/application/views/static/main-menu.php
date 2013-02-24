@@ -24,6 +24,7 @@
             echo '<li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">'.$sessionData['FirstName'].' '.$sessionData['LastName'].' <b class="caret"></b></a>
                     <ul class="dropdown-menu">
+                      <li><a href="'.base_url('index.php/main/profile/' . $sessionData['UserID']).'">Profil</a></li>
                       <li><a href="'.base_url('index.php/login_c/logout').'">Logout</a></li>
                     </ul>
                   </li>';

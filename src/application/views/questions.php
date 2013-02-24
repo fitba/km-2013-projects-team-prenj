@@ -2,13 +2,13 @@
     $data['title'] = 'Pitanje i odgovori';
     $this->load->view('static/header.php', $data); 
 ?>
-<div class="hero-unit" style="font-size: 16px;">
+<div style="font-size: 16px;">
 <h3><?php echo $question['Title']; ?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/main/question/' . $question_id . '?editQuestion=true'); ?>">[promijeni]</a></h3>
   <table class="table">
         <tbody>
             <tr>
                 <td>
-                    <div class="votes1">
+                    <div class="votes">
                         <center>
                             <div><a href="<?php echo base_url('index.php/main/question/' . $question_id . '/' . 0 . '/' . 1); ?>"><img src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></a></div>
                             <?php echo $resultOfVotesForQuestion; ?><br/> votes
@@ -16,7 +16,6 @@
                         </center>
                     </div>
                     <div class="questions">
-                        <p>
                         <?php
                         if(isset($_GET['editQuestion']) && $_GET['editQuestion'] == 'true')
                         {
@@ -36,7 +35,6 @@
                         {
                             echo html_entity_decode($question['Question']);
                         ?>
-                        </p>
                         <p>
                         <?php
                         foreach ($tags as $tag)
@@ -133,7 +131,6 @@
                         <div><a href="<?php echo base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID'] . '?editAnswer=true'); ?>">[promijeni]</a></div>
                     </div>
                     <div class="questions">
-                        <p>
                         <?php
                         if(isset($answer_id) && $answer_id == $answer['AnswerID'] && isset($_GET['editAnswer']) && $_GET['editAnswer'] == 'true')
                         {
@@ -147,8 +144,8 @@
                             echo html_entity_decode($answer['Answer']);
                         }
                         ?>
-                        </p>
                     </div>
+                    
                     <div class="textRight">
                         Odgovorio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $answer['AnswersUserID']) .'">' . $answer['FirstName'] . ' ' . $answer['LastName'] . '</a> | '. $this->formatdate->getFormatDate($answer['AnswerDate']) .'</b>'; ?>
                         <br/>
@@ -159,7 +156,6 @@
                         }
                         ?>
                     </div>
-                    
                 </td>
             </tr>
             <tr>

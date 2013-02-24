@@ -8,7 +8,7 @@
         <tbody>
             <tr>
                 <td>
-                    <div class="votes1">
+                    <div class="votes">
                         <center>
                             <div><a href="<?php echo base_url('index.php/main/article/' . $article_id . '/' . 1); ?>"><img src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></a></div>
                             <?php echo $resultOfVotesForQuestion; ?><br/> votes
@@ -16,7 +16,6 @@
                         </center>
                     </div>
                     <div class="questions">
-                        <p>
                         <?php
                         if(isset($_GET['editArticle']) && $_GET['editArticle'] == 'true')
                         {
@@ -36,7 +35,6 @@
                         {
                             echo html_entity_decode($article['Content']);
                         ?>
-                        </p>
                         <p>
                         <?php
                         foreach ($tags as $tag)

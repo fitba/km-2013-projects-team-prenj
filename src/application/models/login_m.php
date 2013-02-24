@@ -29,7 +29,15 @@ class Login_m extends CI_Model
     {
         $this->db->where('UserID', $id);
         $upit = $this->db->get('users');
-        return $upit->row_array();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $upit->row_array();
+        }
     }
 
     /* Funkcija decodeUserData() prima listu kolona koje treba da dekodira. 

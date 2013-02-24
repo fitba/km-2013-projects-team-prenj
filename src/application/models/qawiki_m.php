@@ -21,7 +21,14 @@ class Qawiki_m extends CI_Model
         
         $query = $this->db->get();
         
-        return $query->row_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->row_array();
+        }
     }
     
     public function getArticleDataById($article_id)
@@ -34,7 +41,14 @@ class Qawiki_m extends CI_Model
         
         $query = $this->db->get();
         
-        return $query->row_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->row_array();
+        }
     }
     
     public function getPodContentDataByArticleId($article_id)
@@ -48,7 +62,14 @@ class Qawiki_m extends CI_Model
         
         $query = $this->db->get();
         
-        return $query->result_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
     }
     
     /* Funkcija getAnswersDataById() vraća sve podatke o odgovorima na određeno pitanje.
@@ -64,7 +85,14 @@ class Qawiki_m extends CI_Model
         
         $query = $this->db->get();
         
-        return $query->result_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
     }
     
     /* Funkcija getUserDataById() vraća sve podatke o korisnicima. Dakle sva pitanja koja je korisnik postavio, sve odgovore,
@@ -83,7 +111,14 @@ class Qawiki_m extends CI_Model
         
         $query = $this->db->get();
         
-        return $query->row_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->row_array();
+        }
     }
     
     /* Funkcija getCommentsDataById() vraća sve podatke o komentarima za neki odgovor ili pitanje.
@@ -119,7 +154,14 @@ class Qawiki_m extends CI_Model
         
         $query = $this->db->get();
         
-        return $query->result_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
     }
     
     public function getTagsForQuestion($question_id)
@@ -147,7 +189,14 @@ class Qawiki_m extends CI_Model
         
         $query = $this->db->get();
         
-        return $query->result_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
     }
 }
 ?>

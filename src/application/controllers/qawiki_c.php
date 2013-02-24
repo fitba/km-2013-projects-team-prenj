@@ -77,7 +77,7 @@ class Qawiki_c extends CI_Controller
 
                             $dataInsert = $this->insertdata->dataForInsert('questions', $_POST);
 
-                            if($this->general_m->addData('questions', $dataInsert) == TRUE)
+                            if($this->general_m->addData('questions', $dataInsert) === TRUE)
                             {
                                 $dataInsertTags['QuestionID'] = mysql_insert_id();
                                 
@@ -121,7 +121,10 @@ class Qawiki_c extends CI_Controller
                                         $this->general_m->addData('tags', $dataInsertTagsName);
 
                                         $dataInsertTags['TagID'] = mysql_insert_id();
-                                        $this->general_m->addData('question_tags', $dataInsertTags);
+                                        if($this->general_m->addData('question_tags', $dataInsertTags) === FALSE)
+                                        {
+                                            $data['unexpectedError'] = 'Dogodila se nočekivana greška prilikom unosa tagova!';
+                                        }
                                     }
                                 }
                                 $data['isOk'] = 'Uspješno ste postavili pitanje.';
@@ -220,7 +223,7 @@ class Qawiki_c extends CI_Controller
                             $test = $_POST;
                             $dataInsert = $this->insertdata->dataForInsert('articles', $_POST);
 
-                            if($this->general_m->addData('articles', $dataInsert) == TRUE)
+                            if($this->general_m->addData('articles', $dataInsert) === TRUE)
                             {
                                 $dataInsertSubtitles['ArticleID'] = mysql_insert_id();
                                 $dataInsertTags['ArticleID'] = mysql_insert_id();
@@ -264,7 +267,10 @@ class Qawiki_c extends CI_Controller
                                         $this->general_m->addData('tags', $dataInsertTagsName);
 
                                         $dataInsertTags['TagID'] = mysql_insert_id();
-                                        $this->general_m->addData('article_tags', $dataInsertTags);
+                                        if($this->general_m->addData('article_tags', $dataInsertTags) === FALSE)
+                                        {
+                                            $data['unexpectedError'] = 'Dogodila se nočekivana greška prilikom unosa tagova!';
+                                        }
                                     }
                                 }
                                 

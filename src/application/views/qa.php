@@ -14,7 +14,7 @@
     <form action="<?php echo base_url('index.php/qawiki_c/qa/' . $key); ?>" method="post">
         <p><input type="text" name="title" placeholder="Ovdje unesite naslov pitanja" class="input-xxlarge"></p>
         <p><textarea id="editor" name="question"></textarea></p>
-        <p><input type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"> [<i>Tagove odvojte praznim poljem (razmakom)</i>]</p>
+        <p><input id="tags" type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"> [<i>Tagove odvojte praznim poljem (razmakom)</i>]</p>
         <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>" /></p>
         <p><input type="hidden" name="askDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
         <p><input type="submit" name="askQuestion" class="btn" value="Submit"></p>

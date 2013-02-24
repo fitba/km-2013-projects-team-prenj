@@ -22,10 +22,14 @@ class General_m extends CI_Model
         }
         $this->db->insert($table, $dataInsert);
 
-        if($this->db->_error_number() == 1452)
-                return FALSE;
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
         else
-                return TRUE;
+        {
+            return TRUE;
+        }
     }
 
     /* Globalna funkcija selectMax() prihvata 3 parametra $column, $table i  $where calusulu koja nije obavezna. 
@@ -42,7 +46,14 @@ class General_m extends CI_Model
 
         $query = $this->db->get($table);
 
-        return $query->row_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->row_array();
+        }
     }
     
     /* Funkcija getColumnNames povlači iz baze imena svih tabela */
@@ -53,7 +64,14 @@ class General_m extends CI_Model
         $this->db->where('TABLE_NAME', $table);
         $query = $this->db->get();
         
-        return $query->result_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
     }
 
     /* Globalna funkcija selectSomeById() prihvata 4 parametra $column, $table, $where calusulu i $id. 
@@ -65,7 +83,14 @@ class General_m extends CI_Model
         $this->db->where($where);
         $query = $this->db->get($table);
 
-        return $query->row_array();
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->row_array();
+        }
     }
 
     /* Globalna funkcija deleteData() prihvata 3 parametra $column, $table, i $id. 
@@ -76,7 +101,7 @@ class General_m extends CI_Model
         $this->db->where($column_id, $id);
         $this->db->delete($table);
 
-        if ($this->db->_error_number() == 1451)
+        if($this->db->_error_number() > 0)
         {
             return false;
         }
@@ -100,10 +125,14 @@ class General_m extends CI_Model
         $this->db->where($where, $id);
         $this->db->update($table, $dataUpdate);
 
-        if($this->db->_error_number() == 1452)
-            return FALSE;
+        if($this->db->_error_number() > 0)
+        {
+            return false;
+        }
         else
-            return TRUE;
+        {
+            return true;
+        }
     }
 
     /* Globalna funkcija exists() prihvata 3 parametra $table, $column i $where. 
@@ -116,7 +145,15 @@ class General_m extends CI_Model
         $query = $this->db->get($table);
 
         $count = $query->result_array();
-        return $count[0]['Count'];
+        
+        if($this->db->_error_number() > 0)
+        {
+            return false;
+        }
+        else
+        {
+            return $count[0]['Count'];
+        }
     }
     
     /* Globalna funkcija countRows() prihvata 3 parametra $table, $column i $where. 
@@ -129,7 +166,15 @@ class General_m extends CI_Model
         $query = $this->db->get($table);
 
         $count = $query->result_array();
-        return $count[0]['Count'];
+        
+        if($this->db->_error_number() > 0)
+        {
+            return false;
+        }
+        else
+        {
+            return $count[0]['Count'];
+        }
     }
 
     /* Globalna funkcija getAll() prihvata 3 parametra $table, $orderBy i $config. 
@@ -152,7 +197,15 @@ class General_m extends CI_Model
 
 
         $query = $this->db->get($table);
-        return $query->result_array();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return false;
+        }
+        else
+        {
+            return $query->result_array();
+        }
     }
 
     /* Globalna funkcija getAll() prihvata 1 parametar $errors. 
@@ -197,11 +250,18 @@ class General_m extends CI_Model
         }
 
         $query = $this->db->get();
-
-        if(count($query) > 0)
-            return $query->result_array();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return false;
+        }
         else
-            return FALSE;
+        {
+           if(count($query) > 0)
+                return $query->result_array();
+           else
+                return FALSE;
+        }
     }
 }
 ?>
