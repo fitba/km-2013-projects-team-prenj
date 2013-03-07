@@ -20,24 +20,32 @@
                         $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
                         $locationOfPicutre = $baseLocation . '/' . $users[$iterate]['ProfilePicture'];
                         echo '<td><div class="formatPicture">';
-                                if($users[$iterate]['ProfilePicture'] != NULL)
-                                {
-                                    echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. $locationOfPicutre .'" height="61" width="60"/></a>';
-                                }
-                                else
-                                {
-                                    if($users[$iterate]['Sex'] == 'm')
-                                    {
-                                        echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. base_url('pictures/default_male.gif') .'" height="61" width="60"/></a>';
-                                    }
-                                    else
-                                    {
-                                        echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. base_url('pictures/default_female.gif') .'" height="61" width="60"/></a>';
-                                    }
-                                }
+                        if($users[$iterate]['ProfilePicture'] != NULL)
+                        {
+                            echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. $locationOfPicutre .'" height="61" width="60"/></a>';
+                        }
+                        else
+                        {
+                            if($users[$iterate]['Sex'] == 'm')
+                            {
+                                echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. base_url('pictures/default_male.gif') .'" height="61" width="60"/></a>';
+                            }
+                            else
+                            {
+                                echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. base_url('pictures/default_female.gif') .'" height="61" width="60"/></a>';
+                            }
+                        }
+                        $userTags = $this->qawiki_m->getTagsForUsers($users[$iterate]['UserID']);
                         echo '</div>
                               <div>
                                 <a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'">' . $users[$iterate]['FirstName'] . ' ' . $users[$iterate]['LastName'] . '</a>
+                                    <div>'.$users[$iterate]['Location'].'</div>
+                                    <div>';
+                                    foreach($userTags as $tag)
+                                    {
+                                        echo '<span class="label"><a style="color:#FFF" href="'.base_url('index.php/qawiki_c/tags/' . $tag['TagID']).'">'.$tag['Name'].'</a></span>' . ' ';
+                                    }
+                        echo       '</div>
                               </div>
                              </td>';
                         $iterate++;

@@ -21,17 +21,19 @@ class Main extends CI_Controller
     /* index() funkcija predstavlja index stranicu na web prikazu */
     public function index()
     {
-        $this->load->view('main');
+        $data['articles'] = $this->general_m->getAll('articles', 'PostDate');
+        $data['questions'] = $this->general_m->getAll('questions', 'AskDate');
+        $this->load->view('main', $data);
     }
     
     public function profile($user_id)
     {
         if(isset($user_id))
         {
-            $data['sessionData'] = $this->sessionData;
+            $data['sessionData'] = $sessionData = $this->sessionData;
             $data['user_id'] = $user_id;
-            $data['userData'] = $userData = $this->qawiki_m->getUserDataById($user_id);
-            $nameOfFolder = 'pictures/' . $userData['UsersUserID'];
+            $data['userData'] = $userData = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $user_id);
+            $nameOfFolder = 'pictures/' . $userData['UserID'];
             $location = $data['baseLocation'] = 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname(dirname($_SERVER['PHP_SELF'])))).'/'.$nameOfFolder;
             
             if(isset($_POST['uploadPicture']))
@@ -127,7 +129,70 @@ class Main extends CI_Controller
                 }
             }
             
-            $data['userData'] = $this->qawiki_m->getUserDataById($user_id);
+            if(isset($_POST['submitEditUser']))
+            {
+                $errors = array();
+                $requiredFields = array(
+                    $this->input->post('email'), 
+                    $this->input->post('firstName'),
+                    $this->input->post('lastName'), 
+                    $this->input->post('username'));
+
+                foreach($requiredFields as $key => $value)
+                {
+                    if(empty($value))
+                    {
+                        $errors[] = 'Polje za odgovor je obavezno polje!';
+                        break 1;
+                    }
+                }
+
+                if($sessionData == NULL)
+                {
+                    $errors[] = 'Morate se prijaviti da biste promijenili podatke o sebi! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                }
+                else
+                {
+                    if($sessionData['UserID'] !== $user_id)
+                    {
+                        $errors[] = 'Ne možete mijenjati profil drugog korisnika!';
+                    }
+                }
+
+                if(!empty($errors))
+                {
+                    $data['errors'] = $this->general_m->displayErrors($errors);
+                }
+                else
+                {
+                    $this->load->library('insertdata');
+                
+                    $dataUpdate = $this->insertdata->dataForInsert('users', $_POST);
+
+                    if($this->general_m->updateData('users', $dataUpdate, 'UserID', $user_id) === TRUE)
+                    {
+                        $data['isOk'] = 'Uspješno ste promijenili podatke.';
+                    }
+                    else
+                    {
+                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                    }
+                }
+            }
+            $data['userData'] = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $user_id);
+            
+            $joinQuestion = array('users' => 'users.UserID = questions.UserID');
+            $data['questions'] = $this->qawiki_m->getUserDataById('questions', $joinQuestion, $user_id);
+            
+            $joinAnswers = array('users' => 'users.UserID = answers.UserID');
+            $data['answers'] = $this->qawiki_m->getUserDataById('answers', $joinAnswers, $user_id);
+            
+            $joinArticles = array('users' => 'users.UserID = articles.UserID');
+            $data['articles'] = $this->qawiki_m->getUserDataById('articles', $joinArticles, $user_id);
+            
+            $joinTags = array('follow_tags' => 'tags.TagID = follow_tags.TagID',
+                              'users' => 'users.UserID = follow_tags.UserID');
+            $data['tags'] = $this->qawiki_m->getUserDataById('tags', $joinTags, $user_id);
             
             $this->load->view('profile', $data);
         }
@@ -271,20 +336,14 @@ class Main extends CI_Controller
                 
                 $tags = array();
                 $inputTags = $_POST['tags'];
-                if(preg_match('/^[A-Za-z ]+$/', $inputTags))
+
+                $explodeTags = explode(',', trim($inputTags));
+                foreach ($explodeTags as $key => $value)
                 {
-                    $explodeTags = explode(' ', trim($inputTags));
-                    foreach ($explodeTags as $key => $value)
+                    if(!empty($value))
                     {
-                        if(!empty($value))
-                        {
-                            $tags[$key] = $value;
-                        }
+                        $tags[$key] = $value;
                     }
-                }
-                else
-                {
-                    $errors[] = 'Tagove morate odvojiti samo razmakom!';
                 }
                 
                 if($sessionData == NULL)
@@ -477,85 +536,6 @@ class Main extends CI_Controller
                         }
                     }
                 }
-                else if($answer_id == 0)
-                {
-                    if(isset($positive))
-                    {
-                        if($sessionData == NULL)
-                        {
-                            $errors[] = 'Morate se prijaviti da biste ocijenili pitanje! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
-                        }
-                        else
-                        {
-                            $where = "UserID = " . $sessionData['UserID'] . " AND QuestionID = " . $question_id . " AND Positive = '".$positive."'";
-                            $count = $this->general_m->exists('votes', 'VoteID', $where);
-
-                            if($count > 0)
-                            {
-                                $errors[] = 'Već ste ocijenili to pitanje!';
-                            }
-                        }
-
-                        if(!empty($errors))
-                        {
-                            $data['errors'] = $this->general_m->displayErrors($errors);
-                        }
-                        else
-                        {
-                            $dataInsert = array('UserID' => $sessionData['UserID'],
-                                                'QuestionID' => $question_id,
-                                                'Positive' => $positive);
-
-                            if($this->general_m->addData('votes', $dataInsert) === TRUE)
-                            {
-                                $data['isOk'] = 'Uspješno ste ocijenili pitanje.';
-                            }
-                            else
-                            {
-                                $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
-                            }
-                        }
-                    }
-                }
-                else if($answer_id != 0)
-                {
-                    if(isset($positive))
-                    {
-                        if($sessionData == NULL)
-                        {
-                            $errors[] = 'Morate se prijaviti da biste ocijenili odgovor! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
-                        }
-                        else
-                        {
-                            $where = "UserID = " . $sessionData['UserID'] . " AND AnswerID = " . $answer_id . " AND Positive = '".$positive."'";
-                            $count = $this->general_m->exists('votes', 'VoteID', $where);
-
-                            if($count > 0)
-                            {
-                                $errors[] = 'Već ste ocijenili taj odgovor!';
-                            }
-                        }
-                        if(!empty($errors))
-                        {
-                            $data['errors'] = $this->general_m->displayErrors($errors);
-                        }
-                        else
-                        {
-                            $dataInsert = array('UserID' => $sessionData['UserID'],
-                                                'AnswerID' => $answer_id,
-                                                'Positive' => $positive);
-
-                            if($this->general_m->addData('votes', $dataInsert) === TRUE)
-                            {
-                                $data['isOk'] = 'Uspješno ste ocijenili odgovor.';
-                            }
-                            else
-                            {
-                                $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
-                            }
-                        }
-                    }
-                }
             }
             $question = $this->qawiki_m->getQuestionDataById($question_id);
             
@@ -729,21 +709,16 @@ class Main extends CI_Controller
                 
                 $tags = array();
                 $inputTags = $_POST['tags'];
-                if(preg_match('/^[A-Za-z ]+$/', $inputTags))
+
+                $explodeTags = explode(',', trim($inputTags));
+                foreach ($explodeTags as $key => $value)
                 {
-                    $explodeTags = explode(' ', trim($inputTags));
-                    foreach ($explodeTags as $key => $value)
+                    if(!empty($value))
                     {
-                        if(!empty($value))
-                        {
-                            $tags[$key] = $value;
-                        }
+                        $tags[$key] = $value;
                     }
                 }
-                else
-                {
-                    $errors[] = 'Tagove morate odvojiti samo razmakom!';
-                }
+                
 
                 if(!empty($errors))
                 {
@@ -780,7 +755,7 @@ class Main extends CI_Controller
                             $index->optimize();
                         }
 
-                        $myid = new Zend_Search_Lucene_Index_Term($question_id, 'myid');
+                        $myid = new Zend_Search_Lucene_Index_Term($article_id, 'myid');
                         $docIds  = $index->termDocs($myid);
                         foreach ($docIds as $id) 
                         {
@@ -943,27 +918,5 @@ class Main extends CI_Controller
             $data['message'] = 'Morate odabrati neko od članaka da biste dobili njegove informacije! Vratite se na <a href="'.  base_url('index.php/qawiki_c/wiki/articles').'">članke.</a>';
             $this->load->view('info/info_page', $data);
         }
-    }
-    
-    public function changes()
-    {
-        $select = '*, questions.Title AS QuestionTitle, articles.Title AS ArticleTitle';
-        $joins = array('users' => 'users.UserID = logs.UserID',
-                       'answers' => 'answers.AnswerID = logs.AnswerID',
-                       'questions' => 'questions.QuestionID = logs.QuestionID',
-                       'articles' => 'articles.ArticleID = logs.ArticleID');
-        
-        $changes = $this->logs_m->getLogs($select, $joins);
-        
-        if($changes === FALSE)
-        {
-            $data['errors'] = 'Došlo je do neočekivane greške prilikom uzimanja podataka iz baze.';
-        }
-        else
-        {
-            $data['changes'] = $changes;
-        }
-        
-        $this->load->view('changes', $data);
     }
 }

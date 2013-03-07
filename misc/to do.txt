@@ -1,0 +1,13 @@
+TAGS -  Treba odraditi autocomplete za tagove. Kada editiramo pitanje/clanak treba omoguciti brisanje tagova iz baze kao i iz fajla.
+
+GLOBAL - treba staviti pracenje gdje se korisnik trenutno nalazi tj na kojoj je stranici trenutno. 
+		 Pocetna stranica je globalna, zatim idu pod stranice i tako redom.
+
+SISTEMI PREPORUKE - treba staviti preporuku na lijevoj strani (sidebar). Preporuka treba da sadrzi pitanja, clanke i tagove. 
+				    Dakle sva pitanja, clanke i tagove vezane za ono sto korisnik trenutno pregleda, na osnovu njegove istorije itd.
+
+TAGS and VOTES - pomocu ajaxa potrebno je ispisati glas koji je korisnik napravio, zatim response na glas, takodje i za lajkovanje taga.
+
+TAGOVI I KORISNICI - Treba odraditi pretragu za oboje.
+
+ODGOVORI - treba odraditi omiljeno pitanje.

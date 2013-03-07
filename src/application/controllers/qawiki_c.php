@@ -49,21 +49,16 @@ class Qawiki_c extends CI_Controller
                         
                         $tags = array();
                         $inputTags = $_POST['tags'];
-                        if(preg_match('/^[A-Za-z ]+$/', $inputTags))
+
+                        $explodeTags = explode(',', trim($inputTags));
+                        foreach ($explodeTags as $key => $value)
                         {
-                            $explodeTags = explode(' ', trim($inputTags));
-                            foreach ($explodeTags as $key => $value)
+                            if(!empty($value))
                             {
-                                if(!empty($value))
-                                {
-                                    $tags[$key] = $value;
-                                }
+                                $tags[$key] = $value;
                             }
                         }
-                        else
-                        {
-                            $errors[] = 'Tagove morate odvojiti samo razmakom!';
-                        }
+                        
 
                         if(!empty($errors))
                         {
@@ -148,15 +143,80 @@ class Qawiki_c extends CI_Controller
         $this->load->view('qa', $data);
     }
     
-    public function tags()
+    public function tags($tag_id = NULL)
     {
         $data['tags'] = $this->general_m->getAll('tags', 'Name');
+        $data['tag'] = '';
+        
+        if(isset($tag_id))
+        {
+            $data['tag_id'] = $tag_id;
+            $tag = $this->general_m->selectSomeById('*', 'tags', "TagID = '$tag_id'");
+
+            if(isset($_POST['submitEditTag']))
+            {
+                $errors = array();
+                $requiredFields = array($this->input->post('description'));
+                $sessionData = $this->sessionData;
+                
+                foreach($requiredFields as $key => $value)
+                {
+                    if(empty($value))
+                    {
+                        $errors[] = 'Polja koja su označena sa * su obavezna!';
+                        break 1;
+                    }
+                }
+                
+                if($sessionData == NULL)
+                {
+                    $errors[] = 'Morate se prijaviti da biste promijenili tag! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                }
+                
+                if(!empty($errors))
+                {
+                    $data['errors'] = $this->general_m->displayErrors($errors);
+                }
+                else
+                {
+                    $this->load->library('insertdata');
+                    $dataUpdate = $this->insertdata->dataForInsert('tags', $_POST);
+                    
+                    if($this->general_m->updateData('tags', $dataUpdate, 'TagID', $tag['TagID']) === TRUE)
+                    {
+                        $logDataInsert = array('UserID' => $sessionData['UserID'],
+                                               'LogDate' => date("Y-m-d H:i:s"),
+                                               'TagID' => $tag['TagID']);
+                        
+                        $this->general_m->addData('logs', $logDataInsert);
+                        
+                        $data['isOk'] = 'Uspješno ste postavili pitanje.';
+                    }
+                    else
+                    {
+                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                    }
+                }
+            }
+
+            if($tag !== FALSE)
+            {
+                $data['tag'] = $this->general_m->selectSomeById('*', 'tags', "TagID = '$tag_id'");
+            }
+            else
+            {
+                $data['unexpectedError'] = 'Došlo je do neočekivane greške prilikom uzimanja tagova iz baze!';
+            }
+            
+        }
+        
+        
         $this->load->view('tags', $data);
     }
-    
+
     public function users()
     {
-        $data['users'] = $this->general_m->getAll('users', 'FirstName');
+        $data['users'] = $users = $this->general_m->getAll('users', 'FirstName');
         $this->load->view('users', $data);
     }
     
@@ -195,21 +255,16 @@ class Qawiki_c extends CI_Controller
 
                         $tags = array();
                         $inputTags = $_POST['tags'];
-                        if(preg_match('/^[A-Za-z ]+$/', $inputTags))
+
+                        $explodeTags = explode(',', trim($inputTags));
+                        foreach ($explodeTags as $key => $value) 
                         {
-                            $explodeTags = explode(' ', trim($inputTags));
-                            foreach ($explodeTags as $key => $value) 
+                            if(!empty($value))
                             {
-                                if(!empty($value))
-                                {
-                                    $tags[$key] = $value;
-                                }
+                                $tags[$key] = $value;
                             }
                         }
-                        else
-                        {
-                            $errors[] = 'Tagove morate odvojiti samo razmakom!';
-                        }
+                        
 
                         if(!empty($errors))
                         {
@@ -220,7 +275,7 @@ class Qawiki_c extends CI_Controller
                             $sessionData = $this->sessionData;
 
                             $this->load->library('insertdata');
-                            $test = $_POST;
+
                             $dataInsert = $this->insertdata->dataForInsert('articles', $_POST);
 
                             if($this->general_m->addData('articles', $dataInsert) === TRUE)

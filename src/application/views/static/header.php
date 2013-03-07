@@ -25,11 +25,13 @@
         padding: 9px 0;
       }
     </style>
+    <script type="text/javascript"> 
+        var CI_ROOT = '<?php echo base_url(); ?>';
+    </script>
     <script type="text/javascript" src="<?php echo base_url("ckeditor/ckeditor.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo base_url("assets/javascript/main.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo base_url("bootstrap/js/bootstrap.js"); ?>"></script>
-    <script type="text/javascript" src="<?php echo base_url("bootstrap/js/popover.js"); ?>"></script>
     
     <script type="text/javascript"> 
         var editor, html = '';
@@ -55,9 +57,36 @@
                 theForm.scrolly.value = scrolly;
             }
         }
+        
+        var Tooltip =
+        {
+            Text: "",
+            X: 0,
+            Y: 0,
+            Show: function () {                  
+                $('#refreshHover').show();
+                $('#refreshHover').css('left', Tooltip.X + 10);
+                $('#refreshHover').css('top', Tooltip.Y + 10);
+                $('#refreshHover').html(Tooltip.Text);
+            },
+            Hide: function () {
+                $('#refreshHover').hide();
+            }
+        }
+        
+        $(document).ready(function (){
+            $(".showsTooltip").mousemove(function (e) {
+                Tooltip.X = e.pageX;
+                Tooltip.Y = e.pageY;
+                Tooltip.Show();
+            }).mouseleave(function (e) {
+                Tooltip.Hide();
+            });
+        });
     </script>
   </head>
   <body onload="createEditor()">
+      <div id="refreshHover"></div>
 <?php 
     $this->load->view('static/main-menu.php');
 ?>

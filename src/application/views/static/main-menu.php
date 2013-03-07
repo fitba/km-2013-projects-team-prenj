@@ -52,12 +52,11 @@
                 <ul class="dropdown-menu">
                   <li><a href="<?php echo base_url('index.php/qawiki_c/users'); ?>">Korisnici</a></li>
                   <li><a href="<?php echo base_url('index.php/qawiki_c/tags'); ?>">Tagovi</a></li>
-                  <li><a href="<?php echo base_url('index.php/main/changes'); ?>">Promjene</a></li>
                 </ul>
               </li>
           </ul>
             <form class="navbar-search pull-left" action="<?php echo base_url('index.php/search_c/index'); ?>" method="GET">
-                <input type="text" name="pretraga" class="search-query span6" placeholder="Pretraga">
+                <input type="text" onmousemove="Tooltip.Text = 'Klikom na enter potvrdite pretragu';" name="pretraga" class="showsTooltip search-query span6" placeholder="Pretraga">
             </form>
         </div><!--/.nav-collapse -->
       </div>

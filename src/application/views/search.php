@@ -2,7 +2,7 @@
     $data['title'] = 'Pretraga';
     $this->load->view('static/header.php', $data);
 ?>
-<div class="hero-unit">
+<div class="hero-unit"></div>
 <table class="table">
         <tbody>
             <?php 
@@ -29,7 +29,7 @@
                                 foreach ($tags as $value) 
                                 {
                                     if(!empty($value))
-                                        echo '<span class="label"><a href="'.base_url('index.php/tag_c/index/' . $value).'" style="color:#FFF">' . $value . '</a></span> ';
+                                        echo '<span class="label"><a href="'.base_url('index.php/search_c/index?pretraga=' . $value).'" style="color:#FFF">' . $value . '</a></span> ';
                                 }
                             ?>
                         </p>
@@ -50,8 +50,9 @@
                                 foreach ($tags as $value) 
                                 {
                                     if(!empty($value))
-                                        echo '<span class="label"><a href="'.base_url('index.php/tag_c/index/' . $value).'" style="color:#FFF">' . $value . '</a></span> ';
+                                        echo '<span class="label"><a href="'.base_url('index.php/search_c/index?pretraga=' . $value).'" style="color:#FFF">' . $value . '</a></span> ';
                                 }
+                                echo $results[$i]->tags_ids;
                             ?>
                         </p>
                     </td>
@@ -64,7 +65,6 @@
             ?>
         </tbody>
     </table> 
-</div>
 <?php 
     $this->load->view('static/footer.php'); 
 ?>

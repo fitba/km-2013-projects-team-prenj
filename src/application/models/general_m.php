@@ -183,7 +183,7 @@ class General_m extends CI_Model
     public function getAll($table, $orderBy, $config = array())
     {
         if($orderBy != NULL)
-            $this->db->order_by($orderBy, "asc");
+            $this->db->order_by($orderBy, "desc");
 
         if (isset($config['limit'])) 
         {

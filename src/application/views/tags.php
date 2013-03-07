@@ -1,39 +1,80 @@
 <?php 
     $data['title'] = 'Tagovi';
     $this->load->view('static/header.php', $data);
+    
+if(!isset($tag_id))
+{
 ?>
-<div class="row-fluid">
-  <div class="span12">
-    <h2>Tags</h2>
-    <table class="table">
-        <tbody>
-            <?php
-            $iterate = 0;
-            for ($i = 0; $i < count($tags); $i++)
+    <h3>Tags</h3>
+    <hr/>
+    <?php
+    $iterate = 0;
+    for ($i = 0; $i < count($tags); $i++)
+    {
+        echo '<div class="row-fluid">';
+        for ($j = 0; $j < 3; $j++)
+        {
+            if($iterate != count($tags))
             {
-                echo '<tr>';
-                for ($j = 0; $j < 4; $j++)
-                {
-                    if($iterate != count($tags))
-                    {
-                        echo '<td>
-                                <a href="#" class="hoverEffect" id="'.$iterate.'">
-                                    <span class="label">'.$tags[$iterate]['Name']. '</span>
-                                </a>
-                                <p class="bubble" id="bubble'.$iterate.'">'.$tags[$iterate]['Description'].'</p>
-                                <br/>' . $tags[$iterate]['Description'] . '
-                              </td>';
-                        $iterate++;
-                    }
-                }
-                $i = $iterate - 1;
-                echo '</tr>';
+                echo '<div class="span4">
+                        <h4><a href="'.base_url('index.php/search_c/index?pretraga=' . $tags[$iterate]['Name']).'" class="btn btn-primary btn-small">'.$tags[$iterate]['Name']. '</a></h4>';
+                        if(strlen($tags[$iterate]['Description']) > 350)
+                        {
+                            echo '<p>'.substr(html_entity_decode($tags[$iterate]['Description']), 0, 350) . '...</p>';
+                        }
+                        else
+                        {
+                            echo '<p>'.html_entity_decode($tags[$iterate]['Description']).'</p>';
+                        }
+                echo '<p><a class="btn btn-mini" href="'.base_url('index.php/qawiki_c/tags/' . $tags[$iterate]['TagID']).'">Detalji</a> <a class="btn btn-mini btn-primary" href="#" onclick="like('.$tags[$iterate]['TagID'].', \'/index.php/ajax/likeTag/\');"><i class="icon-white icon-thumbs-up"></i></a></p>
+                      </div>';
+                $iterate++;
             }
-            ?>
-        </tbody>
-    </table>
-  </div>
-</div>
-<?php 
+        }
+        $i = $iterate - 1;
+        echo '</div><hr/>';
+    }
+}
+else
+{
+    if(count($tag) > 0)
+    {
+?>
+    <h3><?php echo $tag['Name']; ?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/qawiki_c/tags/' . $tag['TagID'] . '?editTag=true'); ?>">[promijeni]</a></h3>
+    <hr/>
+    <?php
+    if(isset($_GET['editTag']) && $_GET['editTag'] == 'true')
+    {
+        
+        if($tag['Description'] === NULL)
+        {
+            echo '<form action="'.  base_url('index.php/qawiki_c/tags/' . $tag['TagID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
+                    <p><textarea id="editor" name="description">Trenutno nemate nikakav opis za ovaj tag.</textarea></p>
+                    <p><input type="submit" name="submitEditTag" value="Promijeni" class="btn btn-primary"/></p>
+                 </form>';
+        }
+        else
+        {
+            echo '<form action="'.  base_url('index.php/qawiki_c/tags/' . $tag['TagID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
+                    <p><textarea id="editor" name="description">'.html_entity_decode($tag['Description']).'</textarea></p>
+                    <p><input type="submit" name="submitEditTag" value="Promijeni" class="btn btn-primary"/></p>
+                 </form>';
+        }
+    }
+    else
+    {
+        if($tag['Description'] === NULL)
+        {
+            echo '<p>Trenutno nemate nikakav opis za ovaj tag.</p>';
+        }
+        else 
+        {
+            echo html_entity_decode($tag['Description']);
+        }
+    }
+    ?>
+<?php
+    }
+}
     $this->load->view('static/footer.php'); 
 ?>

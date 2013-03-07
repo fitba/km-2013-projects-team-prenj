@@ -2,6 +2,18 @@
     $data['title'] = 'Q/A sekcija';
     $this->load->view('static/header.php', $data);
 ?>
+<link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/jquery-ui.css'); ?>"/>
+<link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/jquery.tagit.css'); ?>"/>
+<link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/tagit.ui-zendesk.css'); ?>"/>
+<script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery-ui.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url("assets/javascript/tag-it.js"); ?>"></script>
+<script type="text/javascript" src="<?php echo base_url("assets/javascript/tag-it.min.js"); ?>"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#tags").tagit();
+    });
+</script>
 <div class="row-fluid">
   <div class="span12">
     <?php
@@ -11,10 +23,11 @@
         {
     ?>
     <h2>Postavite pitanje</h2>
+    <hr/>
     <form action="<?php echo base_url('index.php/qawiki_c/qa/' . $key); ?>" method="post">
         <p><input type="text" name="title" placeholder="Ovdje unesite naslov pitanja" class="input-xxlarge"></p>
         <p><textarea id="editor" name="question"></textarea></p>
-        <p><input id="tags" type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"> [<i>Tagove odvojte praznim poljem (razmakom)</i>]</p>
+        <p><input id="tags" type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"></p>
         <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>" /></p>
         <p><input type="hidden" name="askDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
         <p><input type="submit" name="askQuestion" class="btn" value="Submit"></p>
@@ -57,12 +70,37 @@
                         <?php
                         foreach ($tags as $tag)
                         {
-                            echo '<span class="label"><a style="color:#FFF" href="'.base_url('index.php/tag_c/index/' . $tag['Name']).'">'.$tag['Name'].'</a></span>' . ' ';
+                            echo '<span class="label"><a style="color:#FFF" href="'.base_url('index.php/search_c/index?pretraga=' . $tag['Name']).'">'.$tag['Name'].'</a></span>' . ' ';
                         }
                         ?>
                         </p>
                     </div>
-                    <div class="textRight">Pitanje postavio/la: <?php echo '<b><a href="'. base_url('index.php/main/profile/' . $question['UserID']) .'">' . $user['FirstName'] . ' ' . $user['LastName'] . '</a> | '. $this->formatdate->getFormatDate($question['AskDate']) . '</b>'; ?></div>
+                    <div class="textRight">
+                        Pitanje postavio/la: <?php echo $this->formatdate->getFormatDate($question['AskDate']); ?>
+                            <?php
+                                $nameOfFolder = 'pictures/' . $user['UserID'];
+                                $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
+                                $locationOfPicutre = $baseLocation . '/' . $user['ProfilePicture'];
+                                
+                                echo '<div style="float:left">';
+                                if($user['ProfilePicture'] != NULL)
+                                {
+                                    echo '<a href="'.base_url('index.php/main/profile/' . $user['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                }
+                                else
+                                {
+                                    if($user['Sex'] == 'm')
+                                    {
+                                        echo '<a href="'.base_url('index.php/main/profile/' . $user['UserID']).'"><img src="'. base_url('pictures/default_male.gif') .'" height="45" width="45"/></a>';
+                                    }
+                                    else
+                                    {
+                                        echo '<a href="'.base_url('index.php/main/profile/' . $user['UserID']).'"><img src="'. base_url('pictures/default_female.gif') .'" height="45" width="45"/></a>';
+                                    }
+                                }
+                                echo '<b><a href="'. base_url('index.php/main/profile/' . $question['UserID']) .'">
+                                ' . $user['FirstName'] . ' ' . $user['LastName'] . '</a></b></div>'; ?>
+                    </div>
                 </td>
             </tr>
             <?php

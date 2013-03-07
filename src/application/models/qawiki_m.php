@@ -51,27 +51,6 @@ class Qawiki_m extends CI_Model
         }
     }
     
-    public function getPodContentDataByArticleId($article_id)
-    {
-        $article_id = (int)$article_id;
-        $this->db->select('*');
-        $this->db->from('subtitles');
-        $this->db->join('articles', 'articles.ArticleID = subtitles.ArticleID');
-        $this->db->join('users', 'users.UserID = subtitles.UserID', 'left');
-        $this->db->where('subtitles.ArticleID', $article_id);
-        
-        $query = $this->db->get();
-        
-        if($this->db->_error_number() > 0)
-        {
-            return FALSE;
-        }
-        else
-        {
-            return $query->result_array();
-        }
-    }
-    
     /* Funkcija getAnswersDataById() vraća sve podatke o odgovorima na određeno pitanje.
      */
     public function getAnswersDataById($question_id)
@@ -98,15 +77,20 @@ class Qawiki_m extends CI_Model
     /* Funkcija getUserDataById() vraća sve podatke o korisnicima. Dakle sva pitanja koja je korisnik postavio, sve odgovore,
      * komentare, glasove koje je dao na određena pitanja/odgovore itd.
      */
-    public function getUserDataById($user_id)
+    public function getUserDataById($table, $join = array(), $user_id)
     {
         $user_id = (int)$user_id;
-        $this->db->select('*, users.UserID AS UsersUserID');
-        $this->db->from('users');
-        $this->db->join('questions', 'users.UserID = questions.UserID', 'left');
-        $this->db->join('answers', 'users.UserID = answers.UserID', 'left');
-        $this->db->join('comments', 'users.UserID = comments.UserID', 'left');
-        $this->db->join('votes', 'users.UserID = votes.UserID', 'left');
+        $this->db->select('*');
+        $this->db->from($table);
+        
+        if(isset($join))
+        {
+            foreach($join as $key => $value)
+            {
+                $this->db->join($key, $value, 'left');
+            }
+        }
+        
         $this->db->where('users.UserID', $user_id);
         
         $query = $this->db->get();
@@ -117,7 +101,7 @@ class Qawiki_m extends CI_Model
         }
         else
         {
-            return $query->row_array();
+            return $query->result_array();
         }
     }
     
@@ -186,6 +170,27 @@ class Qawiki_m extends CI_Model
         $this->db->join('article_tags', 'tags.TagID = article_tags.TagID');
         $this->db->join('articles', 'article_tags.ArticleID = articles.ArticleID');
         $this->db->where('article_tags.ArticleID', $article_id);
+        
+        $query = $this->db->get();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
+    }
+    
+    public function getTagsForUsers($user_id)
+    {
+        $user_id = (int)$user_id;
+        $this->db->select('*');
+        $this->db->from('tags');
+        $this->db->join('follow_tags', 'tags.TagID = follow_tags.TagID');
+        $this->db->join('users', 'follow_tags.UserID = users.UserID');
+        $this->db->where('follow_tags.UserID', $user_id);
         
         $query = $this->db->get();
         

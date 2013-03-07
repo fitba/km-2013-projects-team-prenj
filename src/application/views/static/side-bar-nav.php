@@ -61,7 +61,7 @@
                             <div>
                                 <input type="file" name="profilePicture" class="btn"/>
                                 <?php 
-                                if($userData['UsersUserID'] === $sessionData['UserID'])
+                                if($userData['UserID'] === $sessionData['UserID'])
                                 {
                                 ?>
                                 <input type="submit" name="uploadPicture" value="Upload" class="btn btn-primary"/>
