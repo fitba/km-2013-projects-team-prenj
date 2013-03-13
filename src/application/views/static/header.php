@@ -91,6 +91,26 @@
     $this->load->view('static/main-menu.php');
 ?>
 <div class="container-fluid">
+    <?php 
+        /*$this->uri->uri_string();
+        
+        error_reporting(0);
+        if(!empty($_SESSION['home']))
+        {
+            $_SESSION['links'] .= $this->uri->uri_string() . '.';
+        }
+        $_SESSION['home'] = 'main/index';
+        
+        $links = array_unique(explode('.', $_SESSION['home'] . '.' . $_SESSION['links']));
+        
+        foreach ($links as $value)
+        {
+            echo '<a href="'.base_url('index.php/' . $value).'">'.$title.'</a> >';
+        }
+        echo '<hr style="margin:5px"/>';
+         */
+    ?>
+    
   <div class="row-fluid">
     <?php 
         $this->load->view('static/side-bar-nav.php');

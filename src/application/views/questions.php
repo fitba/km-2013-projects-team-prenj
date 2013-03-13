@@ -30,9 +30,9 @@
                 <td>
                     <div class="votes">
                         <center>
-                            <div><a class="showsTooltip" onmousemove="Tooltip.Text = 'Ovo pitanje je jasno i korisno';" onclick="vote('<?php echo $question['QuestionID']; ?>', '/index.php/ajax/voteQuestion/', '1');" href="#"><img src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></a></div>
-                            <?php echo $resultOfVotesForQuestion; ?><br/> votes
-                            <div><a class="showsTooltip" onmousemove="Tooltip.Text = 'Ovo pitanje nije jasno niti korisno';" onclick="vote('<?php echo $question['QuestionID']; ?>', '/index.php/ajax/voteQuestion/', '0');" href="#"><img src="<?php echo base_url('assets/images/bottom_arrow.png'); ?>"/></a></div>
+                            <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovo pitanje je jasno i korisno';" onclick="vote('<?php echo $question['QuestionID']; ?>', '/index.php/ajax/voteQuestion/', '1');" src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></div>
+                            <strong id="numOfQuestionVotes"><?php echo $resultOfVotesForQuestion; ?></strong><br/> votes
+                            <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovo pitanje nije jasno niti korisno';" onclick="vote('<?php echo $question['QuestionID']; ?>', '/index.php/ajax/voteQuestion/', '0');" src="<?php echo base_url('assets/images/bottom_arrow.png'); ?>"/></div>
                         </center>
                     </div>
                     <div class="questions">
@@ -70,18 +70,14 @@
                     <div class="textRight">
                         Pitanje postavio/la:<br/> <?php echo $this->formatdate->getFormatDate($question['AskDate']); ?><br/>
                             <?php 
-                                $nameOfFolder = 'pictures/' . $question['UserID'];
-                                $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
-                                $locationOfPicutre = $baseLocation . '/' . $question['ProfilePicture'];
-                                
                                 echo '<div style="float:left">';
                                 if($question['ProfilePicture'] != NULL)
                                 {
-                                    echo '<a href="'.base_url('index.php/main/profile/' . $question['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                    echo '<a href="'.base_url('index.php/main/profile/' . $question['UserID']).'"><img src="'. $question['ProfilePicture'] .'" height="45" width="45"/></a>';
                                 }
                                 else
                                 {
-                                    if($user['Sex'] == 'm')
+                                    if($question['Sex'] == 'm')
                                     {
                                         echo '<a href="'.base_url('index.php/main/profile/' . $question['UserID']).'"><img src="'. base_url('pictures/default_male.gif') .'" height="45" width="45"/></a>';
                                     }
@@ -97,16 +93,12 @@
                         <?php 
                         foreach($lastChangeQuestion as $changedQuestion)
                         {
-                            $nameOfFolder = 'pictures/' . $changedQuestion['UserID'];
-                            $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
-                            $locationOfPicutre = $baseLocation . '/' . $changedQuestion['ProfilePicture'];
-                            
                             echo '<div class="textRight">
                                     Pitanje promijenio/la<br/>' . $this->formatdate->getFormatDate($changedQuestion['LogDate']) .'
                                     <div style="float:left">';
                                     if($changedQuestion['ProfilePicture'] != NULL)
                                     {
-                                        echo '<a href="'.base_url('index.php/main/profile/' . $changedQuestion['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                        echo '<a href="'.base_url('index.php/main/profile/' . $changedQuestion['UserID']).'"><img src="'. $changedQuestion['ProfilePicture'] .'" height="45" width="45"/></a>';
                                     }
                                     else
                                     {
@@ -195,16 +187,55 @@
             ?>
             <tr>
                 <td>
+                    <div style="margin-bottom: 30px;"><a name="ans<?php echo $answer['AnswerID']; ?>" href="#"></a></div>
                     <div class="votes">
                         <center>
-                            <div><a class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj odgovor je jasan i koristan';" onclick="vote('<?php echo $answer['AnswerID']; ?>', '/index.php/ajax/voteAnswer/', '1');" href="#"><img src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></a></div>
-                            <?php echo $resultOfVotesForAnswer; ?><br/> votes
-                            <div><a class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj odgovor nije jasan niti koristan';" onclick="vote('<?php echo $answer['AnswerID']; ?>', '/index.php/ajax/voteAnswer/', '0');" href="#"><img src="<?php echo base_url('assets/images/bottom_arrow.png'); ?>"/></a></div>
+                            <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj odgovor je jasan i koristan';" onclick="voteAnswer('<?php echo $answer['AnswerID']; ?>', '/index.php/ajax/voteAnswer/', '1');" src="<?php  echo base_url('assets/images/top_arrow.png'); ?>"/></div>
+                            <strong id="numOfAnswerVotes<?php echo $answer['AnswerID']; ?>"><?php echo $resultOfVotesForAnswer; ?></strong><br/> votes
+                            <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj odgovor nije jasan niti koristan';" onclick="voteAnswer('<?php echo $answer['AnswerID']; ?>', '/index.php/ajax/voteAnswer/', '0');" src="<?php echo base_url('assets/images/bottom_arrow.png'); ?>"/></div>
                         </center>
-                        <center><a href="<?php echo base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID'] . '?editAnswer=true#editAnswer' . $answer['AnswerID']); ?>">[promijeni]</a></center>
-                        <center><a class="showsTooltip" onmousemove="Tooltip.Text = 'Ovo je najbolji odgovor (kliknite opet da vratite na početno stanje)';" onclick="best('<?php echo $answer['AnswerID']; ?>', '/index.php/ajax/bestAnswer/', '<?php echo $question['QuestionID']; ?>');" href="#"><img src="<?php echo base_url('assets/images/star1.png'); ?>" alt="Ocjenite odgovor kao najbolji"/></a></center>
+                        <center><a href="<?php echo base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID'] . '?editAnswer=true#ans' . $answer['AnswerID']); ?>">[promijeni]</a></center>
+                        <center>
+                            <?php
+                            $best = $this->general_m->selectSomeById('Best', 'answers', 'AnswerID = ' . $answer['AnswerID']);
+                            $countOfAnswers = count($answers);
+                            $coutnOfRows = $this->general_m->countRows('answers', 'AnswerID', "QuestionID = " . $question_id . " AND Best = '0'");
+                            if($sessionData['UserID'] === $question['UserID'])
+                            {
+                                if($best['Best'] === '1')
+                                {
+                                    echo '<input type="checkbox" class="showsTooltip" checked="checked"
+                                                 onmousemove="Tooltip.Text = \'Ocijeni ovaj odogovor kao najbolji (kliknite opet da vratite na početno stanje)\';" 
+                                                 onclick="best('.$answer['AnswerID'].', \'/index.php/ajax/bestAnswer/\', '.$question['QuestionID'].');"/><br/>
+                                          <img class="showsTooltip" src="'.base_url('assets/images/star1.png').'"
+                                               onmousemove="Tooltip.Text = \'Vlasnik pitanja je ocijenio ovaj odgovor kao najbolji\'" />';
+                                }
+                                else
+                                {
+                                    if(count($answers) == $coutnOfRows)
+                                    {
+                            ?>
+                            <input type="checkbox" class="showsTooltip" 
+                               onmousemove="Tooltip.Text = 'Ocijeni ovaj odogovor kao najbolji (kliknite opet da vratite na početno stanje)';" 
+                               onclick="best('<?php echo $answer['AnswerID']; ?>', '/index.php/ajax/bestAnswer/', '<?php echo $question['QuestionID']; ?>');" />
+                            <?php 
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                if($best['Best'] === '1')
+                                {
+                                    echo '<img class="showsTooltip" src="'.base_url('assets/images/star1.png').'"
+                                               onmousemove="Tooltip.Text = \'Vlasnik pitanja je ocijenio ovaj odgovor kao najbolji\'"
+                                               onclick="best('.$answer['AnswerID'].', \'/index.php/ajax/bestAnswer/\', '.$question['QuestionID'].');" />';
+                                }
+                            }
+                            ?>
+                            <div id="answer<?php echo $answer['AnswerID']; ?>"></div>
+                        </center>
                     </div>
-                    <a name="editAnswer<?php echo $answer['AnswerID']; ?>" href="#"></a>
+                    
                     <div class="questions">
                         <?php
                         if(isset($answer_id) && $answer_id == $answer['AnswerID'] && isset($_GET['editAnswer']) && $_GET['editAnswer'] == 'true')
@@ -224,14 +255,10 @@
                     <div class="textRight">
                         Odgovorio/la: <?php echo $this->formatdate->getFormatDate($answer['AnswerDate']); ?>
                             <?php
-                                $nameOfFolder = 'pictures/' . $answer['UserID'];
-                                $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
-                                $locationOfPicutre = $baseLocation . '/' . $answer['ProfilePicture'];
-                                
                                 echo '<div style="float:left">';
                                 if($answer['ProfilePicture'] != NULL)
                                 {
-                                    echo '<a href="'.base_url('index.php/main/profile/' . $answer['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                    echo '<a href="'.base_url('index.php/main/profile/' . $answer['UserID']).'"><img src="'. $answer['ProfilePicture'] .'" height="45" width="45"/></a>';
                                 }
                                 else
                                 {
@@ -250,16 +277,12 @@
                         <?php 
                         foreach($lastChangeAnswer as $changedAnswer)
                         {
-                            $nameOfFolder = 'pictures/' . $changedAnswer['UserID'];
-                            $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
-                            $locationOfPicutre = $baseLocation . '/' . $changedAnswer['ProfilePicture'];
-                            
                             echo '<div class="textRight">
                                     Promijenio/la ' . $this->formatdate->getFormatDate($changedAnswer['LogDate']) .'
                                     <div style="float:left">';
                                     if($changedAnswer['ProfilePicture'] != NULL)
                                     {
-                                        echo '<a href="'.base_url('index.php/main/profile/' . $changedAnswer['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                        echo '<a href="'.base_url('index.php/main/profile/' . $changedAnswer['UserID']).'"><img src="'. $changedAnswer['ProfilePicture'] .'" height="45" width="45"/></a>';
                                     }
                                     else
                                     {

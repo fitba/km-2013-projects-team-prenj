@@ -105,6 +105,7 @@ class Register_c extends CI_Controller
                 $this->load->library('insertdata');
                 
                 $dataInsert = $this->insertdata->dataForInsert('users', $_POST);
+                $dataInsert['ConfirmAccount'] = 1;
 
                 if($this->general_m->addData('users', $dataInsert) === TRUE)
                 {
@@ -125,7 +126,10 @@ class Register_c extends CI_Controller
                     $headers .="X-Mailer:Retroshoes.ba\n"; 
                     
                     if(mail($to, $subject, $message, $headers))
-                        $data['isOk'] = 'Uspješno ste se registrovali. Molimo vas da provjerite vaš email.';
+                    {
+                        $data['isOk'] = 'Uspješno ste se registrovali. Za nekoliko sekudi bićete prebačeni na login stranicu.';
+                        header('refresh:2;url=' . base_url('index.php/login_c/loginUser'));
+                    }
                     else
                         $data['isOk'] = 'Uspješno ste se registrovali. Nažalost email nije poslat. Molimo vas da provjerite vaš SMTP server.';
                 }

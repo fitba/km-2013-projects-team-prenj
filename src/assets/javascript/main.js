@@ -6,14 +6,30 @@ $(document).ready(function() {
     $('.close').click(function() {
         $('.alert').hide();
     });
+    
+    $('.autosuggest').keyup(function(){
+        /*var tags = $('#tags').val();
+        $.post(CI_ROOT + '/index.php/ajax/getAutoCompleteTags/' + tags, { tags : tags }, function(data){
+            $('.result').html(data);
+            $('.result li').click(function(){
+                var result_value = $(this).text();
+                $('#tags').val(result_value);
+                $('.result').html('');
+            });
+        });*/
+    });
 });
 
 function like(id, path)
 {
     $.post(CI_ROOT + path + id, { id : id }, function(data){
-        if(data == 'true')
+        if(isNaN(data) === false)
         {
-            alert('OK');
+            $('#tag' + id).text(' x ' + data);
+        }
+        else
+        {
+            alert(data);
         }
     });
 }
@@ -21,9 +37,28 @@ function like(id, path)
 function vote(id, path, vote)
 {
     $.post(CI_ROOT + path + id + '/' + vote, { id : id, vote : vote }, function(data){
-        if(data == 'true')
+        if(isNaN(data) === false)
         {
-            alert('OK');
+            $('#numOfArticleVotes').text(data);
+            $('#numOfQuestionVotes').text(data);
+        }
+        else
+        {
+            alert(data);
+        }
+    });
+}
+
+function voteAnswer(id, path, vote)
+{
+    $.post(CI_ROOT + path + id + '/' + vote, { id : id, vote : vote }, function(data){
+        if(isNaN(data) === false)
+        {
+            $('#numOfAnswerVotes' + id).text(data);
+        }
+        else
+        {
+            alert(data);
         }
     });
 }
@@ -31,9 +66,8 @@ function vote(id, path, vote)
 function best(answer_id, path, question_id)
 {
     $.post(CI_ROOT + path + answer_id + '/' + question_id, { answer_id : answer_id, question_id : question_id }, function(data){
-
-        alert(data);
-        
+        $('#answer' + answer_id).html(data);
+        location.reload();
     });
 }
 
@@ -41,17 +75,3 @@ function openComment(divOpens)
 {
     $(divOpens).slideToggle();
 }
-
-/*function getData(tag_id)
-{
-    $.post(CI_ROOT + '/index.php/qawiki_c/likeTag', { tag_id : tag_id }, function(data){
-        if(data == 'success')
-        {
-            
-        }
-        else
-        {
-            alert(data);
-        }
-    });
-}*/

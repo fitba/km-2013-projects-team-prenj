@@ -52,8 +52,7 @@
                 }
                 else
                 {
-                    $locationPicture = $baseLocation . '/' . $userData['ProfilePicture'];
-                    echo '<img src="'. $locationPicture .'" height="202" width="200"/>';
+                    echo '<img src="'. $userData['ProfilePicture'] .'" height="202" width="200"/>';
                 }
                 ?>
                         <hr/>

@@ -95,17 +95,17 @@
             if(isset($answers))
             {
                 echo '<b>('.count($answers).') Odgovori</b><hr style="margin:0;"/>';
-                /*foreach ($answers as $answer) 
+                foreach ($answers as $answer) 
                 {
-                    if(strlen($answer['Answer']) > 150)
+                    if(strlen($answer['Answer']) > 100)
                     {
-                        echo '<a href="'.base_url('index.php/main/question/' . $answer['AnswerID']).'">'.substr(html_entity_decode($answer['Answer']), 0, 150) . '...</a><br/>';
+                        echo '<a href="'.base_url('index.php/main/question/' . $answer['QuestionID'] . '#ans' . $answer['AnswerID']).'">'.substr(html_entity_decode($answer['Answer']), 0, 100) . '...</a><br/>';
                     }
                     else
                     {
-                        echo '<a href="'.base_url('index.php/main/question/' . $answer['AnswerID']).'">'.html_entity_decode($answer['Answer']).'</a><br/>';
+                        echo '<a href="'.base_url('index.php/main/question/' . $answer['QuestionID'] . '#ans' . $answer['AnswerID']).'">'.html_entity_decode($answer['Answer']).'</a><br/>';
                     }
-                }*/
+                }
             }
             ?>
         </div>

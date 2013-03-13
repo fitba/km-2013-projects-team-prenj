@@ -27,7 +27,7 @@
     <form action="<?php echo base_url('index.php/qawiki_c/qa/' . $key); ?>" method="post">
         <p><input type="text" name="title" placeholder="Ovdje unesite naslov pitanja" class="input-xxlarge"></p>
         <p><textarea id="editor" name="question"></textarea></p>
-        <p><input id="tags" type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"></p>
+        <p><input id="tags" type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"/></p>
         <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>" /></p>
         <p><input type="hidden" name="askDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
         <p><input type="submit" name="askQuestion" class="btn" value="Submit"></p>
@@ -65,7 +65,18 @@
                     </div>
                     <div class="questions">
                         <p class="title"><a href="<?php echo base_url('index.php/main/question/' . $question['QuestionID']); ?>"><?php echo $question['Title'] ?></a></p>
-                        <p><?php echo html_entity_decode($question['Question']) ?></p>
+                        <p>
+                            <?php
+                                if(strlen($question['Question']) > 450)
+                                {
+                                    echo substr(html_entity_decode($question['Question']), 0, 450) . '...';
+                                }
+                                else
+                                {
+                                    echo html_entity_decode($question['Question']);
+                                }
+                            ?>
+                        </p>
                         <p>
                         <?php
                         foreach ($tags as $tag)
@@ -78,14 +89,10 @@
                     <div class="textRight">
                         Pitanje postavio/la: <?php echo $this->formatdate->getFormatDate($question['AskDate']); ?>
                             <?php
-                                $nameOfFolder = 'pictures/' . $user['UserID'];
-                                $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
-                                $locationOfPicutre = $baseLocation . '/' . $user['ProfilePicture'];
-                                
                                 echo '<div style="float:left">';
                                 if($user['ProfilePicture'] != NULL)
                                 {
-                                    echo '<a href="'.base_url('index.php/main/profile/' . $user['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                    echo '<a href="'.base_url('index.php/main/profile/' . $user['UserID']).'"><img src="'. $user['ProfilePicture'] .'" height="45" width="45"/></a>';
                                 }
                                 else
                                 {

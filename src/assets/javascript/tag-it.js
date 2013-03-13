@@ -37,13 +37,13 @@
             tagLimit          : null,   // Max number of tags allowed (null for unlimited).
 
             // Used for autocomplete, unless you override `autocomplete.source`.
-            availableTags     : [],
+            availableTags     : ['php', 'mysql'],
 
             // Use to override or add any options to the autocomplete widget.
             //
             // By default, autocomplete.source will map to availableTags,
             // unless overridden.
-            autocomplete: {},
+            autocomplete: {delay: 0, minLength: 2},
 
             // Shows autocomplete before the user even types anything.
             showAutocompleteOnFocus: false,

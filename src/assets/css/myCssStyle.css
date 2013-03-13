@@ -3,6 +3,38 @@ h3, h2
     margin-top: 0;
 }
 
+.autocomplete, .result, .autosuggest
+{
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.result
+{
+    list-style: none;
+}
+
+.autocomplete
+{
+    position: absolute;
+    width: 72.18%;
+    background-color: #eeeeee;
+}
+
+.result li
+{
+    padding: 5px;
+    border: 1px solid #000;
+    cursor: pointer;
+}
+
+.result li:hover
+{
+    background-color: #000;
+    color:#FFF;
+}
+
 .hero-unit
 {
     padding: 15px;
@@ -12,6 +44,18 @@ h3, h2
 {
     font-size: 20px;
     color: #0e90d2;
+}
+
+img.showsTooltip
+{
+    cursor: pointer;
+}
+
+.likeTags
+{
+    font-size: 13px;
+    margin-left: 5px;
+    color: #CCCCCC;
 }
 
 .questions

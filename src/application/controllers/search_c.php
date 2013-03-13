@@ -12,6 +12,7 @@ class Search_c extends CI_Controller
         $appPath = dirname(dirname(dirname(__FILE__)));
         $this->search_index = $appPath . '\search\index';
         $this->load->model('general_m');
+        $this->load->model('qawiki_m');
         error_reporting(0);
     }
     

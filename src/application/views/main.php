@@ -37,7 +37,18 @@
                     </div>
                     <div class="questions">
                         <p class="title"><a href="<?php echo base_url('index.php/main/question/' . $question['QuestionID']); ?>"><?php echo $question['Title'] ?></a></p>
-                        <p><?php echo html_entity_decode($question['Question']) ?></p>
+                        <p>
+                            <?php
+                                if(strlen($question['Question']) > 450)
+                                {
+                                    echo substr(html_entity_decode($question['Question']), 0, 450) . '...';
+                                }
+                                else
+                                {
+                                    echo html_entity_decode($question['Question']);
+                                }
+                            ?>
+                        </p>
                         <p>
                         <?php
                         foreach ($tags as $tag)
@@ -49,15 +60,11 @@
                     </div>
                     <div class="textRight">
                         Pitanje postavio/la: <?php echo $this->formatdate->getFormatDate($question['AskDate']); ?>
-                            <?php
-                                $nameOfFolder = 'pictures/' . $user['UserID'];
-                                $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
-                                $locationOfPicutre = $baseLocation . '/' . $user['ProfilePicture'];
-                                
+                            <?php                      
                                 echo '<div style="float:left">';
                                 if($user['ProfilePicture'] != NULL)
                                 {
-                                    echo '<a href="'.base_url('index.php/main/profile/' . $user['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                    echo '<a href="'.base_url('index.php/main/profile/' . $user['UserID']).'"><img src="'. $user['ProfilePicture'] .'" height="45" width="45"/></a>';
                                 }
                                 else
                                 {
@@ -109,7 +116,18 @@
                                         </div>
                                         <div class="questions">
                                             <p class="title"><a href="<?php echo base_url('index.php/main/article/' . $article['ArticleID']); ?>"><?php echo $article['Title'] ?></a></p>
-                                            <p><?php echo html_entity_decode($article['Content']) ?></p>
+                                            <p>
+                                                <?php
+                                                    if(strlen($article['Content']) > 450)
+                                                    {
+                                                        echo substr(html_entity_decode($article['Content']), 0, 450) . '...';
+                                                    }
+                                                    else
+                                                    {
+                                                        echo html_entity_decode($article['Content']);
+                                                    }
+                                                ?>
+                                            </p>
                                             <p>
                                             <?php
                                             foreach ($tags as $tag)
@@ -122,14 +140,10 @@
                                         <div class="textRight">
                                             Članak postavio/la: <?php echo $this->formatdate->getFormatDate($article['PostDate']); ?>
                                                 <?php
-                                                    $nameOfFolder = 'pictures/' . $user['UserID'];
-                                                    $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
-                                                    $locationOfPicutre = $baseLocation . '/' . $user['ProfilePicture'];
-
                                                     echo '<div style="float:left">';
                                                     if($user['ProfilePicture'] != NULL)
                                                     {
-                                                        echo '<a href="'.base_url('index.php/main/profile/' . $user['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                                        echo '<a href="'.base_url('index.php/main/profile/' . $user['UserID']).'"><img src="'. $user['ProfilePicture'] .'" height="45" width="45"/></a>';
                                                     }
                                                     else
                                                     {

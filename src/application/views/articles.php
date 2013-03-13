@@ -26,9 +26,9 @@
                 <td>
                     <div class="votes">
                         <center>
-                            <div><a class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj članak je jasan i koristan';" onclick="vote('<?php echo $article['ArticleID']; ?>', '/index.php/ajax/voteArticle/', '1');" href="#"><img src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></a></div>
-                            <?php echo $resultOfVotesForQuestion; ?><br/> votes
-                            <div><a class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj članak nije jasan niti koristan';" onclick="vote('<?php echo $article['ArticleID']; ?>', '/index.php/ajax/voteArticle/', '0');" href="#"><img src="<?php echo base_url('assets/images/bottom_arrow.png'); ?>"/></a></div>
+                            <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj članak je jasan i koristan';" onclick="vote('<?php echo $article['ArticleID']; ?>', '/index.php/ajax/voteArticle/', '1');"  src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></div>
+                            <strong id="numOfArticleVotes"><?php echo $resultOfVotes; ?></strong><br/> votes
+                            <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj članak nije jasan niti koristan';" onclick="vote('<?php echo $article['ArticleID']; ?>', '/index.php/ajax/voteArticle/', '0');" src="<?php echo base_url('assets/images/bottom_arrow.png'); ?>"/></div>
                         </center>
                     </div>
                     <div class="questions">
@@ -65,15 +65,11 @@
                     </div>
                     <div class="textRight">
                         Članak postavio/la:<br/><?php echo  $this->formatdate->getFormatDate($article['PostDate']); ?><br/>
-                            <?php 
-                                $nameOfFolder = 'pictures/' . $article['UserID'];
-                                $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
-                                $locationOfPicutre = $baseLocation . '/' . $article['ProfilePicture'];
-                                
+                            <?php     
                                 echo '<div style="float:left">';
                                 if($article['ProfilePicture'] != NULL)
                                 {
-                                    echo '<a href="'.base_url('index.php/main/profile/' . $article['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                    echo '<a href="'.base_url('index.php/main/profile/' . $article['UserID']).'"><img src="'. $article['ProfilePicture'] .'" height="45" width="45"/></a>';
                                 }
                                 else
                                 {
@@ -99,16 +95,12 @@
                     <?php 
                     foreach ($lastChangeArticle as $changedArticle)
                     {
-                        $nameOfFolder = 'pictures/' . $changedArticle['UserID'];
-                        $baseLocation = str_replace('index.php/', '', 'http://'.$_SERVER['HTTP_HOST'].dirname(dirname(dirname($_SERVER['PHP_SELF']))).'/'.$nameOfFolder);
-                        $locationOfPicutre = $baseLocation . '/' . $changedArticle['ProfilePicture'];
-
-                        echo '<div class="textRight">
+                          echo '<div class="textRight">
                                 Članak promijenio/la<br/>' . $this->formatdate->getFormatDate($changedArticle['LogDate']) . '
                                 <div style="float:left">';
                                 if($changedArticle['ProfilePicture'] != NULL)
                                 {
-                                    echo '<a href="'.base_url('index.php/main/profile/' . $changedArticle['UserID']).'"><img src="'. $locationOfPicutre .'" height="45" width="45"/></a>';
+                                    echo '<a href="'.base_url('index.php/main/profile/' . $changedArticle['UserID']).'"><img src="'. $changedArticle['ProfilePicture'] .'" height="45" width="45"/></a>';
                                 }
                                 else
                                 {

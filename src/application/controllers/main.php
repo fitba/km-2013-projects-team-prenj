@@ -48,6 +48,7 @@ class Main extends CI_Controller
                 if(!empty($_FILES['profilePicture']['name']) && isset($_FILES['profilePicture']))
 		{
                     $slika = $_FILES['profilePicture']['name'];
+                    $pictureForDatabase = $location . '/' . $_FILES['profilePicture']['name'];
                     $slika_tmp = $_FILES["profilePicture"]['tmp_name'];
                     $slika_size = '';
 
@@ -57,12 +58,13 @@ class Main extends CI_Controller
                     }
 
                     $folder = $_SERVER['DOCUMENT_ROOT'].dirname(dirname(dirname(dirname($_SERVER['PHP_SELF'])))).'/'.$nameOfFolder;
+                    $pictureFileSystemLocation = $_SERVER['DOCUMENT_ROOT'].dirname(dirname(dirname(dirname($_SERVER['PHP_SELF'])))).'/'.$nameOfFolder . '/' . $slika;
                     if($slika_size == NULL)
                     {	
                         $errors[] = 'Ovo nije slika!';
                     }
 
-                    $where4 = "ProfilePicture = '" . $slika . "'";
+                    $where4 = "ProfilePicture = '" . $pictureForDatabase . "'";
 
                     if($this->general_m->exists('users', 'UserID', $where4) > 0)
                     {
@@ -75,15 +77,23 @@ class Main extends CI_Controller
                     }
                     else
                     {
-                        $dataUpdate = array('ProfilePicture' => $slika);
+                        $dataUpdate = array('ProfilePicture' => $pictureForDatabase,
+                                            'PictureFolderLocation' => $pictureFileSystemLocation);
 
                         if($this->general_m->updateData('users', $dataUpdate, 'UserID', $user_id) === TRUE)
                         {
                             if(!file_exists($folder))
                             {
                                 mkdir($folder, 777);
+                                move_uploaded_file($slika_tmp, $pictureFileSystemLocation);
                             }
-                            move_uploaded_file($slika_tmp, $folder.'/'.$slika);
+                            else
+                            {
+                                $picture = $userData['PictureFolderLocation'];
+                                unlink($picture);
+                                move_uploaded_file($slika_tmp, $pictureFileSystemLocation);
+                            }
+                            
                             $data['isOk'] = 'Uspješno ste unijeli profil sliku.';
                         }
                         else
@@ -109,11 +119,12 @@ class Main extends CI_Controller
                 }
                 else
                 {
-                    $dataUpdate = array('ProfilePicture' => NULL);
+                    $dataUpdate = array('ProfilePicture' => NULL,
+                                        'PictureFolderLocation' => NULL);
 
                     if($this->general_m->updateData('users', $dataUpdate, 'UserID', $user_id) === TRUE)
                     {
-                        $picture = $_SERVER['DOCUMENT_ROOT'].dirname(dirname(dirname(dirname($_SERVER['PHP_SELF'])))).'/'.$nameOfFolder . '/' . $userData['ProfilePicture'];
+                        $picture = $userData['PictureFolderLocation'];
                         $folder = $_SERVER['DOCUMENT_ROOT'].dirname(dirname(dirname(dirname($_SERVER['PHP_SELF'])))).'/'.$nameOfFolder;
                         if(file_exists($picture) && file_exists($folder))
                         {
@@ -863,8 +874,8 @@ class Main extends CI_Controller
                 $data['article'] = $article;
             }
             
-            $negativeQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id . " AND Positive = '0'");
-            $positiveQuestion = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id. " AND Positive = '1'");
+            $negative = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id . " AND Positive = '0'");
+            $positive = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id. " AND Positive = '1'");
             
             $joinArticle = array('articles' => 'articles.ArticleID = logs.ArticleID',
                                                'users' => 'users.UserID = logs.UserID');
@@ -906,9 +917,9 @@ class Main extends CI_Controller
                 $data['tags'] = $tags;
             }
             
-            if($negativeQuestion !== FALSE && $positiveQuestion !== FALSE)
+            if($negative !== FALSE && $positive !== FALSE)
             {
-                $data['resultOfVotesForQuestion'] = ($positiveQuestion - $negativeQuestion);
+                $data['resultOfVotes'] = ($positive - $negative);
             }
             
             $this->load->view('articles', $data);

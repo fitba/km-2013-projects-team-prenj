@@ -26,14 +26,23 @@ class Ajax extends CI_Controller
                                         'UserID' => $sessionData['UserID']);
                     if($this->general_m->addData('follow_tags', $dataInsert) === TRUE)
                     {
-                        echo 'true';
+                        $count = $this->general_m->countRows('follow_tags', 'UserID', "TagID = " . $tag_id);
+                        echo $count;
                     }
                     else
                     {
-                        echo 'Dogodila se neočekivana greška';
+                        echo 'false';
                     }
                 }
+                else
+                {
+                    echo 'Ovaj tag ste već lajkali';
+                }
             }
+        }
+        else
+        {
+            echo 'Morate se prijaviti da biste lajkali tag! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
         }
     }
     
@@ -61,7 +70,8 @@ class Ajax extends CI_Controller
 
                 if(!empty($errors))
                 {
-                    $data['errors'] = $this->general_m->displayErrors($errors);
+                    $displayErrors = $this->general_m->displayErrors($errors);
+                    echo $displayErrors;
                 }
                 else
                 {
@@ -71,11 +81,21 @@ class Ajax extends CI_Controller
 
                     if($this->general_m->addData('votes', $dataInsert) === TRUE)
                     {
-                        $data['isOk'] = 'Uspješno ste ocijenili pitanje.';
+                        $negative = $this->general_m->countRows('votes', 'VoteID', "QuestionID = " . $question_id . " AND Positive = '0'");
+                        $positive = $this->general_m->countRows('votes', 'VoteID', "QuestionID = " . $question_id. " AND Positive = '1'");
+
+                        $resultOfVotes = '';
+
+                        if($negative !== FALSE && $positive !== FALSE)
+                        {
+                            $resultOfVotes = ($positive - $negative);
+                        }
+
+                        echo $resultOfVotes;
                     }
                     else
                     {
-                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                        echo 'Dogodila se neočekivana greska!';
                     }
                 }
             }
@@ -106,7 +126,8 @@ class Ajax extends CI_Controller
 
                 if(!empty($errors))
                 {
-                    $data['errors'] = $this->general_m->displayErrors($errors);
+                    $displayErrors = $this->general_m->displayErrors($errors);
+                    echo $displayErrors;
                 }
                 else
                 {
@@ -116,11 +137,21 @@ class Ajax extends CI_Controller
 
                     if($this->general_m->addData('votes', $dataInsert) === TRUE)
                     {
-                        $data['isOk'] = 'Uspješno ste ocijenili odgovor.';
+                        $negative = $this->general_m->countRows('votes', 'VoteID', "AnswerID = " . $answer_id . " AND Positive = '0'");
+                        $positive = $this->general_m->countRows('votes', 'VoteID', "AnswerID = " . $answer_id. " AND Positive = '1'");
+
+                        $resultOfVotes = '';
+
+                        if($negative !== FALSE && $positive !== FALSE)
+                        {
+                            $resultOfVotes = ($positive - $negative);
+                        }
+
+                        echo $resultOfVotes;
                     }
                     else
                     {
-                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                        echo 'Dogodila se neočekivana greska!';
                     }
                 }
             }
@@ -149,8 +180,8 @@ class Ajax extends CI_Controller
 
             if(!empty($errors))
             {
-                $errors = $this->general_m->displayErrors($errors);
-                echo $errors;
+                $displayErrors = $this->general_m->displayErrors($errors);
+                echo $displayErrors;
             }
             else
             {
@@ -163,11 +194,13 @@ class Ajax extends CI_Controller
 
                     if($this->general_m->updateData('answers', $dataUpdate, 'AnswerID', $answer_id) === TRUE)
                     {
-                        echo 'Ocijenili ste odgovor kao najbolji.';
+                        echo '<img class="showsTooltip" src="'.base_url('assets/images/star1.png').'"
+                                   onmousemove="Tooltip.Text = \'Vlasnik pitanja je ocijenio ovaj odgovor kao najbolji (kliknite opet da vratite na početno stanje)\'"
+                                   onclick="best('.$answer_id.', \'/index.php/ajax/bestAnswer/\', '.$question_id.');" />';
                     }
                     else
                     {
-                        echo 'Dogodila se nočekivana greška!';
+                        echo 'Dogodila se neočekivana greska!';
                     }
                 }
                 else
@@ -176,11 +209,11 @@ class Ajax extends CI_Controller
 
                     if($this->general_m->updateData('answers', $dataUpdate, 'AnswerID', $answer_id) === TRUE)
                     {
-                        echo 'Vratili ste prethodnu vrijednost.';
+                        echo '';
                     }
                     else
                     {
-                        echo 'Dogodila se nočekivana greška!';
+                        echo 'Dogodila se neočekivana greska!';
                     }
                 }
             }
@@ -211,7 +244,8 @@ class Ajax extends CI_Controller
 
                 if(!empty($errors))
                 {
-                    $data['errors'] = $this->general_m->displayErrors($errors);
+                    $displayErrors = $this->general_m->displayErrors($errors);
+                    echo $displayErrors;
                 }
                 else
                 {
@@ -221,14 +255,38 @@ class Ajax extends CI_Controller
 
                     if($this->general_m->addData('votes', $dataInsert) === TRUE)
                     {
-                        $data['isOk'] = 'Uspješno ste ocijenili članak.';
+                        $negative = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id . " AND Positive = '0'");
+                        $positive = $this->general_m->countRows('votes', 'VoteID', "ArticleID = " . $article_id. " AND Positive = '1'");
+
+                        $resultOfVotes = '';
+
+                        if($negative !== FALSE && $positive !== FALSE)
+                        {
+                            $resultOfVotes = ($positive - $negative);
+                        }
+
+                        echo $resultOfVotes;
                     }
                     else
                     {
-                        $data['unexpectedError'] = 'Dogodila se nočekivana greška!';
+                        echo 'Dogodila se neočekivana greska!';
                     }
                 }
             }
         }
+    }
+    
+    public function getAutoCompleteTags($name)
+    {
+        if(!empty($name) || isset($name))
+        {
+            $this->db->like('Name',$name);
+            $results = $this->db->get('tags')->result_array();
+            
+            foreach($results as $result)
+            {
+                echo '<li>'.$result['Name'].'</li>';
+            }
+        }  
     }
 }

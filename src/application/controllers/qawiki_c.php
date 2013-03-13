@@ -145,14 +145,31 @@ class Qawiki_c extends CI_Controller
     
     public function tags($tag_id = NULL)
     {
-        $data['tags'] = $this->general_m->getAll('tags', 'Name');
+        if(isset($_GET['tag_search']))
+        {
+            $txtSearch = $_GET['tag_search'];
+            
+            $like = array('Name' => $txtSearch);
+            
+            $data['tags'] = $this->general_m->search('tags', '*', $like);
+            
+            if(count($data['tags']) == 0)
+            {
+                $data['errors'] = 'Nema rezultata pretrage za termin <strong>"' . $txtSearch . '"</strong>';
+            }
+        }
+        else
+        {
+            $data['tags'] = $this->general_m->getAll('tags', 'Name');
+        }
+        
         $data['tag'] = '';
         
         if(isset($tag_id))
         {
             $data['tag_id'] = $tag_id;
             $tag = $this->general_m->selectSomeById('*', 'tags', "TagID = '$tag_id'");
-
+            
             if(isset($_POST['submitEditTag']))
             {
                 $errors = array();
@@ -207,16 +224,32 @@ class Qawiki_c extends CI_Controller
             {
                 $data['unexpectedError'] = 'Došlo je do neočekivane greške prilikom uzimanja tagova iz baze!';
             }
-            
         }
-        
-        
         $this->load->view('tags', $data);
     }
 
     public function users()
     {
-        $data['users'] = $users = $this->general_m->getAll('users', 'FirstName');
+        if(isset($_GET['user_search']))
+        {
+            $txtSearch = $_GET['user_search'];
+            
+            $like = array('CONCAT(FirstName, \' \', LastName)' => $txtSearch);
+            $or_like = array('FirstName' => $txtSearch,
+                             'LastName' => $txtSearch);
+            
+            $data['users'] = $this->general_m->search('users', '*', $like, $or_like);
+            
+            if(count($data['users']) == 0)
+            {
+                $data['errors'] = 'Nema rezultata pretrage za termin <strong>"' . $txtSearch . '"</strong>';
+            }
+        }
+        else
+        {
+            $data['users'] = $users = $this->general_m->getAll('users', 'FirstName');
+        }
+        
         $this->load->view('users', $data);
     }
     
