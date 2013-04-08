@@ -117,13 +117,9 @@ class Register_c extends CI_Controller
                     $headers  = 'MIME-Version: 1.0' . "\r\n";
                     $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
                     $headers .= 'From:admin@localhost' . "\r\n";
-                    $headers .= "Reply-To: Retroshoes <info@retroshoes.ba>\r\n"; 
-                    $headers .= "Return-Path: Retroshoes <info@retroshoes.ba>\r\n"; 
-                    $headers .= "Organization: Retroshoes\r\n"; 
                     $headers .= 'Content-type: text/html; charset=UTF-8' . "\r\n";
                     $headers .="X-Priority: 1\n";
                     $headers .="X-MSMail-Priority: High\n";
-                    $headers .="X-Mailer:Retroshoes.ba\n"; 
                     
                     if(mail($to, $subject, $message, $headers))
                     {

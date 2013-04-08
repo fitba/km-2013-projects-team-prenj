@@ -36,13 +36,15 @@ class Ajax extends CI_Controller
                 }
                 else
                 {
-                    echo 'Ovaj tag ste već lajkali';
+                    echo '<h3>Upozorenje</h3>
+                            <hr/><p>Ovaj tag ste već lajkali</p>';
                 }
             }
         }
         else
         {
-            echo 'Morate se prijaviti da biste lajkali tag! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+            echo '<h3>Login validacija</h3>
+                        <hr/><p style="color:red">Morate se prijaviti da biste lajkali tag! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a></p>';
         }
     }
     
@@ -55,7 +57,10 @@ class Ajax extends CI_Controller
             {
                 if($sessionData == NULL)
                 {
-                    $errors[] = 'Morate se prijaviti da biste ocijenili pitanje! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                    $errors[] = '
+                        <h3>Login validacija</h3>
+                        <hr/>
+                        <p>Morate se prijaviti da biste ocijenili pitanje! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a></p>';
                 }
                 else
                 {
@@ -64,7 +69,10 @@ class Ajax extends CI_Controller
 
                     if($count > 0)
                     {
-                        $errors[] = 'Već ste ocijenili to pitanje!';
+                        $errors[] = '
+                            <h3>Upozorenje</h3>
+                            <hr/>
+                            <p>Već ste ocijenili to pitanje!</p>';
                     }
                 }
 
@@ -95,7 +103,8 @@ class Ajax extends CI_Controller
                     }
                     else
                     {
-                        echo 'Dogodila se neočekivana greska!';
+                        echo '<h3>Upozorenje</h3>
+                        <hr/><p>Dogodila se neočekivana greska!</p>';
                     }
                 }
             }
@@ -111,7 +120,10 @@ class Ajax extends CI_Controller
             {
                 if($sessionData == NULL)
                 {
-                    $errors[] = 'Morate se prijaviti da biste ocijenili pitanje! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                    $errors[] = '
+                        <h3>Login validacija</h3>
+                        <hr/>
+                        <p>Morate se prijaviti da biste ocijenili odgovor! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a></p>';
                 }
                 else
                 {
@@ -120,7 +132,10 @@ class Ajax extends CI_Controller
 
                     if($count > 0)
                     {
-                        $errors[] = 'Već ste ocijenili taj odgovor!';
+                        $errors[] = '
+                            <h3>Upozorenje</h3>
+                            <hr/>
+                            <p>Već ste ocijenili taj odgovor!</p>';
                     }
                 }
 
@@ -151,7 +166,8 @@ class Ajax extends CI_Controller
                     }
                     else
                     {
-                        echo 'Dogodila se neočekivana greska!';
+                        echo '<h3>Upozorenje</h3>
+                        <hr/><p>Dogodila se neočekivana greska!</p>';
                     }
                 }
             }
@@ -165,7 +181,8 @@ class Ajax extends CI_Controller
         {
             if($sessionData == NULL)
             {
-                $errors[] = 'Morate se prijaviti da biste ocijenili pitanje! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                $errors[] = '<h3>Upozorenje</h3>
+                            <hr/><p>Morate se prijaviti da biste označili pitanje kao najbolje! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a></p>';
             }
             else
             {
@@ -174,7 +191,8 @@ class Ajax extends CI_Controller
 
                 if($user['UserID'] != $sessionData['UserID'])
                 {
-                    $errors[] = 'Vi ne možete ocijeniti ovaj odgovor kao najbolji jer niste vlasnik pitanja!';
+                    $errors[] = '<h3>Upozorenje</h3>
+                            <hr/><p>Vi ne možete ocijeniti ovaj odgovor kao najbolji jer niste vlasnik pitanja!</p>';
                 }
             }
 
@@ -200,7 +218,8 @@ class Ajax extends CI_Controller
                     }
                     else
                     {
-                        echo 'Dogodila se neočekivana greska!';
+                        echo '<h3>Upozorenje</h3>
+                        <hr/><p>Dogodila se neočekivana greska!</p>';
                     }
                 }
                 else
@@ -213,7 +232,8 @@ class Ajax extends CI_Controller
                     }
                     else
                     {
-                        echo 'Dogodila se neočekivana greska!';
+                        echo '<h3>Upozorenje</h3>
+                        <hr/><p>Dogodila se neočekivana greska!</p>';
                     }
                 }
             }
@@ -229,7 +249,8 @@ class Ajax extends CI_Controller
             {
                 if($sessionData == NULL)
                 {
-                    $errors[] = 'Morate se prijaviti da biste ocijenili pitanje! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a>';
+                    $errors[] = '<h3>Login validacija</h3>
+                        <hr/><p>Morate se prijaviti da biste ocijenili pitanje! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a></p>';
                 }
                 else
                 {
@@ -238,7 +259,8 @@ class Ajax extends CI_Controller
 
                     if($count > 0)
                     {
-                        $errors[] = 'Već ste ocijenili taj članak!';
+                        $errors[] = '<h3>Upozorenje</h3>
+                        <hr/><p>Već ste ocijenili taj članak!</p>';
                     }
                 }
 
@@ -269,7 +291,8 @@ class Ajax extends CI_Controller
                     }
                     else
                     {
-                        echo 'Dogodila se neočekivana greska!';
+                        echo '<h3>Upozorenje</h3>
+                        <hr/><p>Dogodila se neočekivana greska!</p>';
                     }
                 }
             }

@@ -5,7 +5,8 @@
     <link rel="stylesheet" type="text/css"  href="<?php echo base_url('bootstrap/css/bootstrap.css'); ?>"/>
     <link rel="stylesheet" type="text/css"  href="<?php echo base_url('bootstrap/css/bootstrap-responsive.css'); ?>"/>
     <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/myCssStyle.css'); ?>"/>
-    
+    <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/demo.css'); ?>"/>
+    <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/basic.css'); ?>"/>
     <title>
         <?php 
 	if(isset($title))
@@ -32,7 +33,7 @@
     <script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo base_url("assets/javascript/main.js"); ?>"></script>
     <script type="text/javascript" src="<?php echo base_url("bootstrap/js/bootstrap.js"); ?>"></script>
-    
+    <script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery.simplemodal.js"); ?>"></script>
     <script type="text/javascript"> 
         var editor, html = '';
         function createEditor() 
@@ -186,4 +187,8 @@
              $_SESSION['redirect'] = $linkForRedirect;
        }
    }
-?> 
+?>
+<!-- modal content -->
+<div id="basic-modal-content">
+        
+</div>

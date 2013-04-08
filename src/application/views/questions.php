@@ -9,6 +9,8 @@
 <script type="text/javascript" src="<?php echo base_url("assets/javascript/tag-it.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url("assets/javascript/tag-it.min.js"); ?>"></script>
 
+
+
 <script type="text/javascript">
     $(document).ready(function() {
         $("#tags").tagit();

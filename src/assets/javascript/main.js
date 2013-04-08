@@ -29,7 +29,10 @@ function like(id, path)
         }
         else
         {
-            alert(data);
+            $(function() {
+                $('#basic-modal-content').html(data);
+                $('#basic-modal-content').modal();
+            });
         }
     });
 }
@@ -44,7 +47,10 @@ function vote(id, path, vote)
         }
         else
         {
-            alert(data);
+            $(function() {
+                $('#basic-modal-content').html(data);
+                $('#basic-modal-content').modal();
+            });
         }
     });
 }
@@ -58,7 +64,10 @@ function voteAnswer(id, path, vote)
         }
         else
         {
-            alert(data);
+            $(function() {
+                $('#basic-modal-content').html(data);
+                $('#basic-modal-content').modal();
+            });
         }
     });
 }
