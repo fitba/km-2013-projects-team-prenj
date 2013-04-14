@@ -99,10 +99,10 @@
                 }
                 else
                 {
-                    /*$(function() {
+                    $(function() {
                         $('#basic-modal-content').html(data);
                         $('#basic-modal-content').modal();
-                    });*/
+                    });
                 }
             });
         });
