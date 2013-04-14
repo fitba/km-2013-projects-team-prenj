@@ -96,9 +96,9 @@ class General_m extends CI_Model
     /* Globalna funkcija deleteData() prihvata 3 parametra $column, $table, i $id. 
      * Funkcija briše red na osnovu zadatog ID-a.
      */
-    public function deleteData($table, $column_id, $id)
+    public function deleteData($table, $where)
     {
-        $this->db->where($column_id, $id);
+        $this->db->where($where);
         $this->db->delete($table);
 
         if($this->db->_error_number() > 0)
@@ -174,6 +174,27 @@ class General_m extends CI_Model
         else
         {
             return $count[0]['Count'];
+        }
+    }
+    
+    /* Globalna funkcija sum() prihvata 3 parametra $table, $column i $where. 
+     * Funkcija vraca sumu vrijednosti za zadatu kolonu.
+     */
+    public function sum($table, $column, $where)
+    {
+        $this->db->select('SUM('.$column.') AS Sum');
+        $this->db->where($where);
+        $query = $this->db->get($table);
+
+        $sum = $query->row_array();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return false;
+        }
+        else
+        {
+            return $sum['Sum'];
         }
     }
 

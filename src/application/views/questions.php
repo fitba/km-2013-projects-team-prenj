@@ -5,14 +5,45 @@
 <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/jquery-ui.css'); ?>"/>
 <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/jquery.tagit.css'); ?>"/>
 <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/tagit.ui-zendesk.css'); ?>"/>
+<link rel="stylesheet" href="<?php echo base_url('assets/css/jRating.jquery.css'); ?>" type="text/css" />
 <script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery-ui.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url("assets/javascript/tag-it.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url("assets/javascript/tag-it.min.js"); ?>"></script>
-
+<script type="text/javascript" src="<?php echo base_url("assets/javascript/jRating.jquery.js"); ?>"></script>
 
 
 <script type="text/javascript">
     $(document).ready(function() {
+        
+        $(function(){
+            var question_id = '<?php echo $question_id; ?>';
+            $.post(CI_ROOT + '/index.php/ajax/getEvaluate' + '/question/' + question_id, {  }, function(data){
+                var jRateAverage = document.getElementById('jRatingAverage');
+                
+                if(data == 1)
+                {
+                    jRateAverage.style.width = '23px';
+                }
+                else if(data == 2)
+                {
+                    jRateAverage.style.width = '46px';
+                }
+                else if(data == 3)
+                {
+                    jRateAverage.style.width = '69px';
+                }
+                else if(data == 4)
+                {
+                    jRateAverage.style.width = '92px';
+                }
+                else if(data == 5)
+                {
+                    jRateAverage.style.width = '115px';
+                }
+            });
+        });
+        
+        
         $("#tags").tagit();
         
         $('#openComment').click(function(){
@@ -21,6 +52,59 @@
         
         $('#openAnswerForm').click(function(){
             $('#answerForm').slideToggle();
+        });
+        
+        $(".basic").jRating({
+	  step:true,
+	  length : 5
+	});
+        
+        $('.minus, .minusTest').click(function(){
+           var question_id = '<?php echo $question_id; ?>';
+           $.post(CI_ROOT + '/index.php/ajax/dismissEvaluate' + '/question/' + question_id, {  }, function(data1){
+               if(data1 == 'true')
+               {
+                    $('.minus, .minusTest').hide();
+                    $.post(CI_ROOT + '/index.php/ajax/averageEvaluate/' + '/question/' + question_id, { }, function(data2){
+                         $('.ocjena').text(data2 + ' / 5');
+                     });
+               }
+               else
+               {
+                   
+               }
+           }); 
+        });
+        
+        var evaluate = '';
+        $('.basic').mousemove(function(){
+            var rate = document.getElementById("jRatingInfos").innerHTML;
+            var explode = rate.split(" ");
+            evaluate = explode[0];
+        });
+        
+        $('.basic').click(function(){
+            var question_id = '<?php echo $question_id; ?>';
+            $.post(CI_ROOT + '/index.php/ajax/evaluateQuestion/' + question_id + '/' + evaluate, {  }, function(data){
+                if(data === 'true')
+                {
+                    $.post(CI_ROOT + '/index.php/ajax/averageEvaluate' + '/question/' + question_id, { }, function(data){
+                        $('.ocjena').text(data + ' / 5');
+                    });
+                    $('.minusTest').show();
+                    $('#response').text('Uspješno ste ocijenili pitanje');
+                    setTimeout(function() {
+                        $('#response').fadeOut('fast');
+                    }, 1000);
+                }
+                else
+                {
+                    /*$(function() {
+                        $('#basic-modal-content').html(data);
+                        $('#basic-modal-content').modal();
+                    });*/
+                }
+            });
         });
     });
 </script>
@@ -35,6 +119,8 @@
                             <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovo pitanje je jasno i korisno';" onclick="vote('<?php echo $question['QuestionID']; ?>', '/index.php/ajax/voteQuestion/', '1');" src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></div>
                             <strong id="numOfQuestionVotes"><?php echo $resultOfVotesForQuestion; ?></strong><br/> votes
                             <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovo pitanje nije jasno niti korisno';" onclick="vote('<?php echo $question['QuestionID']; ?>', '/index.php/ajax/voteQuestion/', '0');" src="<?php echo base_url('assets/images/bottom_arrow.png'); ?>"/></div>
+                            <br/>
+                            <p class="ocjena"><?php echo $averageEvaluate; ?> / 5</p>
                         </center>
                     </div>
                     <div class="questions">
@@ -69,6 +155,25 @@
                         }
                         ?>
                     </div>
+                    <br/><br/><br/>
+                    <div class="exemple">
+                        <em style="font-size: 18px;"><strong>Ocjenite pitanje</strong></em>
+                        <img class="minusTest showsTooltip" onmousemove="Tooltip.Text = 'Poništite ocjenu';" src="<?php echo base_url('assets/images/minus.png'); ?>" width="40"/>
+                        <?php
+                        if(isset($user))
+                        {
+                            if($user > 0)
+                            {
+                            ?>
+                            <img class="minus showsTooltip" onmousemove="Tooltip.Text = 'Poništite ocjenu';" src="<?php echo base_url('assets/images/minus.png'); ?>" width="40"/>
+                            <?php 
+                            }
+                        }
+                        ?>
+                        <div id="mydiv" class="basic" data-average="5" data-id="1"></div>
+                        <div id="response" style="color:green"></div>
+                    </div>
+                    
                     <div class="textRight">
                         Pitanje postavio/la:<br/> <?php echo $this->formatdate->getFormatDate($question['AskDate']); ?><br/>
                             <?php 
@@ -229,8 +334,7 @@
                                 if($best['Best'] === '1')
                                 {
                                     echo '<img class="showsTooltip" src="'.base_url('assets/images/star1.png').'"
-                                               onmousemove="Tooltip.Text = \'Vlasnik pitanja je ocijenio ovaj odgovor kao najbolji\'"
-                                               onclick="best('.$answer['AnswerID'].', \'/index.php/ajax/bestAnswer/\', '.$question['QuestionID'].');" />';
+                                               onmousemove="Tooltip.Text = \'Vlasnik pitanja je ocijenio ovaj odgovor kao najbolji\'" />';
                                 }
                             }
                             ?>

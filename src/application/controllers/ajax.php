@@ -12,6 +12,87 @@ class Ajax extends CI_Controller
         $this->sessionData = $this->login_m->isLoggedIn();
     }
     
+    public function averageEvaluate($type, $id)
+    {
+        if($type == 'article')
+        {
+            $sum = $this->general_m->sum('evaluation', 'Evaluate', 'ArticleID = ' . $id);
+            $count = $this->general_m->countRows('evaluation', 'Evaluate', 'ArticleID = ' . $id);
+
+            $averageEvaluate = number_format(($sum / $count), 1);
+
+            echo $averageEvaluate;
+        }
+        else if($type == 'question')
+        {
+            $sum = $this->general_m->sum('evaluation', 'Evaluate', 'QuestionID = ' . $id);
+            $count = $this->general_m->countRows('evaluation', 'Evaluate', 'QuestionID = ' . $id);
+
+            $averageEvaluate = number_format(($sum / $count), 1);
+
+            echo $averageEvaluate;
+        }
+    }
+    
+    public function getEvaluate($type, $id)
+    {
+        $sessionData = $this->sessionData;
+        if($sessionData != NULL)
+        {
+            if($type === 'article')
+            {
+                $eval = $this->general_m->selectSomeById('Evaluate', 'evaluation', 'ArticleID = ' . $id . ' AND UserID = ' . $sessionData['UserID']);
+
+                echo $eval['Evaluate'];
+            }
+            else if($type === 'question')
+            {
+                $eval = $this->general_m->selectSomeById('Evaluate', 'evaluation', 'QuestionID = ' . $id . ' AND UserID = ' . $sessionData['UserID']);
+
+                echo $eval['Evaluate'];
+            }
+        }
+    }
+    
+    public function dismissEvaluate($type, $id)
+    {
+        $sessionData = $this->sessionData;
+        if($type === 'question')
+        {
+            if($sessionData != NULL)
+            {
+                if(isset($id))
+                {
+                    if($this->general_m->deleteData('evaluation', 'QuestionID = ' . $id . ' AND UserID = ' . $sessionData['UserID']) === TRUE)
+                    {
+                        echo 'true';
+                    }
+                    else
+                    {
+                        echo 'false';
+                    }
+                }
+            }
+        }
+        else if($type === 'article')
+        {
+            if($sessionData != NULL)
+            {
+                if(isset($id))
+                {
+                    if($this->general_m->deleteData('evaluation', 'ArticleID = ' . $id . ' AND UserID = ' . $sessionData['UserID']) === TRUE)
+                    {
+                        echo 'true';
+                    }
+                    else
+                    {
+                        echo 'false';
+                    }
+                }
+            }
+        }
+    }
+    
     public function likeTag($tag_id)
     {
         $sessionData = $this->sessionData;
@@ -288,6 +369,104 @@ class Ajax extends CI_Controller
                         }
 
                         echo $resultOfVotes;
+                    }
+                    else
+                    {
+                        echo '<h3>Upozorenje</h3>
+                        <hr/><p>Dogodila se neočekivana greska!</p>';
+                    }
+                }
+            }
+        }
+    }
+    
+    public function evaluateArticle($article_id, $evaluate)
+    {
+        $sessionData = $this->sessionData;
+        if(isset($article_id))
+        {
+            if(isset($evaluate))
+            {
+                if($sessionData == NULL)
+                {
+                    $errors[] = '<h3>Login validacija</h3>
+                        <hr/><p>Morate se prijaviti da biste ocijenili članak! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a></p>';
+                }
+                else
+                {
+                    $where = "UserID = " . $sessionData['UserID'] . " AND ArticleID = " . $article_id;
+                    $count = $this->general_m->exists('evaluation', 'EvaluationID', $where);
+
+                    if($count > 0)
+                    {
+                        $errors[] = '<h3>Upozorenje</h3>
+                        <hr/><p>Već ste ocijenili taj članak!</p>';
+                    }
+                }
+
+                if(!empty($errors))
+                {
+                    $displayErrors = $this->general_m->displayErrors($errors);
+                    echo $displayErrors;
+                }
+                else
+                {
+                    $dataInsert = array('UserID' => $sessionData['UserID'],
+                                        'ArticleID' => $article_id,
+                                        'Evaluate' => $evaluate);
+
+                    if($this->general_m->addData('evaluation', $dataInsert) === TRUE)
+                    {
+                        echo 'true';
+                    }
+                    else
+                    {
+                        echo '<h3>Upozorenje</h3>
+                        <hr/><p>Dogodila se neočekivana greska!</p>';
+                    }
+                }
+            }
+        }
+    }
+    
+    public function evaluateQuestion($question_id, $evaluate)
+    {
+        $sessionData = $this->sessionData;
+        if(isset($question_id))
+        {
+            if(isset($evaluate))
+            {
+                if($sessionData == NULL)
+                {
+                    $errors[] = '<h3>Login validacija</h3>
+                        <hr/><p>Morate se prijaviti da biste ocijenili pitanje! Prijavite se <a href="'.  base_url('index.php/login_c/loginUser').'">ovdje</a></p>';
+                }
+                else
+                {
+                    $where = "UserID = " . $sessionData['UserID'] . " AND QuestionID = " . $question_id;
+                    $count = $this->general_m->exists('evaluation', 'EvaluationID', $where);
+
+                    if($count > 0)
+                    {
+                        $errors[] = '<h3>Upozorenje</h3>
+                        <hr/><p>Već ste ocijenili to pitanje!</p>';
+                    }
+                }
+
+                if(!empty($errors))
+                {
+                    $displayErrors = $this->general_m->displayErrors($errors);
+                    echo $displayErrors;
+                }
+                else
+                {
+                    $dataInsert = array('UserID' => $sessionData['UserID'],
+                                        'QuestionID' => $question_id,
+                                        'Evaluate' => $evaluate);
+
+                    if($this->general_m->addData('evaluation', $dataInsert) === TRUE)
+                    {
+                        echo 'true';
                     }
                     else
                     {

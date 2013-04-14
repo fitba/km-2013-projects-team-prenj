@@ -5,19 +5,108 @@
 <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/jquery-ui.css'); ?>"/>
 <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/jquery.tagit.css'); ?>"/>
 <link rel="stylesheet" type="text/css"  href="<?php echo base_url('assets/css/tagit.ui-zendesk.css'); ?>"/>
+<link rel="stylesheet" href="<?php echo base_url('assets/css/jRating.jquery.css'); ?>" type="text/css" />
 <script type="text/javascript" src="<?php echo base_url("assets/javascript/jquery-ui.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url("assets/javascript/tag-it.js"); ?>"></script>
 <script type="text/javascript" src="<?php echo base_url("assets/javascript/tag-it.min.js"); ?>"></script>
 
+<script type="text/javascript" src="<?php echo base_url("assets/javascript/jRating.jquery.js"); ?>"></script>
+
 <script type="text/javascript">
     $(document).ready(function() {
+        
+        $(function(){
+            var article_id = '<?php echo $article_id; ?>';
+            $.post(CI_ROOT + '/index.php/ajax/getEvaluate' + '/article/' + article_id, {  }, function(data){
+                var jRateAverage = document.getElementById('jRatingAverage');
+                
+                if(data == 1)
+                {
+                    jRateAverage.style.width = '23px';
+                }
+                else if(data == 2)
+                {
+                    jRateAverage.style.width = '46px';
+                }
+                else if(data == 3)
+                {
+                    jRateAverage.style.width = '69px';
+                }
+                else if(data == 4)
+                {
+                    jRateAverage.style.width = '92px';
+                }
+                else if(data == 5)
+                {
+                    jRateAverage.style.width = '115px';
+                }
+                
+            });
+        });
+        
         $("#tags").tagit();
         
         $('#openComment').click(function(){
             $('#commentOpens').slideToggle();
         });
+        
+        $(".basic").jRating({
+	  step:true,
+	  length : 5
+	});
+        
+        var evaluate = '';
+        $('.basic').mousemove(function(){
+            var rate = document.getElementById("jRatingInfos").innerHTML;
+            var explode = rate.split(" ");
+            evaluate = explode[0];
+        });
+        
+        $('.minus, .minusTest').click(function(){
+            var article_id = '<?php echo $article_id; ?>';
+           $.post(CI_ROOT + '/index.php/ajax/dismissEvaluate' + '/article/' + article_id, {  }, function(data1){
+               if(data1 == 'true')
+               {
+                    $('.minus, .minusTest').hide();
+                    $.post(CI_ROOT + '/index.php/ajax/averageEvaluate' + '/article/' + article_id, { }, function(data2){
+                         $('.ocjena').text(data2 + ' / 5');
+                     });
+               }
+               else
+               {
+                   
+               }
+           }); 
+        });
+        
+        $('.basic').click(function(){
+            var article_id = '<?php echo $article_id; ?>';
+            $.post(CI_ROOT + '/index.php/ajax/evaluateArticle/' + article_id + '/' + evaluate, {  }, function(data){
+                if(data === 'true')
+                {
+                    $.post(CI_ROOT + '/index.php/ajax/averageEvaluate' + '/article/' + article_id, { }, function(data){
+                        $('.ocjena').text(data + ' / 5');
+                    });
+                    $('.minusTest').show();
+                    $('#response').text('Uspješno ste ocijenili članak');
+                    setTimeout(function() {
+                        $('#response').fadeOut('fast');
+                    }, 1000);
+                }
+                else
+                {
+                    $(function() {
+                        $('#basic-modal-content').html(data);
+                        $('#basic-modal-content').modal();
+                    });
+                }
+            });
+        });
     });
 </script>
+
+
+
 <div class="row-fluid">
 <h3><?php echo $article['Title']; ?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/main/article/' . $article_id . '?editArticle=true'); ?>">[promijeni]</a></h3>
   <table class="table">
@@ -29,6 +118,8 @@
                             <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj članak je jasan i koristan';" onclick="vote('<?php echo $article['ArticleID']; ?>', '/index.php/ajax/voteArticle/', '1');"  src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></div>
                             <strong id="numOfArticleVotes"><?php echo $resultOfVotes; ?></strong><br/> votes
                             <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj članak nije jasan niti koristan';" onclick="vote('<?php echo $article['ArticleID']; ?>', '/index.php/ajax/voteArticle/', '0');" src="<?php echo base_url('assets/images/bottom_arrow.png'); ?>"/></div>
+                            <br/>
+                            <p class="ocjena"><?php echo $averageEvaluate; ?> / 5</p>
                         </center>
                     </div>
                     <div class="questions">
@@ -62,6 +153,24 @@
                         <?php
                         }
                         ?>
+                    </div>
+                    <br/><br/><br/>
+                    <div class="exemple">
+                        <em style="font-size: 18px;"><strong>Ocjenite članak</strong></em>
+                        <img class="minusTest showsTooltip" onmousemove="Tooltip.Text = 'Poništite ocjenu';" src="<?php echo base_url('assets/images/minus.png'); ?>" width="40"/>
+                        <?php
+                        if(isset($user))
+                        {
+                            if($user > 0)
+                            {
+                            ?>
+                            <img class="minus showsTooltip" onmousemove="Tooltip.Text = 'Poništite ocjenu';" src="<?php echo base_url('assets/images/minus.png'); ?>" width="40"/>
+                            <?php 
+                            }
+                        }
+                        ?>
+                        <div id="mydiv" class="basic" data-average="12" data-id="1"></div>
+                        <div id="response" style="color:green"></div>
                     </div>
                     <div class="textRight">
                         Članak postavio/la:<br/><?php echo  $this->formatdate->getFormatDate($article['PostDate']); ?><br/>

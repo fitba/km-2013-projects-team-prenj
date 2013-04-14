@@ -59,6 +59,11 @@
                                 $views = $this->general_m->countRows('views', 'ViewID', 'ArticleID = ' . $article['ArticleID']);
                                 
                                 $resultOfVotes = ($positive - $negative);
+                                
+                                $sum = $this->general_m->sum('evaluation', 'Evaluate', 'ArticleID = ' . $article['ArticleID']);
+                                $count = $this->general_m->countRows('evaluation', 'Evaluate', 'ArticleID = ' . $article['ArticleID']);
+                                
+                                $averageEvaluate = number_format(($sum / $count), 1);
                         ?>
                                 <tr>
                                     <td>
@@ -66,6 +71,8 @@
                                             <center>
                                                 <?php echo '<b>' . $resultOfVotes . '</b>'; ?><br/> votes<br/>
                                                 <?php echo '<b>' .  $views  . '</b>';  ?><br/> views
+                                                <br/><br/>
+                                                <p class="ocjena"><?php echo $averageEvaluate; ?> / 5</p>
                                             </center>
                                         </div>
                                         <div class="questions">

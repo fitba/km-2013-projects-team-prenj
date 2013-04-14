@@ -77,6 +77,33 @@ img.showsTooltip
     float: left;
 }
 
+.ocjena
+{
+    font-size: 20px; 
+    text-decoration: underline; 
+    font-weight: bold;
+}
+
+.minus
+{
+    float: right; 
+    margin-right: 800px; 
+    margin-top: -8px;
+}
+
+.minusTest
+{
+    float: right; 
+    margin-right: 800px; 
+    margin-top: -8px;
+    display: none;
+}
+
+.minus:hover
+{
+    cursor: pointer;
+}
+
 .votes1
 {
     background-color: #fff;

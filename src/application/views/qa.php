@@ -53,6 +53,11 @@
                     $tags = $this->qawiki_m->getTagsForQuestion($question['QuestionID']);
                     
                     $resultOfVotes = ($positive - $negative);
+                    
+                    $sum = $this->general_m->sum('evaluation', 'Evaluate', 'QuestionID = ' . $question['QuestionID']);
+                    $count = $this->general_m->countRows('evaluation', 'Evaluate', 'QuestionID = ' . $question['QuestionID']);
+                                
+                    $averageEvaluate = number_format(($sum / $count), 1);
             ?>
             <tr>
                 <td>
@@ -61,7 +66,11 @@
                             <?php echo '<b>' . $resultOfVotes . '</b>'; ?><br/> votes<br/>
                             <?php echo '<b>' . $answers . '</b>'; ?><br/> answers
                         </center>
-                        <center><?php echo '<b>' .  $views  . '</b>';  ?> views</center>
+                        <center>
+                            <?php echo '<b>' .  $views  . '</b>';  ?> views
+                            <br/><br/>
+                            <p class="ocjena"><?php echo $averageEvaluate; ?> / 5</p>
+                        </center>
                     </div>
                     <div class="questions">
                         <p class="title"><a href="<?php echo base_url('index.php/main/question/' . $question['QuestionID']); ?>"><?php echo $question['Title'] ?></a></p>

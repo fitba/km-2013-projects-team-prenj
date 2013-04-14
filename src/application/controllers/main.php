@@ -619,6 +619,18 @@ class Main extends CI_Controller
                 $data['lastChangeQuestion'] = $lastChangeQuestion;
             }
             
+            $sum = $this->general_m->sum('evaluation', 'Evaluate', 'QuestionID = ' . $question['QuestionID']);
+            $count = $this->general_m->countRows('evaluation', 'Evaluate', 'QuestionID = ' . $question['QuestionID']);
+                                
+            $data['averageEvaluate'] = number_format(($sum / $count), 1);
+            
+            if($sessionData != NULL)
+            {
+                $where = "QuestionID = " . $question_id . ' AND UserID = ' . $sessionData['UserID'];
+                $user = $this->general_m->exists('evaluation', 'UserID', $where);
+
+                $data['user'] = $user;
+            }
             $this->load->view('questions', $data);
         }
         else
@@ -922,6 +934,17 @@ class Main extends CI_Controller
                 $data['resultOfVotes'] = ($positive - $negative);
             }
             
+            $sum = $this->general_m->sum('evaluation', 'Evaluate', 'ArticleID = ' . $article_id);
+            $count = $this->general_m->countRows('evaluation', 'Evaluate', 'ArticleID = ' . $article_id);
+                                
+            $data['averageEvaluate'] = number_format(($sum / $count), 1);
+            
+            if($sessionData != NULL)
+            {
+                $where = "ArticleID = " . $article_id . ' AND UserID = ' . $sessionData['UserID'];
+                $user = $this->general_m->exists('evaluation', 'UserID', $where);
+                $data['user'] = $user;
+            }
             $this->load->view('articles', $data);
         }
         else
