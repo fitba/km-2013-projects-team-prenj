@@ -113,7 +113,7 @@
         <tbody>
             <tr>
                 <td>
-                    <div class="votes">
+                    <div class="votes1">
                         <center>
                             <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj članak je jasan i koristan';" onclick="vote('<?php echo $article['ArticleID']; ?>', '/index.php/ajax/voteArticle/', '1');"  src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></div>
                             <strong id="numOfArticleVotes"><?php echo $resultOfVotes; ?></strong><br/> votes

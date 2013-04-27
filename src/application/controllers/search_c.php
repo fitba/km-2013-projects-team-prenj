@@ -21,6 +21,8 @@ class Search_c extends CI_Controller
         // If a search_query parameter has been posted, search the index.
         if ($_GET['pretraga'])
         {
+            $this->load->library('recommender');
+            $data = $this->recommender->recommenderSystem($this->sessionData);
             // Create empty array, in case there are no results.
             $data['results'] = array();
             if(file_exists($this->search_index))

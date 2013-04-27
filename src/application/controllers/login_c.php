@@ -10,6 +10,7 @@ class Login_c extends CI_Controller
     {
         parent::__construct();
         $this->data = $this->login_m->isLoggedIn();
+        error_reporting(0);
     }
     
     /* loginUser() ima sledeće funkcionalnosti: Ako je korisnik logiran, ne može se vratiti opet na login stranicu. 

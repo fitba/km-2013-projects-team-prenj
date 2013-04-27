@@ -18,8 +18,10 @@ class Ajax extends CI_Controller
         {
             $sum = $this->general_m->sum('evaluation', 'Evaluate', 'ArticleID = ' . $id);
             $count = $this->general_m->countRows('evaluation', 'Evaluate', 'ArticleID = ' . $id);
-
-            $averageEvaluate = number_format(($sum / $count), 1);
+            
+            $averageEvaluate = 0;
+            if($count != 0)
+                $averageEvaluate = number_format(($sum / $count), 1);
 
             echo $averageEvaluate;
         }
@@ -28,7 +30,9 @@ class Ajax extends CI_Controller
             $sum = $this->general_m->sum('evaluation', 'Evaluate', 'QuestionID = ' . $id);
             $count = $this->general_m->countRows('evaluation', 'Evaluate', 'QuestionID = ' . $id);
 
-            $averageEvaluate = number_format(($sum / $count), 1);
+            $averageEvaluate = 0;
+            if($count != 0)
+                $averageEvaluate = number_format(($sum / $count), 1);
 
             echo $averageEvaluate;
         }

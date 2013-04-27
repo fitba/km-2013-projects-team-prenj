@@ -108,7 +108,7 @@ img.showsTooltip
 {
     background-color: #fff;
     width: 70px;
-    height: 80px;
+    height: 0;
     float: left;
 }
 

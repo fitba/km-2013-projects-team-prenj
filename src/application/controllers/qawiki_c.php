@@ -11,6 +11,7 @@ class Qawiki_c extends CI_Controller
         $this->load->model('general_m');
         $this->load->model('qawiki_m');
         $this->load->library('formatdate');
+        $this->load->library('recommender');
         $this->sessionData = $this->login_m->isLoggedIn();
     }
     
@@ -18,10 +19,6 @@ class Qawiki_c extends CI_Controller
      * postavljamo pitanje, stranici moramo proslijediti podatak $ask da ne bi došlo do greške. */
     public function qa($key = null)
     {
-        $data['key'] = $key;
-
-        $data['sessionData'] = $this->sessionData;
-        
         if(isset($key))
         {
             if($key == 'ask')
@@ -137,9 +134,15 @@ class Qawiki_c extends CI_Controller
             }
             else if($key == 'questions')
             {
-                $data['questions'] = $this->general_m->getAll('questions', NULL);
+                $data = $this->recommender->recommenderSystem($this->sessionData);
+                
+                $data['questions'] = $this->general_m->getAll('questions', 'QuestionID');
             }
         }
+        
+        $data['key'] = $key;
+        $data['sessionData'] = $this->sessionData;
+        
         $this->load->view('qa', $data);
     }
     
@@ -151,6 +154,8 @@ class Qawiki_c extends CI_Controller
             
             $like = array('Name' => $txtSearch);
             
+            $data = $this->recommender->recommenderSystem($this->sessionData);
+            
             $data['tags'] = $this->general_m->search('tags', '*', $like);
             
             if(count($data['tags']) == 0)
@@ -160,8 +165,11 @@ class Qawiki_c extends CI_Controller
         }
         else
         {
+            $data = $this->recommender->recommenderSystem($this->sessionData);
+            
             $data['tags'] = $this->general_m->getAll('tags', 'Name');
         }
+        
         
         $data['tag'] = '';
         
@@ -238,6 +246,9 @@ class Qawiki_c extends CI_Controller
             $or_like = array('FirstName' => $txtSearch,
                              'LastName' => $txtSearch);
             
+            
+            $data = $this->recommender->recommenderSystem($this->sessionData);
+            
             $data['users'] = $this->general_m->search('users', '*', $like, $or_like);
             
             if(count($data['users']) == 0)
@@ -247,6 +258,8 @@ class Qawiki_c extends CI_Controller
         }
         else
         {
+            $data = $this->recommender->recommenderSystem($this->sessionData);
+            
             $data['users'] = $users = $this->general_m->getAll('users', 'FirstName');
         }
         
@@ -255,6 +268,7 @@ class Qawiki_c extends CI_Controller
     
     public function wiki($key = null)
     {
+        $data = $this->recommender->recommenderSystem($this->sessionData);
         $data[''] = '';
         $data['subtitlesTags'] = '';
         $data['sessionData'] = $this->sessionData;

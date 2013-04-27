@@ -56,8 +56,11 @@
                     
                     $sum = $this->general_m->sum('evaluation', 'Evaluate', 'QuestionID = ' . $question['QuestionID']);
                     $count = $this->general_m->countRows('evaluation', 'Evaluate', 'QuestionID = ' . $question['QuestionID']);
-                                
-                    $averageEvaluate = number_format(($sum / $count), 1);
+                    
+                    $averageEvaluate = 0;
+                    
+                    if($count != 0)
+                        $averageEvaluate = number_format(($sum / $count), 1);
             ?>
             <tr>
                 <td>
@@ -76,9 +79,9 @@
                         <p class="title"><a href="<?php echo base_url('index.php/main/question/' . $question['QuestionID']); ?>"><?php echo $question['Title'] ?></a></p>
                         <p>
                             <?php
-                                if(strlen($question['Question']) > 450)
+                                if(strlen(strip_tags($question['Question'])) > 450)
                                 {
-                                    echo substr(html_entity_decode($question['Question']), 0, 450) . '...';
+                                    echo substr(strip_tags(html_entity_decode($question['Question'])), 0, 450) . '...';
                                 }
                                 else
                                 {

@@ -108,13 +108,13 @@
         });
     });
 </script>
-<div style="font-size: 16px;">
+<div class="row-fluid">
 <h3><?php echo $question['Title']; ?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/main/question/' . $question_id . '?editQuestion=true'); ?>">[promijeni]</a></h3>
   <table class="table">
         <tbody>
             <tr>
                 <td>
-                    <div class="votes">
+                    <div class="votes1">
                         <center>
                             <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovo pitanje je jasno i korisno';" onclick="vote('<?php echo $question['QuestionID']; ?>', '/index.php/ajax/voteQuestion/', '1');" src="<?php echo base_url('assets/images/top_arrow.png'); ?>"/></div>
                             <strong id="numOfQuestionVotes"><?php echo $resultOfVotesForQuestion; ?></strong><br/> votes
@@ -295,7 +295,7 @@
             <tr>
                 <td>
                     <div style="margin-bottom: 30px;"><a name="ans<?php echo $answer['AnswerID']; ?>" href="#"></a></div>
-                    <div class="votes">
+                    <div class="votes1">
                         <center>
                             <div><img class="showsTooltip" onmousemove="Tooltip.Text = 'Ovaj odgovor je jasan i koristan';" onclick="voteAnswer('<?php echo $answer['AnswerID']; ?>', '/index.php/ajax/voteAnswer/', '1');" src="<?php  echo base_url('assets/images/top_arrow.png'); ?>"/></div>
                             <strong id="numOfAnswerVotes<?php echo $answer['AnswerID']; ?>"><?php echo $resultOfVotesForAnswer; ?></strong><br/> votes

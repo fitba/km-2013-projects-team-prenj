@@ -113,10 +113,19 @@
     ?>
     
   <div class="row-fluid">
-    <?php 
-        $this->load->view('static/side-bar-nav.php');
+    <?php
+        if($this->uri->segment(2) !== 'loginUser' && $this->uri->segment(2) !== 'register'
+        && $this->uri->segment(3) !== 'postArticles' && $this->uri->segment(3) !== 'ask')
+        {
+           $this->load->view('static/side-bar-nav.php');
+           echo '<div class="span9">';
+        }
+        else
+        {
+            echo '<div class="span12">';
+        }
+        
     ?>
-        <div class="span9">
 <?php 
    if(isset($errors))
    {

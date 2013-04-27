@@ -63,7 +63,9 @@
                                 $sum = $this->general_m->sum('evaluation', 'Evaluate', 'ArticleID = ' . $article['ArticleID']);
                                 $count = $this->general_m->countRows('evaluation', 'Evaluate', 'ArticleID = ' . $article['ArticleID']);
                                 
-                                $averageEvaluate = number_format(($sum / $count), 1);
+                                $averageEvaluate = 0;
+                                if($count != 0)
+                                    $averageEvaluate = number_format(($sum / $count), 1);
                         ?>
                                 <tr>
                                     <td>
@@ -79,9 +81,9 @@
                                             <p class="title"><a href="<?php echo base_url('index.php/main/article/' . $article['ArticleID']); ?>"><?php echo $article['Title'] ?></a></p>
                                             <p>
                                                 <?php
-                                                    if(strlen($article['Content']) > 450)
+                                                    if(strlen(strip_tags($article['Content'])) >= 450)
                                                     {
-                                                        echo substr(html_entity_decode($article['Content']), 0, 450) . '...';
+                                                        echo substr(strip_tags(html_entity_decode($article['Content'])), 0, 450) . '...';
                                                     }
                                                     else
                                                     {

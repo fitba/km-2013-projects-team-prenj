@@ -7,7 +7,12 @@
         if($segment3 == 'qa')
         {
         ?>
-            <li class="nav-header">Q/A</li>
+            <li class="nav-header">Pitanja</li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li class="nav-header">Korisnici</li>
             <li><a href="#">Link</a></li>
             <li><a href="#">Link</a></li>
             <li><a href="#">Link</a></li>
@@ -17,9 +22,14 @@
         else if($segment3 == 'wiki')
         {
         ?>
-            <li class="nav-header">Wiki</li>
+            <li class="nav-header">Članci</li>
             <li><a href="#">Link</a></li>
             <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>
+            <li class="nav-header">Korisnici</li>
             <li><a href="#">Link</a></li>
             <li><a href="#">Link</a></li>
             <li><a href="#">Link</a></li>
@@ -77,18 +87,48 @@
         else 
         {
         ?>
-            <li class="nav-header">Q/A</li>
+            <li class="nav-header">Pitanja</li>
+            <?php
+            if(isset($top_rated_questions))
+            {
+                foreach($top_rated_questions as $question)
+                {
+            ?>
+                <li><a href="<?php echo base_url('index.php/main/question/' . $question['ID']); ?>"><?php echo $question['Title']; ?></a></li>
+            <?php
+                }
+            }
+            ?>
+            <li class="nav-header">Članci</li>
+            <?php
+            if(isset($top_rated_articles))
+            {
+                foreach($top_rated_articles as $article)
+                {
+            ?>
+                <li><a href="<?php echo base_url('index.php/main/article/' . $article['ID']); ?>"><?php echo $article['Title']; ?></a></li>
+            <?php
+                }
+            }
+            ?>
+            <!--<li class="nav-header">Korisnici</li>
             <li><a href="#">Link</a></li>
             <li><a href="#">Link</a></li>
             <li><a href="#">Link</a></li>
             <li><a href="#">Link</a></li>
-            <li class="nav-header">Wiki</li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
+            <li><a href="#">Link</a></li>-->
+            <li class="nav-header">Tagovi</li>
+            <?php
+            if(isset($top_rated_tags))
+            {
+                foreach($top_rated_tags as $tag)
+                {
+            ?>
+                <li><a href="<?php echo base_url('index.php/search_c/index?pretraga=' . $tag['Name']); ?>"><?php echo $tag['Name']; ?></a></li>
+            <?php
+                }
+            }
+            ?>
         <?php 
         }
         ?>

@@ -183,14 +183,21 @@ class Qawiki_m extends CI_Model
         }
     }
     
-    public function getTagsForUsers($user_id)
+    public function getTagsForUsers($user_id, $config = array())
     {
         $user_id = (int)$user_id;
         $this->db->select('*');
         $this->db->from('tags');
         $this->db->join('follow_tags', 'tags.TagID = follow_tags.TagID');
         $this->db->join('users', 'follow_tags.UserID = users.UserID');
+        
+        if (isset($config['limit'])) 
+        {
+            $this->db->limit($config['limit']);	
+        }
+        
         $this->db->where('follow_tags.UserID', $user_id);
+        
         
         $query = $this->db->get();
         

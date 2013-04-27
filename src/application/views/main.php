@@ -39,9 +39,9 @@
                         <p class="title"><a href="<?php echo base_url('index.php/main/question/' . $question['QuestionID']); ?>"><?php echo $question['Title'] ?></a></p>
                         <p>
                             <?php
-                                if(strlen($question['Question']) > 450)
+                                if(strlen(strip_tags($question['Question'])) > 450)
                                 {
-                                    echo substr(html_entity_decode($question['Question']), 0, 450) . '...';
+                                    echo substr(strip_tags(html_entity_decode($question['Question'])), 0, 450) . '...';
                                 }
                                 else
                                 {
@@ -118,9 +118,9 @@
                                             <p class="title"><a href="<?php echo base_url('index.php/main/article/' . $article['ArticleID']); ?>"><?php echo $article['Title'] ?></a></p>
                                             <p>
                                                 <?php
-                                                    if(strlen($article['Content']) > 450)
+                                                    if(strlen(strip_tags($article['Content'])) > 450)
                                                     {
-                                                        echo substr(html_entity_decode($article['Content']), 0, 450) . '...';
+                                                        echo substr(strip_tags(html_entity_decode($article['Content'])), 0, 450) . '...';
                                                     }
                                                     else
                                                     {

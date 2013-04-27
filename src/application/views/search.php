@@ -91,9 +91,9 @@ if(isset($results))
                                 <p class="title"><?php echo '<a href="'. base_url('index.php/main/question/' . $results[$i]->myid) .'">' . $results[$i]->title . '</a>'; ?></p>
                                 <p>
                                     <?php
-                                    if(strlen($results[$i]->contents) > 450)
+                                    if(strlen(strip_tags($results[$i]->contents)) > 450)
                                     {
-                                        echo substr(html_entity_decode($results[$i]->contents), 0, 450) . '...';
+                                        echo substr(strip_tags(html_entity_decode($results[$i]->contents)), 0, 450) . '...';
                                     }
                                     else
                                     {
@@ -162,9 +162,9 @@ if(isset($results))
                                     <p class="title"><?php echo '<a href="'. base_url('index.php/main/article/' . $results[$i]->myid) .'">' . $results[$i]->title . '</a>'; ?></p>
                                     <p>
                                         <?php
-                                        if(strlen($results[$i]->contents) > 450)
+                                        if(strlen(strip_tags($results[$i]->contents)) > 450)
                                         {
-                                            echo substr(html_entity_decode($results[$i]->contents), 0, 450) . '...';
+                                            echo substr(strip_tags(html_entity_decode($results[$i]->contents)), 0, 450) . '...';
                                         }
                                         else
                                         {

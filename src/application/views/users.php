@@ -40,7 +40,7 @@
                                 echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. base_url('pictures/default_female.gif') .'" height="61" width="60"/></a>';
                             }
                         }
-                        $userTags = $this->qawiki_m->getTagsForUsers($users[$iterate]['UserID']);
+                        $userTags = $this->qawiki_m->getTagsForUsers($users[$iterate]['UserID'], array('limit' => 3));
                         echo '</div>
                               <div>
                                 <a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'">' . $users[$iterate]['FirstName'] . ' ' . $users[$iterate]['LastName'] . '</a>
@@ -94,7 +94,7 @@
                                 echo '<a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'"><img src="'. base_url('pictures/default_female.gif') .'" height="61" width="60"/></a>';
                             }
                         }
-                        $userTags = $this->qawiki_m->getTagsForUsers($users[$iterate]['UserID']);
+                        $userTags = $this->qawiki_m->getTagsForUsers($users[$iterate]['UserID'], array('limit' => 3));
                         echo '</div>
                               <div>
                                 <a href="'.base_url('index.php/main/profile/' . $users[$iterate]['UserID']).'">' . $users[$iterate]['FirstName'] . ' ' . $users[$iterate]['LastName'] . '</a>

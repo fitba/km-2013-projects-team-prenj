@@ -15,14 +15,18 @@ class Main extends CI_Controller
         $this->load->model('general_m');
         $this->load->model('qawiki_m');
         $this->load->model('logs_m');
+        $this->load->library('recommender');
         $this->sessionData = $this->login_m->isLoggedIn();
     }
     
     /* index() funkcija predstavlja index stranicu na web prikazu */
     public function index()
     {
+        $data = $this->recommender->recommenderSystem($this->sessionData);
+        
         $data['articles'] = $this->general_m->getAll('articles', 'PostDate');
         $data['questions'] = $this->general_m->getAll('questions', 'AskDate');
+        
         $this->load->view('main', $data);
     }
     
@@ -218,7 +222,7 @@ class Main extends CI_Controller
     {
         if(isset($question_id))
         {
-            
+            $data = $this->recommender->recommenderSystem($this->sessionData);
             $data['question_id'] = $question_id;
             $data['sessionData'] = $sessionData = $this->sessionData;
             
@@ -621,8 +625,10 @@ class Main extends CI_Controller
             
             $sum = $this->general_m->sum('evaluation', 'Evaluate', 'QuestionID = ' . $question['QuestionID']);
             $count = $this->general_m->countRows('evaluation', 'Evaluate', 'QuestionID = ' . $question['QuestionID']);
-                                
-            $data['averageEvaluate'] = number_format(($sum / $count), 1);
+            
+            $data['averageEvaluate'] = 0;
+            if($count != 0)
+                $data['averageEvaluate'] = number_format(($sum / $count), 1);
             
             if($sessionData != NULL)
             {
@@ -645,7 +651,7 @@ class Main extends CI_Controller
         if(isset($article_id))
         {
             $errors = array();
-            
+            $data = $this->recommender->recommenderSystem($this->sessionData);
             $data['article_id'] = $article_id;
             $data['sessionData'] = $sessionData = $this->sessionData;
             
@@ -936,8 +942,11 @@ class Main extends CI_Controller
             
             $sum = $this->general_m->sum('evaluation', 'Evaluate', 'ArticleID = ' . $article_id);
             $count = $this->general_m->countRows('evaluation', 'Evaluate', 'ArticleID = ' . $article_id);
-                                
-            $data['averageEvaluate'] = number_format(($sum / $count), 1);
+            
+            $data['averageEvaluate'] = 0;
+            
+            if($count != 0)
+                $data['averageEvaluate'] = number_format(($sum / $count), 1);
             
             if($sessionData != NULL)
             {

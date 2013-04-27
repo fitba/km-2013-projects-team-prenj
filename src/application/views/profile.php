@@ -97,13 +97,13 @@
                 echo '<b>('.count($answers).') Odgovori</b><hr style="margin:0;"/>';
                 foreach ($answers as $answer) 
                 {
-                    if(strlen($answer['Answer']) > 100)
+                    if(strlen(strip_tags($answer['Answer'])) > 100)
                     {
-                        echo '<a href="'.base_url('index.php/main/question/' . $answer['QuestionID'] . '#ans' . $answer['AnswerID']).'">'.substr(html_entity_decode($answer['Answer']), 0, 100) . '...</a><br/>';
+                        echo '<a href="'.base_url('index.php/main/question/' . $answer['QuestionID'] . '#ans' . $answer['AnswerID']).'">'.substr(strip_tags(html_entity_decode($answer['Answer'])), 0, 100) . '...</a><br/>';
                     }
                     else
                     {
-                        echo '<a href="'.base_url('index.php/main/question/' . $answer['QuestionID'] . '#ans' . $answer['AnswerID']).'">'.html_entity_decode($answer['Answer']).'</a><br/>';
+                        echo '<a href="'.base_url('index.php/main/question/' . $answer['QuestionID'] . '#ans' . $answer['AnswerID']).'">'.strip_tags(html_entity_decode($answer['Answer'])).'</a><br/>';
                     }
                 }
             }
