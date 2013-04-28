@@ -9,9 +9,8 @@ class Recommender_m extends CI_Model
         $this->load->database();
     }
     
-    public function getSomethingByUser($table, $user_id, $join = array())
+    public function getSomethingByUser($table, $where, $join = array(), $order_by = null)
     {
-        $user_id = (int)$user_id;
         $this->db->select('*');
         $this->db->from($table);
         
@@ -23,7 +22,12 @@ class Recommender_m extends CI_Model
             }
         }
         
-        $this->db->where('users.UserID', $user_id);
+        $this->db->where($where);
+        
+        if(isset($order_by))
+        {
+            $this->db->order_by($order_by);
+        }
         
         $query = $this->db->get();
         
@@ -34,6 +38,30 @@ class Recommender_m extends CI_Model
         else
         {
             return $query->result_array();
+        }
+    }
+    
+    public function getAverageEvaluateForUser($table_id, $where)
+    {
+        /* 
+         *  SELECT SUM( Evaluate ) as Sum , COUNT( * ) as Count
+            FROM evaluation
+            WHERE UserID = 3 AND ArticleID IS NOT NULL
+        */
+        $this->db->select('SUM( Evaluate ) as Sum , COUNT( * ) as Count');
+        $this->db->from('evaluation');
+        
+        $this->db->where($where);
+        
+        $query = $this->db->get();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->row_array();
         }
     }
     
@@ -69,6 +97,41 @@ class Recommender_m extends CI_Model
         }
     }
     
+    public function getMostViewed($table, $id, $join)
+    {
+        /* 
+         * SELECT a.Title, a.ArticleID, COUNT( v.ViewID ) 
+            FROM views v
+            JOIN articles a ON a.ArticleID = v.ArticleID
+            GROUP BY v.ArticleID
+            ORDER BY COUNT( v.ViewID ) DESC
+         */
+        
+        $this->db->select($table. '.' . $id . ' as ID, ' . $table . '.Title as Title, COUNT( views.ViewID ) as Count');
+        $this->db->from('views');
+        
+        if(isset($join))
+        {
+            foreach($join as $key => $value)
+            {
+                $this->db->join($key, $value, 'left');
+            }
+        }
+        $this->db->group_by('views.ArticleID');
+        $this->db->order_by('COUNT( views.ViewID )', 'DESC');
+        $this->db->limit(5);
+        $query = $this->db->get();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
+    }
+    
     public function topRatedTags()
     {
         /* SELECT t.Name, ft.TagID, COUNT( * ) 
@@ -85,6 +148,29 @@ class Recommender_m extends CI_Model
         $this->db->group_by('ft.TagID');
         $this->db->order_by('COUNT(*)', 'DESC');
         $this->db->limit(10);
+        $query = $this->db->get();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
+    }
+    
+    public function getSomethingByTag($table, $table_id, $table_tag, $tag_id, $order_by = null)
+    {
+        $this->db->select($table . '.' . $table_id . ', ' . $table . '.Title');
+        $this->db->from($table);
+        $this->db->join($table_tag, $table_tag . '.' . $table_id . ' = ' . $table . '.' . $table_id);
+        $this->db->where($table_tag . '.TagID', $tag_id);
+        if(isset($order_by))
+        {
+            $this->db->order_by($order_by);
+        }
+        $this->db->limit(5);
         $query = $this->db->get();
         
         if($this->db->_error_number() > 0)

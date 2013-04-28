@@ -98,6 +98,15 @@
             <?php
                 }
             }
+            else if(isset($most_viewed_questions))
+            {
+                foreach($most_viewed_questions as $question)
+                {
+                ?>
+                    <li><a href="<?php echo base_url('index.php/main/question/' . $question['ID']); ?>"><?php echo $question['Title']; ?></a></li>
+                <?php
+                }
+            }
             ?>
             <li class="nav-header">Članci</li>
             <?php
@@ -110,13 +119,57 @@
             <?php
                 }
             }
+            else if(isset($most_viewed_articles))
+            {
+                foreach($most_viewed_articles as $article)
+                {
+                ?>
+                    <li><a href="<?php echo base_url('index.php/main/article/' . $article['ID']); ?>"><?php echo $article['Title']; ?></a></li>
+                <?php
+                }
+            }
             ?>
-            <!--<li class="nav-header">Korisnici</li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>-->
+            <li class="nav-header">Korisnici</li>
+            <?php 
+            if(isset($userIDArticle))
+            {
+                foreach ($userIDArticle as $value)
+                {
+                    $u = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $value);
+                    echo '<li><a href="'.base_url('index.php/main/profile/' . $u['UserID']).'">'.$u['FirstName'] . ' ' . $u['LastName'] .'</a></li>';
+                }
+            }
+            if(isset($userIDQuestion))
+            {
+                foreach ($userIDQuestion as $value) 
+                {
+                    $u = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $value);
+                    echo '<li><a href="'.base_url('index.php/main/profile/' . $u['UserID']).'">'.$u['FirstName'] . ' ' . $u['LastName'] .'</a></li>';
+                }
+            }
+            ?>
+            
+            <?php 
+            /*if(isset($totalArticle))
+            {
+                foreach ($totalArticle as $value) 
+                {
+                    if($value > 0.7)
+                        echo '<li><a href="#">'.$value.'</a></li>';
+                }
+            }*/
+            ?>
+            
+            <?php 
+            /*if(isset($totalQuestion))
+            {
+                foreach ($totalQuestion as $value)
+                {
+                    if($value > 0.7)
+                        echo '<li><a href="#">'.$value.'</a></li>';
+                }
+            }*/
+            ?>
             <li class="nav-header">Tagovi</li>
             <?php
             if(isset($top_rated_tags))
@@ -124,7 +177,7 @@
                 foreach($top_rated_tags as $tag)
                 {
             ?>
-                <li><a href="<?php echo base_url('index.php/search_c/index?pretraga=' . $tag['Name']); ?>"><?php echo $tag['Name']; ?></a></li>
+                <li><span class="label"><a style="color:#FFF" href="<?php echo base_url('index.php/search_c/index?pretraga=' . $tag['Name']); ?>"><?php echo $tag['Name']; ?></a></span></li>
             <?php
                 }
             }

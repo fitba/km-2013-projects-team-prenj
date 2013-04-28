@@ -33,7 +33,7 @@ if(!isset($tag_id))
                             {
                                 echo '<p>'.html_entity_decode($tags[$iterate]['Description']).'</p>';
                             }
-                    echo '<p><a class="btn btn-mini" href="'.base_url('index.php/qawiki_c/tags/' . $tags[$iterate]['TagID']).'">Detalji</a> <a class="btn btn-mini btn-primary" href="#" onclick="like('.$tags[$iterate]['TagID'].', \'/index.php/ajax/likeTag/\');"><i class="icon-white icon-thumbs-up"></i></a></p>
+                    echo '<p><a class="btn btn-mini" href="'.base_url('index.php/qawiki_c/tags/' . $tags[$iterate]['TagID']).'">Detalji</a> <a class="btn btn-mini btn-primary" onclick="like('.$tags[$iterate]['TagID'].', \'/index.php/ajax/likeTag/\');"><i class="icon-white icon-thumbs-up"></i></a></p>
                           </div>';
                     $iterate++;
                 }
@@ -63,7 +63,7 @@ if(!isset($tag_id))
                             {
                                 echo '<p>'.html_entity_decode($tags[$iterate]['Description']).'</p>';
                             }
-                    echo '<p><a class="btn btn-mini" href="'.base_url('index.php/qawiki_c/tags/' . $tags[$iterate]['TagID']).'">Detalji</a> <a class="btn btn-mini btn-primary" href="#" onclick="like('.$tags[$iterate]['TagID'].', \'/index.php/ajax/likeTag/\');"><i class="icon-white icon-thumbs-up"></i></a></p>
+                    echo '<p><a class="btn btn-mini" href="'.base_url('index.php/qawiki_c/tags/' . $tags[$iterate]['TagID']).'">Detalji</a> <a class="btn btn-mini btn-primary" onclick="like('.$tags[$iterate]['TagID'].', \'/index.php/ajax/likeTag/\');"><i class="icon-white icon-thumbs-up"></i></a></p>
                           </div>';
                     $iterate++;
                 }
