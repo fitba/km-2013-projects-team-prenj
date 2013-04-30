@@ -11,7 +11,8 @@ class Recommender
         
         if(isset($CI->sessionData))
         {
-            $join_evaluation = array('users' => 'evaluation.UserID = users.UserID');
+            $join_evaluation = array('users' => 'evaluation.UserID = users.UserID',
+                                     'articles' => 'evaluation.ArticleID = articles.ArticleID');
             $data['u_evaluation'] = $CI->recommender_m->getSomethingByUser('evaluation', 'users.UserID = ' . $CI->sessionData['UserID'], $join_evaluation);
             if(count($data['u_evaluation']) == 0)
             {
@@ -108,134 +109,160 @@ class Recommender
             }
             else
             {
-                $userSumAndCountEvalArticle = $CI->recommender_m->getAverageEvaluateForUser('ArticleID', 'UserID = ' . $CI->sessionData['UserID'] . ' AND ArticleID IS NOT NULL');
-                $userSumAndCountEvalQuestion = $CI->recommender_m->getAverageEvaluateForUser('QuestionID', 'UserID = ' . $CI->sessionData['UserID'] . ' AND QuestionID IS NOT NULL');
+                $userSumAndCountEval = $CI->recommender_m->getAverageEvaluateForUser('UserID = ' . $CI->sessionData['UserID']);
+                $userAverageEval = ($userSumAndCountEval['Sum'] / $userSumAndCountEval['Count']);
                 
-                $userAverageEvalArticle = ($userSumAndCountEvalArticle['Sum'] / $userSumAndCountEvalArticle['Count']);
-                $userAverageEvalQuestion = ($userSumAndCountEvalQuestion['Sum'] / $userSumAndCountEvalQuestion['Count']);
+                $valuesForCurrUser = array();
+                $whichCurrUserEvaluate = array();
+                $sumEvalCurrUser = 0;
                 
+                $data['articleIds'] = array();
+                $data['questionIds'] = array();
                 
-                
-                $valuesForCurrUserArticle = array();
-                $articlesWhichCurrUserEvaluate = array();
-                $sumEvalCurrUserArticle = 0;
-                
-                $valuesForCurrUserQuestion = array();
-                $questionsWhichCurrUserEvaluate = array();
-                $sumEvalCurrUserQuestion = 0;
-                
-                foreach ($data['u_evaluation'] as $value)
+                for ($j = 0; $j < count($data['u_evaluation']); $j++)
                 {
-                    if($value['ArticleID'] != null)
+                    if($data['u_evaluation'][$j]['ArticleID'] != null)
                     {
-                        $u_curr_eval = $value['Evaluate'];
-                        array_push($valuesForCurrUserArticle, ($u_curr_eval - $userAverageEvalArticle));
-                        array_push($articlesWhichCurrUserEvaluate, $value['ArticleID']);
+                        if($j != 0)
+                        {
+                            $evalsArticle1 = $CI->recommender_m->getSomethingByUser('evaluation', 'ArticleID = ' . $data['u_evaluation'][$j-1]['ArticleID'], null, 'ArticleID');
+                            $evalsArticle2 = $CI->recommender_m->getSomethingByUser('evaluation', 'ArticleID = ' . $data['u_evaluation'][$j]['ArticleID'], null, 'ArticleID');
+                            
+                            if(count($evalsArticle1) == count($evalsArticle2))
+                            {
+                                $sumOfArticleItemsAbove = 0;
+                                $sumOfArticlesBottom1 = 0;
+                                $sumOfArticlesBottom2 = 0;
+                                for($x = 0; $x < count($evalsArticle1); $x++)
+                                {
+                                    $sumOfArticleItemsAbove += $evalsArticle1[$x]['Evaluate'] * $evalsArticle2[$x]['Evaluate'];
+                                    $sumOfArticlesBottom1 += pow($evalsArticle1[$x]['Evaluate'], 2);
+                                    $sumOfArticlesBottom2 += pow($evalsArticle2[$x]['Evaluate'], 2);
+                                }
+                                $sumTotal = $sumOfArticleItemsAbove / (sqrt($sumOfArticlesBottom1) * sqrt($sumOfArticlesBottom2));
+                                
+                                if($sumTotal >= 0.6)
+                                {
+                                    array_push($data['articleIds'], $data['u_evaluation'][$j]['ArticleID'] . '.' . $data['u_evaluation'][$j]['Title']);
+                                }
+                            }
+                        }
                         
-                        $sumEvalCurrUserArticle += pow(($u_curr_eval - $userAverageEvalArticle), 2);
+                        $u_curr_eval = $data['u_evaluation'][$j]['Evaluate'];
+                        array_push($valuesForCurrUser, ($u_curr_eval - $userAverageEval));
+                        array_push($whichCurrUserEvaluate, $data['u_evaluation'][$j]['ArticleID']);
+                        
+                        $sumEvalCurrUser += pow(($u_curr_eval - $userAverageEval), 2);
                     }
-                    else if($value['QuestionID'] != null)
+                    else if($data['u_evaluation'][$j]['QuestionID'] != null)
                     {
-                        $u_curr_eval = $value['Evaluate'];
-                        array_push($valuesForCurrUserQuestion, ($u_curr_eval - $userAverageEvalQuestion));
-                        array_push($questionsWhichCurrUserEvaluate, $value['QuestionID']);
+                        if($j != 0)
+                        {
+                            $evalsQuestion1 = $CI->recommender_m->getSomethingByUser('evaluation', 'QuestionID = ' . $data['u_evaluation'][$j-1]['QuestionID'], null, 'QuestionID');
+                            $evalsQuestion2 = $CI->recommender_m->getSomethingByUser('evaluation', 'QuestionID = ' . $data['u_evaluation'][$j]['QuestionID'], null, 'QuestionID');
+                            
+                            if(count($evalsQuestion1) == count($evalsQuestion2))
+                            {
+                                $sumOfQuestionsItemsAbove = 0;
+                                $sumOfQuestionsBottom1 = 0;
+                                $sumOfQuestionsBottom2 = 0;
+                                for($x = 0; $x < count($evalsQuestion1); $x++)
+                                {
+                                    $sumOfQuestionsItemsAbove += $evalsQuestion1[$x]['Evaluate'] * $evalsQuestion2[$x]['Evaluate'];
+                                    $sumOfQuestionsBottom1 += pow($evalsQuestion1[$x]['Evaluate'], 2);
+                                    $sumOfQuestionsBottom2 += pow($evalsQuestion2[$x]['Evaluate'], 2);
+                                }
+                                $sumTotal = $sumOfQuestionsItemsAbove / (sqrt($sumOfQuestionsBottom1) * sqrt($sumOfQuestionsBottom2));
+                                
+                                if($sumTotal >= 0.6)
+                                {
+                                    array_push($data['questionIds'], $data['u_evaluation'][$j]['QuestionID'] . '.' . $data['u_evaluation'][$j]['Title']);
+                                }
+                            }
+                        }
                         
-                        $sumEvalCurrUserQuestion += pow(($u_curr_eval - $userAverageEvalQuestion), 2);
+                        $u_curr_eval = $data['u_evaluation'][$j]['Evaluate'];
+                        array_push($valuesForCurrUser, ($u_curr_eval - $userAverageEval));
+                        array_push($whichCurrUserEvaluate, $data['u_evaluation'][$j]['QuestionID']);
+                        
+                        $sumEvalCurrUser += pow(($u_curr_eval - $userAverageEval), 2);
                     }
                 }
                 
                 $join_evaluation = array('users' => 'evaluation.UserID = users.UserID');
-                $usersBesidesCurrentUserArticle = $CI->recommender_m->getSomethingByUser('evaluation', 'users.UserID != ' . $CI->sessionData['UserID'] . ' AND QuestionID IS NULL AND ArticleID IN ('. implode(',', $articlesWhichCurrUserEvaluate) .')', $join_evaluation, 'evaluation.UserID');
+                
+                $usersBesidesCurrentUser = $CI->recommender_m->getSomethingByUser('evaluation', 'users.UserID != ' . $CI->sessionData['UserID'] . ' AND (QuestionID IN ('. implode(',', $whichCurrUserEvaluate) .') OR ArticleID IN ('. implode(',', $whichCurrUserEvaluate) .'))', $join_evaluation, 'evaluation.UserID');
                 
                 $sumEvalOtherUser = 0;
-                $keyArticle = 0;
-                $sumArticle = 0;
+                $key = 0;
+                $sum = 0;
                 $users_ids = array();
-                $data['totalArticle'] = array();
-                
-                
-                for ($i = 0; $i < count($usersBesidesCurrentUserArticle); $i++)
+                $data['total'] = array();
+ 
+                for ($i = 0; $i < count($usersBesidesCurrentUser); $i++)
                 {
+                    /*$testiranje = $usersBesidesCurrentUser[$i]['EvaluationID'];
+                    if($usersBesidesCurrentUser[$i]['ArticleID'] != null)
+                    {
+                        $countOfArticleEvals = $CI->recommender_m->getAverageEvaluateForUser('UserID = ' . $usersBesidesCurrentUser[$i]['UserID'] . ' AND ArticleID IS NOT NULL');
+                        if(count($evalsForArticles) == $countOfArticleEvals['Count'])
+                        {
+                            for($k = 0; $k < count($evalsForArticles); $k++)
+                            {
+                                $test1 = $evalsForArticles[$k];
+                                $test2 = $usersBesidesCurrentUser[$k]['Evaluate'];
+                                $sumOfArticleItems += $evalsForArticles[$k] * $usersBesidesCurrentUser[$k]['Evaluate'];
+                            }
+                        }
+                    }
+                    else if($usersBesidesCurrentUser[$i]['QuestionID'] != null)
+                    {
+                        $countOfQuestionEvals = $CI->recommender_m->getAverageEvaluateForUser('UserID = ' . $usersBesidesCurrentUser[$i]['UserID'] . ' AND QuestionID IS NOT NULL');
+                        if(count($evalsForQuestions) == $countOfQuestionEvals['Count'])
+                        {
+                            for($k = 0; $k < count($evalsForQuestions); $k++)
+                            {
+                                $test1 = $evalsForQuestions[$k];
+                                $test2 = $usersBesidesCurrentUser[$k]['Evaluate'];
+                                $sumOfQuestionItems += $evalsForQuestions[$k] * $usersBesidesCurrentUser[$k]['Evaluate'];
+                            }
+                        }
+                    }*/
+                    
                     if($i != 0)
                     {
-                        if($usersBesidesCurrentUserArticle[$i]['UserID'] != $usersBesidesCurrentUserArticle[$i-1]['UserID'])
+                        if($usersBesidesCurrentUser[$i]['UserID'] != $usersBesidesCurrentUser[$i-1]['UserID'])
                         {
                             error_reporting(0);
-                            $total = ($sumArticle / (sqrt($sumEvalCurrUserArticle) * sqrt($sumEvalOtherUser)));
-                            array_push($data['totalArticle'], $total);
-                            $data['totalArticle'] = array_filter(array_map('trim', $data['totalArticle']));
+                            $total = $sum / (sqrt($sumEvalCurrUser) * sqrt($sumEvalOtherUser));
+                            array_push($data['total'], $total);
+                            $data['total'] = array_filter(array_map('trim', $data['total']));
                             
-                            $keyArticle = 0;
+                            $key = 0;
                             $sumEvalOtherUser = 0;
-                            $sumArticle = 0;
+                            $sum = 0;
                         }
                     }
                     
-                    $otherUserSumAndCountEvalArticle = $CI->recommender_m->getAverageEvaluateForUser('ArticleID', 'UserID = ' . $usersBesidesCurrentUserArticle[$i]['UserID'] . ' AND ArticleID IN ('. implode(',', $articlesWhichCurrUserEvaluate) .')');
-                    $otherUserAverageEvalArticle = ($otherUserSumAndCountEvalArticle['Sum'] / $otherUserSumAndCountEvalArticle['Count']);
+                    $otherUserSumAndCountEval = $CI->recommender_m->getAverageEvaluateForUser('UserID = ' . $usersBesidesCurrentUser[$i]['UserID'] . ' AND (ArticleID IN ('. implode(',', $whichCurrUserEvaluate) .') OR QuestionID IN ('. implode(',', $whichCurrUserEvaluate) .'))');
+                    $otherUserAverageEval = ($otherUserSumAndCountEval['Sum'] / $otherUserSumAndCountEval['Count']);
                     
-                    if($otherUserSumAndCountEvalArticle['Count'] == count($articlesWhichCurrUserEvaluate))
+                    if($otherUserSumAndCountEval['Count'] == count($whichCurrUserEvaluate))
                     {
-                        $u_other_eval = $usersBesidesCurrentUserArticle[$i]['Evaluate'];
+                        $u_other_eval = $usersBesidesCurrentUser[$i]['Evaluate'];
 
-                        $sumArticle += ($valuesForCurrUserArticle[$keyArticle] * ($u_other_eval - $otherUserAverageEvalArticle));
-                        $sumEvalOtherUser += pow(($u_other_eval - $otherUserAverageEvalArticle), 2);
+                        $sum += $valuesForCurrUser[$key] * ($u_other_eval - $otherUserAverageEval);
+                        $sumEvalOtherUser += pow(($u_other_eval - $otherUserAverageEval), 2);
                         
-                        if(($sumArticle / (sqrt($sumEvalCurrUserArticle) * sqrt($sumEvalOtherUser))) > 0.7)
-                            array_push($users_ids, $usersBesidesCurrentUserArticle[$i]['UserID']);
+                        if($sum / (sqrt($sumEvalCurrUser) * sqrt($sumEvalOtherUser)) >= 0.6)
+                            array_push($users_ids, $usersBesidesCurrentUser[$i]['UserID']);
                         
-                        $keyArticle++;
+                        $key++;
                     }
                 }
                 
-                $join_evaluation_question = array('users' => 'evaluation.UserID = users.UserID');
-                $usersBesidesCurrentUserQuestion = $CI->recommender_m->getSomethingByUser('evaluation', 'users.UserID != ' . $CI->sessionData['UserID'] . ' AND ArticleID IS NULL AND QuestionID IN ('. implode(',', $questionsWhichCurrUserEvaluate) .')', $join_evaluation_question, 'evaluation.UserID');
-                
-                $sumEvalOtherUserQuestion = 0;
-                $keyQuestion = 0;
-                $sumQuestion = 0;
-                $users_ids_question = array();
-                $data['totalQuestion'] = array();
-                
-                for ($i = 0; $i < count($usersBesidesCurrentUserQuestion); $i++)
-                {
-                    if($i != 0)
-                    {
-                        if($usersBesidesCurrentUserQuestion[$i]['UserID'] != $usersBesidesCurrentUserQuestion[$i-1]['UserID'])
-                        {
-                            error_reporting(0);
-                            $total = ($sumQuestion / (sqrt($sumEvalCurrUserQuestion) * sqrt($sumEvalOtherUserQuestion)));
-                            array_push($data['totalQuestion'], $total);
-                            $data['totalQuestion'] = array_filter(array_map('trim', $data['totalQuestion']));
-                            
-                            $keyQuestion = 0;
-                            $sumEvalOtherUserQuestion = 0;
-                            $sumQuestion = 0;
-                        }
-                    }
-                    
-                    $otherUserSumAndCountEvalQuestion = $CI->recommender_m->getAverageEvaluateForUser('QuestionID', 'UserID = ' . $usersBesidesCurrentUserQuestion[$i]['UserID'] . ' AND QuestionID IN ('. implode(',', $questionsWhichCurrUserEvaluate) .')');
-                    $otherUserAverageEvalQuestion = ($otherUserSumAndCountEvalQuestion['Sum'] / $otherUserSumAndCountEvalQuestion['Count']);
-                    
-                    if($otherUserSumAndCountEvalQuestion['Count'] == count($questionsWhichCurrUserEvaluate))
-                    {
-                        $u_other_eval = $usersBesidesCurrentUserQuestion[$i]['Evaluate'];
-
-                        $sumQuestion += ($valuesForCurrUserQuestion[$keyQuestion] * ($u_other_eval - $otherUserAverageEvalQuestion));
-                        $sumEvalOtherUserQuestion += pow(($u_other_eval - $otherUserAverageEvalQuestion), 2);
-                        
-                        if(($sumQuestion / (sqrt($sumEvalCurrUserQuestion) * sqrt($sumEvalOtherUserQuestion))) > 0.7)
-                            array_push($users_ids_question, $usersBesidesCurrentUserQuestion[$i]['UserID']);
-                        
-                        $keyQuestion++;
-                    }
-                }
-                
-                $data['userIDArticle'] = array_unique($users_ids);
-                $data['userIDArticle'] = array_filter(array_map('trim', $data['userIDArticle']));
-                
-                $data['userIDQuestion'] = array_unique($users_ids_question);
-                $data['userIDQuestion'] = array_filter(array_map('trim', $data['userIDQuestion']));
+                $data['userID'] = array_unique($users_ids);
+                $data['userID'] = array_filter(array_map('trim', $data['userID']));
             }
         }
         else

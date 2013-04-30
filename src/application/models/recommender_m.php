@@ -41,7 +41,7 @@ class Recommender_m extends CI_Model
         }
     }
     
-    public function getAverageEvaluateForUser($table_id, $where)
+    public function getAverageEvaluateForUser($where)
     {
         /* 
          *  SELECT SUM( Evaluate ) as Sum , COUNT( * ) as Count

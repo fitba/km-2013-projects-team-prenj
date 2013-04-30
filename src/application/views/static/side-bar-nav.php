@@ -107,6 +107,16 @@
                 <?php
                 }
             }
+            else if(isset($questionIds))
+            {
+                foreach($questionIds as $id)
+                {
+                    $separate = explode('.', $id);
+                ?>
+                    <li><a href="<?php echo base_url('index.php/main/question/' . $separate[0]); ?>"><?php echo $separate[1]; ?></a></li>
+                <?php
+                }
+            }
             ?>
             <li class="nav-header">Članci</li>
             <?php
@@ -128,44 +138,34 @@
                 <?php
                 }
             }
+            else if(isset($articleIds))
+            {
+                foreach($articleIds as $id)
+                {
+                    $separate = explode('.', $id);
+                ?>
+                    <li><a href="<?php echo base_url('index.php/main/article/' . $separate[0]); ?>"><?php echo $separate[1]; ?></a></li>
+                <?php
+                }
+            }
             ?>
             <li class="nav-header">Korisnici</li>
             <?php 
-            if(isset($userIDArticle))
+            if(isset($userID))
             {
-                foreach ($userIDArticle as $value)
-                {
-                    $u = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $value);
-                    echo '<li><a href="'.base_url('index.php/main/profile/' . $u['UserID']).'">'.$u['FirstName'] . ' ' . $u['LastName'] .'</a></li>';
-                }
-            }
-            if(isset($userIDQuestion))
-            {
-                foreach ($userIDQuestion as $value) 
+                foreach ($userID as $value)
                 {
                     $u = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $value);
                     echo '<li><a href="'.base_url('index.php/main/profile/' . $u['UserID']).'">'.$u['FirstName'] . ' ' . $u['LastName'] .'</a></li>';
                 }
             }
             ?>
-            
             <?php 
-            /*if(isset($totalArticle))
+            /*if(isset($total))
             {
-                foreach ($totalArticle as $value) 
+                foreach ($total as $value) 
                 {
-                    if($value > 0.7)
-                        echo '<li><a href="#">'.$value.'</a></li>';
-                }
-            }*/
-            ?>
-            
-            <?php 
-            /*if(isset($totalQuestion))
-            {
-                foreach ($totalQuestion as $value)
-                {
-                    if($value > 0.7)
+                    if($value >= 0.6)
                         echo '<li><a href="#">'.$value.'</a></li>';
                 }
             }*/
