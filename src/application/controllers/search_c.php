@@ -3,6 +3,7 @@
 class Search_c extends CI_Controller 
 {
     var $search_index;
+    var $sessionData;
     function __construct()
     {
         parent::__construct();
@@ -14,15 +15,18 @@ class Search_c extends CI_Controller
         $this->load->model('general_m');
         $this->load->model('qawiki_m');
         error_reporting(0);
+        $this->sessionData = $this->login_m->isLoggedIn();
     }
     
     public function index()
     {
+        $this->load->library('recommender');
+        $data = $this->recommender->recommenderSystem($this->sessionData);
+            
         // If a search_query parameter has been posted, search the index.
         if ($_GET['pretraga'])
         {
-            $this->load->library('recommender');
-            $data = $this->recommender->recommenderSystem($this->sessionData);
+            
             // Create empty array, in case there are no results.
             $data['results'] = array();
             if(file_exists($this->search_index))

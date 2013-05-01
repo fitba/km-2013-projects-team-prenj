@@ -156,6 +156,7 @@
                 foreach ($userID as $value)
                 {
                     $u = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $value);
+                    if($u != $sessionData['UserID'])
                     echo '<li><a href="'.base_url('index.php/main/profile/' . $u['UserID']).'">'.$u['FirstName'] . ' ' . $u['LastName'] .'</a></li>';
                 }
             }

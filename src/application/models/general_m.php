@@ -216,7 +216,6 @@ class General_m extends CI_Model
             $this->db->offset($config['offset']);
         }
 
-
         $query = $this->db->get($table);
         
         if($this->db->_error_number() > 0)

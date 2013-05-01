@@ -9,24 +9,32 @@ class Recommender_m extends CI_Model
         $this->load->database();
     }
     
-    public function getSomethingByUser($table, $where, $join = array(), $order_by = null)
+    public function getSomethingByUser($table, $config = array())
     {
-        $this->db->select('*');
+        if(isset($config['select']))
+        {
+            $this->db->select($config['select']);
+        }
+        else
+        {
+            $this->db->select('*');
+        }
+        
         $this->db->from($table);
         
-        if(isset($join))
+        if(isset($config['join']))
         {
-            foreach($join as $key => $value)
+            foreach($config['join'] as $key => $value)
             {
                 $this->db->join($key, $value, 'left');
             }
         }
         
-        $this->db->where($where);
+        $this->db->where($config['wheree']);
         
-        if(isset($order_by))
+        if(isset($config['order_by']))
         {
-            $this->db->order_by($order_by);
+            $this->db->order_by($config['order_by']);
         }
         
         $query = $this->db->get();
@@ -50,6 +58,30 @@ class Recommender_m extends CI_Model
         */
         $this->db->select('SUM( Evaluate ) as Sum , COUNT( * ) as Count');
         $this->db->from('evaluation');
+        
+        $this->db->where($where);
+        
+        $query = $this->db->get();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->row_array();
+        }
+    }
+    
+    public function getAverageVotesForUser($where)
+    {
+        /* 
+         *  SELECT SUM( Evaluate ) as Sum , COUNT( * ) as Count
+            FROM evaluation
+            WHERE UserID = 3 AND ArticleID IS NOT NULL
+        */
+        $this->db->select('SUM( Positive ) as Sum , COUNT( * ) as Count');
+        $this->db->from('votes');
         
         $this->db->where($where);
         
