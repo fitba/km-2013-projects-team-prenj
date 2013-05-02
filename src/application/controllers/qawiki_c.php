@@ -391,7 +391,7 @@ class Qawiki_c extends CI_Controller
             }
             else if($key == 'articles')
             {
-                $data['articles'] = $this->general_m->getAll('articles', NULL);
+                $data['articles'] = $this->general_m->getAll('articles', 'ArticleID');
             }
         }
         $this->load->view('wiki', $data);

@@ -4,39 +4,7 @@
         <?php
         $segment3 = $this->uri->segment(3);
         $segment2 = $this->uri->segment(2);
-        if($segment3 == 'qa')
-        {
-        ?>
-            <li class="nav-header">Pitanja</li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li class="nav-header">Korisnici</li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-        <?php 
-        }
-        else if($segment3 == 'wiki')
-        {
-        ?>
-            <li class="nav-header">Članci</li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li class="nav-header">Korisnici</li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-            <li><a href="#">Link</a></li>
-        <?php 
-        }
-        else if($segment2 == 'profile')
+        if($segment2 == 'profile')
         {
         ?>
             <li>
@@ -109,12 +77,52 @@
             }
             else if(isset($questionIds))
             {
-                foreach($questionIds as $id)
+                if(isset($question_id))
                 {
-                    $separate = explode('.', $id);
-                ?>
-                    <li><a href="<?php echo base_url('index.php/main/question/' . $separate[0]); ?>"><?php echo $separate[1]; ?></a></li>
-                <?php
+                    foreach($questionIds as $id)
+                    {
+                        $separate = explode('.', $id);
+                        if($separate[0] != $question_id)
+                        {
+                            ?>
+                                <li><a href="<?php echo base_url('index.php/main/question/' . $separate[0]); ?>"><?php echo $separate[1]; ?></a></li>
+                            <?php
+                        }
+                    }
+                }
+                else
+                {
+                    foreach($questionIds as $id)
+                    {
+                        $separate = explode('.', $id);
+                        ?>
+                            <li><a href="<?php echo base_url('index.php/main/question/' . $separate[0]); ?>"><?php echo $separate[1]; ?></a></li>
+                        <?php
+                    }
+                }
+            }
+            else if(isset($questions_by_tags))
+            {
+                if(isset($question_id))
+                {
+                    foreach($questions_by_tags as $question)
+                    {
+                        if($question['QuestionID'] != $question_id)
+                        {
+                        ?>
+                            <li><a href="<?php echo base_url('index.php/main/question/' . $question['QuestionID']); ?>"><?php echo $question['QuestionTitle']; ?></a></li>
+                        <?php
+                        }
+                    }
+                }
+                else
+                {
+                    foreach($questions_by_tags as $question)
+                    {
+                        ?>
+                            <li><a href="<?php echo base_url('index.php/main/question/' . $question['QuestionID']); ?>"><?php echo $question['QuestionTitle']; ?></a></li>
+                        <?php
+                    }
                 }
             }
             ?>
@@ -140,24 +148,86 @@
             }
             else if(isset($articleIds))
             {
-                foreach($articleIds as $id)
+                if(isset($article_id))
                 {
-                    $separate = explode('.', $id);
-                ?>
-                    <li><a href="<?php echo base_url('index.php/main/article/' . $separate[0]); ?>"><?php echo $separate[1]; ?></a></li>
-                <?php
+                    foreach($articleIds as $id)
+                    {
+                        $separate = explode('.', $id);
+                        if($article_id != $separate[0])
+                        {
+                        ?>
+                            <li><a href="<?php echo base_url('index.php/main/article/' . $separate[0]); ?>"><?php echo $separate[1]; ?></a></li>
+                        <?php
+                        }
+                    }
+                }
+                else
+                {
+                    foreach($articleIds as $id)
+                    {
+                        $separate = explode('.', $id);
+                    ?>
+                        <li><a href="<?php echo base_url('index.php/main/article/' . $separate[0]); ?>"><?php echo $separate[1]; ?></a></li>
+                    <?php
+                    }
                 }
             }
-            ?>
-            <li class="nav-header">Korisnici</li>
-            <?php 
+            else if(isset($articles_by_tags))
+            {
+                if(isset($article_id))
+                {
+                    foreach($articles_by_tags as $article)
+                    {
+                        if($article['ArticleID'] != $article_id)
+                        {
+                    ?>
+                        <li><a href="<?php echo base_url('index.php/main/article/' . $article['ArticleID']); ?>"><?php echo $article['ArticleTitle']; ?></a></li>
+                    <?php
+                        }
+                    }
+                }
+                else
+                {
+                    foreach($articles_by_tags as $article)
+                    {
+                     ?>
+                        <li><a href="<?php echo base_url('index.php/main/article/' . $article['ArticleID']); ?>"><?php echo $article['ArticleTitle']; ?></a></li>
+                    <?php
+                    }
+                }
+            }
             if(isset($userID))
             {
+                ?>
+                <li class="nav-header">Korisnici</li>
+                <?php 
                 foreach ($userID as $value)
                 {
                     $u = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $value);
                     if($u != $sessionData['UserID'])
                     echo '<li><a href="'.base_url('index.php/main/profile/' . $u['UserID']).'">'.$u['FirstName'] . ' ' . $u['LastName'] .'</a></li>';
+                }
+            }
+            else if(isset($users_by_tags))
+            {
+                ?>
+                <li class="nav-header">Korisnici</li>
+                <?php
+                if(isset($sessionData))
+                {
+                    foreach ($users_by_tags as $value)
+                    {
+                        $u = $this->general_m->selectSomeById('*', 'users', 'UserID = ' . $value['UserID']);
+                        if($u != $sessionData['UserID'])
+                            echo '<li><a href="'.base_url('index.php/main/profile/' . $value['UserID']).'">'.$value['FirstName'] . ' ' . $value['LastName'] .'</a></li>';
+                    }
+                }
+                else
+                {
+                    foreach ($users_by_tags as $value)
+                    {
+                        echo '<li><a href="'.base_url('index.php/main/profile/' . $value['UserID']).'">'.$value['FirstName'] . ' ' . $value['LastName'] .'</a></li>';
+                    }
                 }
             }
             ?>
@@ -170,11 +240,11 @@
                         echo '<li><a href="#">'.$value.'</a></li>';
                 }
             }*/
-            ?>
-            <li class="nav-header">Tagovi</li>
-            <?php
             if(isset($top_rated_tags))
             {
+                ?>
+                <li class="nav-header">Tagovi</li>
+                <?php
                 foreach($top_rated_tags as $tag)
                 {
             ?>

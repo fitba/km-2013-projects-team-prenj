@@ -11,6 +11,11 @@ class Recommender_m extends CI_Model
     
     public function getSomethingByUser($table, $config = array())
     {
+        if(isset($config['distinct']))
+        {
+            $this->db->distinct();
+        }
+        
         if(isset($config['select']))
         {
             $this->db->select($config['select']);
@@ -116,7 +121,7 @@ class Recommender_m extends CI_Model
         }
         $this->db->group_by($table. '.' . $id . ', ' . $table . '.Title');
         $this->db->order_by('(SUM(evaluation.Evaluate) / COUNT(evaluation.Evaluate))', 'DESC');
-        $this->db->limit(5);
+        $this->db->limit(10);
         $query = $this->db->get();
         
         if($this->db->_error_number() > 0)
@@ -151,7 +156,7 @@ class Recommender_m extends CI_Model
         }
         $this->db->group_by('views.ArticleID');
         $this->db->order_by('COUNT( views.ViewID )', 'DESC');
-        $this->db->limit(5);
+        $this->db->limit(10);
         $query = $this->db->get();
         
         if($this->db->_error_number() > 0)
@@ -192,17 +197,47 @@ class Recommender_m extends CI_Model
         }
     }
     
-    public function getSomethingByTag($table, $table_id, $table_tag, $tag_id, $order_by = null)
+    public function getSomethingByTag($config = array())
     {
-        $this->db->select($table . '.' . $table_id . ', ' . $table . '.Title');
-        $this->db->from($table);
-        $this->db->join($table_tag, $table_tag . '.' . $table_id . ' = ' . $table . '.' . $table_id);
-        $this->db->where($table_tag . '.TagID', $tag_id);
-        if(isset($order_by))
+        if(isset($config['distinct']))
         {
-            $this->db->order_by($order_by);
+            $this->db->distinct();
         }
-        $this->db->limit(5);
+        
+        if(isset($config['select']))
+        {
+            $this->db->select($config['select']);
+        }
+        else
+        {
+            $this->db->select('*');
+        }
+        
+        $this->db->from($config['table']);
+        
+        if(isset($config['join']))
+        {
+            foreach($config['join'] as $key => $value)
+            {
+                $this->db->join($key, $value, 'left');
+            }
+        }
+        
+        if(isset($config['wheree']))
+        {
+            $this->db->where($config['wheree']);
+        }
+        
+        if(isset($config['order_by']))
+        {
+            $this->db->order_by($config['order_by']);
+        }
+        
+        if(isset($config['limit']))
+        {
+            $this->db->limit($config['limit']);
+        }
+        
         $query = $this->db->get();
         
         if($this->db->_error_number() > 0)
