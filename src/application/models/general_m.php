@@ -134,6 +134,26 @@ class General_m extends CI_Model
             return true;
         }
     }
+    
+    public function updateData2($table, $data = array(), $where)
+    {
+        $dataUpdate = array();
+        foreach($data as $key => $value)
+        {
+            $dataUpdate[$key] = htmlentities($value, ENT_NOQUOTES);
+        }
+        $this->db->where($where);
+        $this->db->update($table, $dataUpdate);
+
+        if($this->db->_error_number() > 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
 
     /* Globalna funkcija exists() prihvata 3 parametra $table, $column i $where. 
      * Funkcija provjerava da li postoji proslijeđeni podatak u bazi.
@@ -214,6 +234,11 @@ class General_m extends CI_Model
         if (isset($config['offset'])) 
         {
             $this->db->offset($config['offset']);
+        }
+        
+        if (isset($config['order'])) 
+        {
+            $this->db->order_by($config['order']);
         }
 
         $query = $this->db->get($table);

@@ -149,15 +149,31 @@ class Ajax extends CI_Controller
                 }
                 else
                 {
-                    $where = "UserID = " . $sessionData['UserID'] . " AND QuestionID = " . $question_id . " AND Positive = '".$vote."'";
-                    $count = $this->general_m->exists('votes', 'VoteID', $where);
-
-                    if($count > 0)
+                    $where1 = "UserID = " . $sessionData['UserID'] . " AND QuestionID = " . $question_id . " AND Positive = '1'";
+                    $count1 = $this->general_m->exists('votes', 'VoteID', $where1);
+                    
+                    $where0 = "UserID = " . $sessionData['UserID'] . " AND QuestionID = " . $question_id . " AND Positive = '0'";
+                    $count0 = $this->general_m->exists('votes', 'VoteID', $where0);
+                    
+                    if($vote == 1)
                     {
-                        $errors[] = '
-                            <h3>Upozorenje</h3>
-                            <hr/>
-                            <p>Već ste ocijenili to pitanje!</p>';
+                        if(($count1 - $count0) >= 0)
+                        {
+                            $errors[] = '
+                                <h3>Upozorenje</h3>
+                                <hr/>
+                                <p>Već ste ocijenili to pitanje!</p>';
+                        }
+                    }
+                    else 
+                    {
+                        if(($count0 - $count1) >= 0)
+                        {
+                            $errors[] = '
+                                <h3>Upozorenje</h3>
+                                <hr/>
+                                <p>Već ste ocijenili to pitanje!</p>';
+                        }
                     }
                 }
 
@@ -214,13 +230,32 @@ class Ajax extends CI_Controller
                 {
                     $where = "UserID = " . $sessionData['UserID'] . " AND AnswerID = " . $answer_id . " AND Positive = '".$vote."'";
                     $count = $this->general_m->exists('votes', 'VoteID', $where);
-
-                    if($count > 0)
+                    
+                    $where1 = "UserID = " . $sessionData['UserID'] . " AND AnswerID = " . $answer_id . " AND Positive = '1'";
+                    $count1 = $this->general_m->exists('votes', 'VoteID', $where1);
+                    
+                    $where0 = "UserID = " . $sessionData['UserID'] . " AND AnswerID = " . $answer_id . " AND Positive = '0'";
+                    $count0 = $this->general_m->exists('votes', 'VoteID', $where0);
+                    
+                    if($vote == 1)
                     {
-                        $errors[] = '
-                            <h3>Upozorenje</h3>
-                            <hr/>
-                            <p>Već ste ocijenili taj odgovor!</p>';
+                        if(($count1 - $count0) == 1)
+                        {
+                            $errors[] = '
+                                <h3>Upozorenje</h3>
+                                <hr/>
+                                <p>Već ste ocijenili taj odgovor!</p>';
+                        }
+                    }
+                    else 
+                    {
+                        if(($count0 - $count1) == 1)
+                        {
+                            $errors[] = '
+                                <h3>Upozorenje</h3>
+                                <hr/>
+                                <p>Već ste ocijenili taj odgovor!</p>';
+                        }
                     }
                 }
 
@@ -339,13 +374,31 @@ class Ajax extends CI_Controller
                 }
                 else
                 {
-                    $where = "UserID = " . $sessionData['UserID'] . " AND ArticleID = " . $article_id . " AND Positive = '".$vote."'";
-                    $count = $this->general_m->exists('votes', 'VoteID', $where);
-
-                    if($count > 0)
+                    $where1 = "UserID = " . $sessionData['UserID'] . " AND ArticleID = " . $article_id . " AND Positive = '1'";
+                    $count1 = $this->general_m->exists('votes', 'VoteID', $where1);
+                    
+                    $where0 = "UserID = " . $sessionData['UserID'] . " AND ArticleID = " . $article_id . " AND Positive = '0'";
+                    $count0 = $this->general_m->exists('votes', 'VoteID', $where0);
+                    
+                    if($vote == 1)
                     {
-                        $errors[] = '<h3>Upozorenje</h3>
-                        <hr/><p>Već ste ocijenili taj članak!</p>';
+                        if(($count1 - $count0) == 1)
+                        {
+                            $errors[] = '
+                                <h3>Upozorenje</h3>
+                                <hr/>
+                                <p>Već ste ocijenili taj članak!</p>';
+                        }
+                    }
+                    else 
+                    {
+                        if(($count0 - $count1) == 1)
+                        {
+                            $errors[] = '
+                                <h3>Upozorenje</h3>
+                                <hr/>
+                                <p>Već ste ocijenili taj članak!</p>';
+                        }
                     }
                 }
 
@@ -400,12 +453,6 @@ class Ajax extends CI_Controller
                 {
                     $where = "UserID = " . $sessionData['UserID'] . " AND ArticleID = " . $article_id;
                     $count = $this->general_m->exists('evaluation', 'EvaluationID', $where);
-
-                    if($count > 0)
-                    {
-                        $errors[] = '<h3>Upozorenje</h3>
-                        <hr/><p>Već ste ocijenili taj članak!</p>';
-                    }
                 }
 
                 if(!empty($errors))
@@ -415,18 +462,35 @@ class Ajax extends CI_Controller
                 }
                 else
                 {
-                    $dataInsert = array('UserID' => $sessionData['UserID'],
-                                        'ArticleID' => $article_id,
-                                        'Evaluate' => $evaluate);
-
-                    if($this->general_m->addData('evaluation', $dataInsert) === TRUE)
+                    if($count > 0)
                     {
-                        echo 'true';
+                        $dataUpdate = array('Evaluate' => $evaluate);
+
+                        if($this->general_m->updateData2('evaluation', $dataUpdate, 'UserID = ' . $sessionData['UserID'] . ' AND ' . 'ArticleID = ' . $article_id) === TRUE)
+                        {
+                            echo 'true';
+                        }
+                        else
+                        {
+                            echo '<h3>Upozorenje</h3>
+                            <hr/><p>Dogodila se neočekivana greska!</p>';
+                        }
                     }
                     else
                     {
-                        echo '<h3>Upozorenje</h3>
-                        <hr/><p>Dogodila se neočekivana greska!</p>';
+                        $dataInsert = array('UserID' => $sessionData['UserID'],
+                                        'ArticleID' => $article_id,
+                                        'Evaluate' => $evaluate);
+
+                        if($this->general_m->addData('evaluation', $dataInsert) === TRUE)
+                        {
+                            echo 'true';
+                        }
+                        else
+                        {
+                            echo '<h3>Upozorenje</h3>
+                            <hr/><p>Dogodila se neočekivana greska!</p>';
+                        }
                     }
                 }
             }
@@ -449,12 +513,6 @@ class Ajax extends CI_Controller
                 {
                     $where = "UserID = " . $sessionData['UserID'] . " AND QuestionID = " . $question_id;
                     $count = $this->general_m->exists('evaluation', 'EvaluationID', $where);
-
-                    if($count > 0)
-                    {
-                        $errors[] = '<h3>Upozorenje</h3>
-                        <hr/><p>Već ste ocijenili to pitanje!</p>';
-                    }
                 }
 
                 if(!empty($errors))
@@ -464,18 +522,35 @@ class Ajax extends CI_Controller
                 }
                 else
                 {
-                    $dataInsert = array('UserID' => $sessionData['UserID'],
-                                        'QuestionID' => $question_id,
-                                        'Evaluate' => $evaluate);
-
-                    if($this->general_m->addData('evaluation', $dataInsert) === TRUE)
+                    if($count > 0)
                     {
-                        echo 'true';
+                        $dataUpdate = array('Evaluate' => $evaluate);
+
+                        if($this->general_m->updateData2('evaluation', $dataUpdate, 'UserID = ' . $sessionData['UserID'] . ' AND ' . 'QuestionID = ' . $question_id) === TRUE)
+                        {
+                            echo 'true';
+                        }
+                        else
+                        {
+                            echo '<h3>Upozorenje</h3>
+                            <hr/><p>Dogodila se neočekivana greska!</p>';
+                        }
                     }
                     else
                     {
-                        echo '<h3>Upozorenje</h3>
-                        <hr/><p>Dogodila se neočekivana greska!</p>';
+                        $dataInsert = array('UserID' => $sessionData['UserID'],
+                                        'QuestionID' => $question_id,
+                                        'Evaluate' => $evaluate);
+
+                        if($this->general_m->addData('evaluation', $dataInsert) === TRUE)
+                        {
+                            echo 'true';
+                        }
+                        else
+                        {
+                            echo '<h3>Upozorenje</h3>
+                            <hr/><p>Dogodila se neočekivana greska!</p>';
+                        }
                     }
                 }
             }

@@ -5,6 +5,7 @@ class Recommender
     var $sessionData;
     public function recommenderSystem($sessionData)
     {
+        error_reporting(0);
         $CI =& get_instance();
         $CI->load->model('recommender_m');
         $CI->sessionData = $sessionData;

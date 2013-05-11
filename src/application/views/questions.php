@@ -96,6 +96,7 @@
                     setTimeout(function() {
                         $('#response').fadeOut('fast');
                     }, 1000);
+                    location.reload(true);
                 }
                 else
                 {
@@ -109,7 +110,7 @@
     });
 </script>
 <div class="row-fluid">
-<h3><?php echo $question['Title']; ?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/main/question/' . $question_id . '?editQuestion=true'); ?>">[promijeni]</a></h3>
+<h3 class="naslov"><?php echo $question['Title']; ?> <a style="float: right; font-size: 13px; color: #FFF;"  href="<?php echo base_url('index.php/main/question/' . $question_id . '?editQuestion=true'); ?>">[promijeni]</a></h3>
   <table class="table">
         <tbody>
             <tr>
@@ -136,7 +137,9 @@
                                     <p><input type="text" name="title" class="input-xxlarge" value="'.$question['Title'].'"/></p>
                                     <p><textarea id="editor" name="question">'.html_entity_decode($question['Question']).'</textarea></p>
                                     <p><input id="tags" type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge" value="'.$tagsForEdit.'"></p>
-                                    <p><input type="submit" name="submitEditQuestion" value="Promijeni" class="btn btn-primary"/></p>
+                                    <p>
+                                        <button type="submit" name="submitEditQuestion" class="btn btn-primary"><i class="icon-pencil icon-white"></i> Promijeni</button>
+                                    </p>
                                  </form>';
                         }
                         else
@@ -158,18 +161,6 @@
                     <br/><br/><br/>
                     <div class="exemple">
                         <em style="font-size: 18px;"><strong>Ocjenite pitanje</strong></em>
-                        <img class="minusTest showsTooltip" onmousemove="Tooltip.Text = 'Poništite ocjenu';" src="<?php echo base_url('assets/images/minus.png'); ?>" width="40"/>
-                        <?php
-                        if(isset($user))
-                        {
-                            if($user > 0)
-                            {
-                            ?>
-                            <img class="minus showsTooltip" onmousemove="Tooltip.Text = 'Poništite ocjenu';" src="<?php echo base_url('assets/images/minus.png'); ?>" width="40"/>
-                            <?php 
-                            }
-                        }
-                        ?>
                         <div id="mydiv" class="basic" data-average="5" data-id="1"></div>
                         <div id="response" style="color:green"></div>
                     </div>
@@ -251,7 +242,7 @@
                     <?php
                     }
                     ?>
-                    <a href="#" style="margin-left: 30px" id="openComment" class="btn btn-mini">Otvorite komentar</a>
+                    <a style="margin-left: 30px" id="openComment" class="btn btn-mini"><i class="icon-comment"></i> Otvorite komentar</a>
                     <br/><br/>
                     <div id="commentOpens" style="margin-left: 30px; display: none;">
                         <form action="<?php echo base_url('index.php/main/question/' . $question_id); ?>" method="post" onsubmit="return saveScrollPositions(this);">
@@ -265,7 +256,9 @@
                             <input type="hidden" name="scrollx" id="scrollx" value="0" />
                             <input type="hidden" name="scrolly" id="scrolly" value="0" />
                             
-                            <p><input type="submit" name="submitComment" value="Komentariši" class="btn btn-primary"/></p>
+                            <p>
+                                <button type="submit" name="submitComment" class="btn btn-primary"><i class="icon-plus icon-white"></i> Komentariši</button>
+                            </p>
                         </form>
                     </div>
                 </div>
@@ -348,7 +341,9 @@
                         {
                             echo '<form action="'.  base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
                                     <p><textarea id="editor" name="answer">'.html_entity_decode($answer['Answer']).'</textarea></p>
-                                    <p><input type="submit" name="submitEditAnswer" value="Promijeni" class="btn btn-primary"/></p>
+                                    <p>
+                                        <button type="submit" name="submitEditAnswer" class="btn btn-primary"><i class="icon-pencil icon-white"></i> Promijeni</button>
+                                    </p>
                                  </form>';
                         }
                         else
@@ -437,7 +432,7 @@
                                         }
                                         $lastOrdinal = $this->general_m->selectMax('Ordinal', 'comments', 'AnswerID = ' . $answer['AnswerID']);
                                         ?>
-                                        <a href="#comment<?php echo $answer['AnswerID']; ?>" onclick="openComment('#commentOpens<?php echo $answer['AnswerID']; ?>');" style="margin-left: 30px" id="openComment" class="btn btn-mini">Otvorite komentar</a>
+                                        <a href="#comment<?php echo $answer['AnswerID']; ?>" onclick="openComment('#commentOpens<?php echo $answer['AnswerID']; ?>');" style="margin-left: 30px" id="openComment" class="btn btn-mini"><i class="icon-comment"></i> Otvorite komentar</a>
                                         <br/><br/>
                                         <div name="comment<?php echo $answer['AnswerID']; ?>" style="margin-left: 30px; display: none;" id="commentOpens<?php echo $answer['AnswerID']; ?>">
                                             <form action="<?php echo base_url('index.php/main/question/' . $question_id . '/' . $answer['AnswerID']); ?>" method="post" onsubmit="return saveScrollPositions(this);">
@@ -450,7 +445,9 @@
                                                 <input type="hidden" name="scrollx" id="scrollx" value="0" />
                                                 <input type="hidden" name="scrolly" id="scrolly" value="0" />
                                                 
-                                                <p><input type="submit" name="submitCommentAnswer" value="Komentariši" class="btn btn-primary"/></p>
+                                                <p>
+                                                    <button type="submit" name="submitCommentAnswer" class="btn btn-primary"><i class="icon-plus icon-white"></i> Komentariši</button>
+                                                </p>
                                             </form>
                                         </div>
                                     </div>
@@ -470,7 +467,7 @@
       if(!(isset($_GET['editAnswer'])) || !(isset($_GET['editQuestion'])))
       {
       ?>
-      <a href="#answerForm" id="openAnswerForm" class="btn btn-mini">Otvorite odgovor</a>
+      <a href="#answerForm" id="openAnswerForm" class="btn btn-mini"><i class="icon-folder-open"></i> Otvorite odgovor</a>
       <br/><br/>
       <form name="answerForm" id="answerForm" style="display: none;" action="<?php echo base_url('index.php/main/question/' . $question_id); ?>" method="post" onsubmit="return saveScrollPositions(this);">
           <p><textarea id="editor" name="answer"></textarea></p>
@@ -481,7 +478,9 @@
           <input type="hidden" name="scrollx" id="scrollx" value="0" />
           <input type="hidden" name="scrolly" id="scrolly" value="0" />
           
-          <p><input type="submit" name="submitAnswer" value="Odgovori" class="btn btn-primary"/></p>
+          <p>
+              <button type="submit" name="submitAnswer" class="btn btn-primary"><i class="icon-plus icon-white"></i> Odgovori</button>
+          </p>
       </form>
       <?php 
       }

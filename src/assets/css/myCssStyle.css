@@ -10,6 +10,26 @@ h3, h2
     border: 0;
 }
 
+#preporuka, .naslov
+{
+    background-color: #bababa;
+    margin-top: -10px;
+    color: #FFF;
+    margin-left: -1px;
+    margin-right: -1px;
+}
+
+.naslov
+{
+    margin-top: 0;
+}
+
+.my-nav-header
+{
+    background-color: #cfcfcf;
+    color: #FFF;
+}
+
 .result
 {
     list-style: none;
@@ -75,6 +95,16 @@ img.showsTooltip
     width: 70px;
     height: 83px;
     float: left;
+}
+
+.profileEval
+{
+    background-color: #eeeeee;
+    width: 30px;
+    height: 18px;
+    float: left;
+    margin: 1px;
+    margin-right: 3px;
 }
 
 .ocjena

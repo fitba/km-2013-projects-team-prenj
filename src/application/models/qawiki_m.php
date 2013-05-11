@@ -105,6 +105,48 @@ class Qawiki_m extends CI_Model
         }
     }
     
+    public function getEvaluatesForUser($user_id, $config)
+    {
+        /* 
+            SELECT u.FirstName, u.LastName, q.Title, e.Evaluate
+            FROM users u
+            JOIN evaluation e ON e.UserID = u.UserID
+            JOIN questions q ON q.QuestionID = e.QuestionID
+         */
+        $user_id = (int)$user_id;
+        if(isset($config['select']))
+        {
+           $this->db->select($config['select']); 
+        }
+        else
+        {
+            $this->db->select('*'); 
+        }
+        
+        $this->db->from('users');
+        
+        if(isset($config['join']))
+        {
+            foreach($config['join'] as $key => $value)
+            {
+                $this->db->join($key, $value);
+            }
+        }
+        
+        $this->db->where('users.UserID', $user_id);
+        
+        $query = $this->db->get();
+        
+        if($this->db->_error_number() > 0)
+        {
+            return FALSE;
+        }
+        else
+        {
+            return $query->result_array();
+        }
+    }
+    
     /* Funkcija getCommentsDataById() vraća sve podatke o komentarima za neki odgovor ili pitanje.
      */
     public function getCommentsDataById($question_id = NULL, $answer_id = NULL, $article_id = NULL)

@@ -20,14 +20,25 @@
         <?php 
         if(isset($key))
         {
-            if($key == 'postArticles')
+            if($key == 'postArticles' && $sessionData != null)
             {
         ?>
-        <h2>Postavite članak</h2>
+        <h2 class="naslov">Postavite članak</h2>
         <hr/>
         <form action="<?php echo base_url('index.php/qawiki_c/wiki/' . $key); ?>" method="post">
             <p><input type="text" name="title" placeholder="Ovdje unesite naslov članka" class="input-xxlarge" /></p>
             <p><textarea id="editor" name="content"></textarea></p>
+            <p>
+                <select name="categoryid" class="input-xxlarge">
+                    <option value=""></option>
+                    <?php 
+                    foreach($categories as $c)
+                    {
+                        echo '<option value="'.$c['CategoryID'].'">'.$c['Name'].'</option>';
+                    }
+                    ?>
+                </select>
+            </p>
             <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>" /></p>
             <p><input type="hidden" name="postDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
             <p class="autosuggest">
@@ -37,14 +48,16 @@
                     </ul>
                 </div>
             </p>
-            <p><input type="submit" name="postArticle" class="btn" value="Submit"></p>
+            <p>
+                <button type="submit" name="postArticle" class="btn btn-primary"><i class="icon-plus icon-white"></i> Snimi</button>
+            </p>
         </form>
         <?php
             }
             else if($key == 'articles')
             {
         ?>
-                <h2>Lista članaka</h2>
+                <h2 class="naslov">Lista članaka</h2>
                 <table class="table">
                     <tbody>
                         <?php 
@@ -131,8 +144,8 @@
                         ?>
                     </tbody>
                 </table>
-        <tbody>
         <?php
+        echo $pagination;
             }
         }
         ?>

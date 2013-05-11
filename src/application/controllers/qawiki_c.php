@@ -17,7 +17,7 @@ class Qawiki_c extends CI_Controller
     
     /* qa() funkcija nam omogućava unos pitanja. Pošto smo u question/answer sekciji i još u sekciji question, tj
      * postavljamo pitanje, stranici moramo proslijediti podatak $ask da ne bi došlo do greške. */
-    public function qa($key = null)
+    public function qa($key = null, $per_page = 0)
     {
         if(isset($key))
         {
@@ -136,7 +136,21 @@ class Qawiki_c extends CI_Controller
             {
                 $data = $this->recommender->recommenderSystem($this->sessionData);
                 
-                $data['questions'] = $this->general_m->getAll('questions', 'QuestionID');
+                if(isset($per_page))
+                    $data['per_page'] = $per_page;
+                else
+                    $data['per_page'] = 0;
+                $config = array (
+                        'limit' => LIMIT,
+                        'offset' => $per_page
+                );
+
+                $data['questions'] = $users = $this->general_m->getAll('questions', 'AskDate', $config);
+
+                $this->load->helper('MY_pagination');
+
+                $data['pagination'] = generate_pagination ('qawiki_c/qa/questions/', 
+                count($this->general_m->getAll('questions', 'AskDate')), 4, PER_PAGE);
             }
         }
         
@@ -146,7 +160,7 @@ class Qawiki_c extends CI_Controller
         $this->load->view('qa', $data);
     }
     
-    public function tags($tag_id = NULL)
+    public function tags($tag_id = NULL, $per_page = 0)
     {
         if(isset($_GET['tag_search']))
         {
@@ -167,7 +181,20 @@ class Qawiki_c extends CI_Controller
         {
             $data = $this->recommender->recommenderSystem($this->sessionData);
             
-            $data['tags'] = $this->general_m->getAll('tags', 'Name');
+            if(isset($per_page))
+                $data['per_page'] = $per_page;
+            else
+                $data['per_page'] = 0;
+            $config = array (
+                    'limit' => LIMIT,
+                    'offset' => $per_page
+            );
+            $data['tags'] = $this->general_m->getAll('tags', 'Name', $config);
+
+            $this->load->helper('MY_pagination');
+
+            $data['pagination'] = generate_pagination ('qawiki_c/tags/0/', 
+            count($this->general_m->getAll('tags', 'Name')), 4, PER_PAGE);
         }
         
         
@@ -236,7 +263,7 @@ class Qawiki_c extends CI_Controller
         $this->load->view('tags', $data);
     }
 
-    public function users()
+    public function users($per_page = 0)
     {
         if(isset($_GET['user_search']))
         {
@@ -260,13 +287,27 @@ class Qawiki_c extends CI_Controller
         {
             $data = $this->recommender->recommenderSystem($this->sessionData);
             
-            $data['users'] = $users = $this->general_m->getAll('users', 'FirstName');
+            if(isset($per_page))
+                $data['per_page'] = $per_page;
+            else
+                $data['per_page'] = 0;
+            $config = array (
+                    'limit' => LIMIT,
+                    'offset' => $per_page
+            );
+            
+            $data['users'] = $users = $this->general_m->getAll('users', 'FirstName', $config);
+
+            $this->load->helper('MY_pagination');
+
+            $data['pagination'] = generate_pagination ('qawiki_c/users/', 
+            count($this->general_m->getAll('users', 'FirstName')), 3, PER_PAGE);
         }
         
         $this->load->view('users', $data);
     }
     
-    public function wiki($key = null)
+    public function wiki($key = null, $per_page = 0)
     {
         $data = $this->recommender->recommenderSystem($this->sessionData);
         $data[''] = '';
@@ -286,10 +327,12 @@ class Qawiki_c extends CI_Controller
                 }
                 else
                 {
+                    $config['order'] = 'Name';
+                    $data['categories'] = $this->general_m->getAll('categories', null, $config);
                     if(isset($_POST['postArticle']))
                     {
                         $errors = array();
-                        $requiredFields = array($this->input->post('title'), $this->input->post('content'), $this->input->post('tags'));
+                        $requiredFields = array($this->input->post('title'), $this->input->post('categoryid'), $this->input->post('content'), $this->input->post('tags'));
 
                         foreach($requiredFields as $key => $value)
                         {
@@ -391,7 +434,21 @@ class Qawiki_c extends CI_Controller
             }
             else if($key == 'articles')
             {
-                $data['articles'] = $this->general_m->getAll('articles', 'ArticleID');
+                if(isset($per_page))
+                    $data['per_page'] = $per_page;
+                else
+                    $data['per_page'] = 0;
+                $config = array (
+                        'limit' => LIMIT,
+                        'offset' => $per_page
+                );
+
+                $data['articles'] = $this->general_m->getAll('articles', 'PostDate', $config);
+
+                $this->load->helper('MY_pagination');
+
+                $data['pagination'] = generate_pagination ('qawiki_c/wiki/articles/', 
+                count($this->general_m->getAll('articles', 'PostDate')), 4, PER_PAGE);
             }
         }
         $this->load->view('wiki', $data);

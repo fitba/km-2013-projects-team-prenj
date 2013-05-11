@@ -3,13 +3,13 @@
     $this->load->view('static/header.php', $data);
 ?>
 <div class="row-fluid">
-<h3>
+<h3 class="naslov">
     <?php echo $userData['FirstName'] . ' ' . $userData['LastName']; ?>
     <?php 
     if($user_id === $sessionData['UserID']) 
     {
     ?>
-    <a style="float: right; font-size: 13px;"  href="<?php if($user_id === $sessionData['UserID']) echo base_url('index.php/main/profile/' . $userData['UserID'] . '?editUser=true'); ?>">[promijeni]</a>
+    <a style="float: right; font-size: 13px; color: #FFF;"  href="<?php if($user_id === $sessionData['UserID']) echo base_url('index.php/main/profile/' . $userData['UserID'] . '?editUser=true'); ?>">[promijeni]</a>
     <?php 
     }
     ?>
@@ -56,17 +56,50 @@
 ?>
 <form action="<?php echo base_url('index.php/main/profile/' . $userData['UserID']); ?>" method="POST">
     <div class="span4">
-        <p><label>Email: *</label> <input type="text" name="email" value="<?php echo $userData['Email']; ?>"/></p>
-        <p><label>Ime: *</label> <input type="text" name="firstName" value="<?php echo $userData['FirstName']; ?>"/></p>
-        <p><label>Prezime: *</label> <input type="text" name="lastName" value="<?php echo $userData['LastName']; ?>"/></p>
-        <p><label>Korisničko ime: *</label> <input type="text" name="username" value="<?php echo $userData['Username']; ?>"/></p>
+        <p>
+            <label>Email: *</label> 
+            <div class="input-prepend">
+               <span class="add-on"><i class="icon-envelope"></i></span>
+               <input type="text" name="email" value="<?php echo $userData['Email']; ?>"/>
+            </div>
+        </p>
+        <p><label>Ime: *</label> 
+            <div class="input-prepend">
+               <span class="add-on"><i class="icon-font"></i></span>
+               <input type="text" name="firstName" value="<?php echo $userData['FirstName']; ?>"/>
+            </div></p>
+        <p><label>Prezime: *</label> 
+            <div class="input-prepend">
+               <span class="add-on"><i class="icon-bold"></i></span>
+               <input type="text" name="lastName" value="<?php echo $userData['LastName']; ?>"/>
+            </div></p>
+        <p><label>Korisničko ime: *</label> 
+            <div class="input-prepend">
+               <span class="add-on"><i class="icon-user"></i></span>
+               <input type="text" name="username" value="<?php echo $userData['Username']; ?>"/>
+            </div></p>
     </div>
     <div class="span7">
-        <p><label>Lokacija:</label> <input type="text" name="location" value="<?php echo $userData['Location']; ?>"/></p>
-        <p><label>Web stranica:</label> <input type="text" name="website" value="<?php echo $userData['WebSite']; ?>"/></p>
-        <p><label>Datum rođenja:</label> <input type="text" name="dateOfBirth" value="<?php echo $userData['DateOfBirth']; ?>" placeholder="YYYY-MM-DD"/></p>
+        <p><label>Lokacija:</label> 
+            <div class="input-prepend">
+               <span class="add-on"><i class="icon-random"></i></span>
+               <input type="text" name="location" value="<?php echo $userData['Location']; ?>"/>
+            </div></p>
+        <p><label>Web stranica:</label> 
+            <div class="input-prepend">
+               <span class="add-on"><i class="icon-home"></i></span>
+               <input type="text" name="website" value="<?php echo $userData['WebSite']; ?>"/>
+            </div></p>
+        <p><label>Datum rođenja:</label> 
+            <div class="input-prepend">
+               <span class="add-on"><i class="icon-calendar"></i></span>
+               <input type="text" name="dateOfBirth" value="<?php echo $userData['DateOfBirth']; ?>" placeholder="YYYY-MM-DD"/>
+            </div></p>
         <p><label>O sebi:</label> <textarea id="editor" name="aboutSelf"><?php echo $userData['AboutSelf']; ?></textarea></p>
-        <p><input type="submit" name="submitEditUser" value="Snimi promjene" class="btn btn-primary pull-right"/></p>
+        <p>
+            <button type="submit" name="submitEditUser" class="btn btn-primary pull-right"><i class="icon-pencil icon-white"></i> Snimi promjene</button>
+            <input type="submit" />
+        </p>
     </div>
 </form>
 <?php
@@ -88,7 +121,6 @@
                 }
             }
             ?>
-
         </div>
         <div class="span5">
             <?php 
@@ -131,6 +163,74 @@
                 foreach ($tags as $tag) 
                 {
                     echo '<span class="label"><a style="color:#FFF" href="'.base_url('index.php/qawiki_c/tags/' . $tag['TagID']).'">'.$tag['Name'].'</a></span>' . ' ';
+                }
+            }
+            ?>
+        </div>
+    </div>
+    <div class="span12">
+        <div class="span5">
+            <?php 
+            if(isset($evaluateQuestion))
+            {
+                echo '<b>('.count($evaluateQuestion).') Ocjene za pitanja</b><hr style="margin:0;"/>';
+                foreach ($evaluateQuestion as $eval) 
+                {
+                    echo '<div class="profileEval">
+                        <center>
+                            '.$eval['Evaluate'].'
+                        </center>
+                    </div><a href="'.base_url('index.php/main/question/' . $eval['QuestionID']).'">'.$eval['Title'].'</a><br/>';
+                }
+            }
+            ?>
+        </div>
+        <div class="span5">
+            <?php 
+            if(isset($evaluateArticle))
+            {
+                echo '<b>('.count($evaluateArticle).') Ocjene za članke</b><hr style="margin:0;"/>';
+                foreach ($evaluateArticle as $eval) 
+                {
+                    echo '<div class="profileEval">
+                        <center>
+                            '.$eval['Evaluate'].'
+                        </center>
+                    </div><a href="'.base_url('index.php/main/question/' . $eval['ArticleID']).'">'.$eval['Title'].'</a><br/>';
+                }
+            }
+            ?>
+        </div>
+    </div>
+    <div class="span12">
+        <div class="span5">
+            <?php 
+            if(isset($votesQuestion))
+            {
+                echo '<b>('.count($votesQuestion).') Glasanja za pitanja</b><hr style="margin:0;"/>';
+                foreach ($votesQuestion as $eval) 
+                {
+                    echo '<div class="profileEval">
+                        <center>
+                            '.$eval['Positive'].'
+                        </center>
+                    </div><a href="'.base_url('index.php/main/question/' . $eval['QuestionID']).'">'.$eval['Title'].'</a><br/>';
+                }
+            }
+            ?>
+        </div>
+        <div class="span5">
+            <?php 
+            if(isset($votesArticle))
+            {
+                echo '<b>('.count($votesArticle).') Glasanja za članke</b><hr style="margin:0;"/>';
+                foreach ($votesArticle as $eval) 
+                {
+                    echo '<div class="profileEval">
+                        <center>
+                            '.$eval['Positive'].'
+                        </center>
+                    </div><a href="'.base_url('index.php/main/question/' . $eval['ArticleID']).'">'.$eval['Title'].'</a><br/>';
                 }
             }
             ?>

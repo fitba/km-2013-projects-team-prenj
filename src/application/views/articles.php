@@ -92,6 +92,7 @@
                     setTimeout(function() {
                         $('#response').fadeOut('fast');
                     }, 1000);
+                    location.reload(true);
                 }
                 else
                 {
@@ -108,7 +109,7 @@
 
 
 <div class="row-fluid">
-<h3><?php echo $article['Title']; ?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/main/article/' . $article_id . '?editArticle=true'); ?>">[promijeni]</a></h3>
+<h3 class="naslov"><?php echo $article['Title']; ?> <a style="float: right; font-size: 13px; color: #FFF;"  href="<?php echo base_url('index.php/main/article/' . $article_id . '?editArticle=true'); ?>">[promijeni]</a></h3>
   <table class="table">
         <tbody>
             <tr>
@@ -134,8 +135,23 @@
                             echo '<form action="'.  base_url('index.php/main/article/' . $article_id) .'" method="post" onsubmit="return saveScrollPositions(this);">
                                     <p><input type="text" name="title" class="input-xxlarge" value="'.$article['Title'].'"/></p>
                                     <p><textarea id="editor" name="content">'.html_entity_decode($article['Content']).'</textarea></p>
+                                    <p>
+                                        <select name="categoryid" class="input-xxlarge">';
+                                            foreach($categories as $c)
+                                            {
+                                                if($c['CategoryID'] == $article['CategoryID'])
+                                                {
+                                                    echo '<option selected value="'.$c['CategoryID'].'">'.$c['Name'].'</option>';
+                                                }
+                                                if($c['CategoryID'] != $article['CategoryID'])
+                                                {
+                                                    echo '<option value="'.$c['CategoryID'].'">'.$c['Name'].'</option>';
+                                                }
+                                            }
+                            echo       '</select>
+                                    </p>
                                     <p><input id="tags" type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge" value="'.$tagsForEdit.'"></p>
-                                    <p><input type="submit" name="submitEditArticle" value="Promijeni" class="btn btn-primary"/></p>
+                                    <p><button type="submit" name="submitEditArticle" class="btn btn-primary"><i class="icon-pencil icon-white"></i> Promijeni</button></p>
                                  </form>';
                         }
                         else
@@ -151,24 +167,19 @@
                         ?>
                         </p>
                         <?php
+                        foreach($categories as $c)
+                        {
+                            if($c['CategoryID'] == $article['CategoryID'])
+                            {
+                                echo '<input disabled="disabled" type="text" class="input-xxlarge" value="'.$c['Name'].'" />';
+                            }
+                        }
                         }
                         ?>
                     </div>
                     <br/><br/><br/>
                     <div class="exemple">
                         <em style="font-size: 18px;"><strong>Ocjenite članak</strong></em>
-                        <img class="minusTest showsTooltip" onmousemove="Tooltip.Text = 'Poništite ocjenu';" src="<?php echo base_url('assets/images/minus.png'); ?>" width="40"/>
-                        <?php
-                        if(isset($user))
-                        {
-                            if($user > 0)
-                            {
-                            ?>
-                            <img class="minus showsTooltip" onmousemove="Tooltip.Text = 'Poništite ocjenu';" src="<?php echo base_url('assets/images/minus.png'); ?>" width="40"/>
-                            <?php 
-                            }
-                        }
-                        ?>
                         <div id="mydiv" class="basic" data-average="12" data-id="1"></div>
                         <div id="response" style="color:green"></div>
                     </div>
@@ -253,7 +264,7 @@
                     <?php
                     }
                     ?>
-                    <a href="#" style="margin-left: 30px" id="openComment" class="btn btn-mini">Otvorite komentar</a>
+                    <a style="margin-left: 30px" id="openComment" class="btn btn-mini"><i class="icon-comment"></i> Otvorite komentar</a>
                     <br/><br/>
                     <div style="margin-left: 30px; display: none;" id="commentOpens">
                         <form action="<?php echo base_url('index.php/main/article/' . $article_id); ?>" method="post" onsubmit="return saveScrollPositions(this);">
@@ -267,7 +278,9 @@
                             <input type="hidden" name="scrollx" id="scrollx" value="0" />
                             <input type="hidden" name="scrolly" id="scrolly" value="0" />
                             
-                            <p><input type="submit" name="submitComment" value="Komentariši" class="btn btn-primary"/></p>
+                            <p>
+                                <button type="submit" name="submitComment" class="btn btn-primary"><i class="icon-plus icon-white"></i> Komentariši</button>
+                            </p>
                         </form>
                     </div>
                 </div>

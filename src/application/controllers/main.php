@@ -20,12 +20,28 @@ class Main extends CI_Controller
     }
     
     /* index() funkcija predstavlja index stranicu na web prikazu */
-    public function index()
+    public function index($per_page = 0)
     {
         $data = $this->recommender->recommenderSystem($this->sessionData);
         
-        $data['articles'] = $this->general_m->getAll('articles', 'PostDate');
-        $data['questions'] = $this->general_m->getAll('questions', 'AskDate');
+        if(isset($per_page))
+                $data['per_page'] = $per_page;
+        else
+                $data['per_page'] = 0;
+        $config = array (
+                'limit' => LIMIT,
+                'offset' => $per_page
+        );
+        
+        $data['articles'] = $this->general_m->getAll('articles', 'PostDate', $config);
+        $data['questions'] = $this->general_m->getAll('questions', 'AskDate', $config);
+        
+        $this->load->helper('MY_pagination');
+        $data['pagination'] = generate_pagination ('main/index/', 
+        count($this->general_m->getAll('questions', 'AskDate')), 3, PER_PAGE);
+        
+        $data['pagination1'] = generate_pagination ('main/index/', 
+        count($this->general_m->getAll('articles', 'PostDate')), 3, PER_PAGE);
         
         $this->load->view('main', $data);
     }
@@ -204,6 +220,22 @@ class Main extends CI_Controller
             
             $joinArticles = array('users' => 'users.UserID = articles.UserID');
             $data['articles'] = $this->qawiki_m->getUserDataById('articles', $joinArticles, $user_id);
+            
+            $joinEvaluateQuestion['join'] = array('evaluation' => 'users.UserID = evaluation.UserID',
+                                                  'questions' => 'questions.QuestionID = evaluation.QuestionID');
+            $data['evaluateQuestion'] = $this->qawiki_m->getEvaluatesForUser($user_id, $joinEvaluateQuestion);
+            
+            $joinEvaluateArticle['join'] = array('evaluation' => 'users.UserID = evaluation.UserID',
+                                                  'articles' => 'articles.ArticleID = evaluation.ArticleID');
+            $data['evaluateArticle'] = $this->qawiki_m->getEvaluatesForUser($user_id, $joinEvaluateArticle);
+            
+            $joinVoteQuestion['join'] = array('votes' => 'users.UserID = votes.UserID',
+                                                  'questions' => 'questions.QuestionID = votes.QuestionID');
+            $data['votesQuestion'] = $this->qawiki_m->getEvaluatesForUser($user_id, $joinVoteQuestion);
+            
+            $joinVoteArticle['join'] = array('votes' => 'users.UserID = votes.UserID',
+                                                  'articles' => 'articles.ArticleID = votes.ArticleID');
+            $data['votesArticle'] = $this->qawiki_m->getEvaluatesForUser($user_id, $joinVoteArticle);
             
             $joinTags = array('follow_tags' => 'tags.TagID = follow_tags.TagID',
                               'users' => 'users.UserID = follow_tags.UserID');
@@ -881,6 +913,9 @@ class Main extends CI_Controller
             }
             
             $article = $this->qawiki_m->getArticleDataById($article_id);
+            
+            $config['order'] = 'Name';
+            $data['categories'] = $this->general_m->getAll('categories', null, $config);
             
             if($article === FALSE)
             {

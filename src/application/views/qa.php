@@ -19,10 +19,10 @@
     <?php
     if(isset($key))
     {
-        if($key == 'ask')
+        if($key == 'ask' && $sessionData != null)
         {
     ?>
-    <h2>Postavite pitanje</h2>
+    <h2 class="naslov">Postavite pitanje</h2>
     <hr/>
     <form action="<?php echo base_url('index.php/qawiki_c/qa/' . $key); ?>" method="post">
         <p><input type="text" name="title" placeholder="Ovdje unesite naslov pitanja" class="input-xxlarge"></p>
@@ -30,14 +30,16 @@
         <p><input id="tags" type="text" name="tags" placeholder="Ovdje unesite tagove" class="input-xxlarge"/></p>
         <p><input type="hidden" name="userid" value="<?php echo base64_encode($sessionData['UserID']); ?>" /></p>
         <p><input type="hidden" name="askDate" value="<?php echo date("Y-m-d H:i:s"); ?>"/></p>
-        <p><input type="submit" name="askQuestion" class="btn" value="Submit"></p>
+        <p>
+            <button type="submit" name="askQuestion" class="btn btn-primary"><i class="icon-plus icon-white"></i> Snimi</button>
+        </p>
     </form>
     <?php
         }
         else if($key == 'questions')
         {
     ?>
-    <h2>Lista pitanja</h2>
+    <h2 class="naslov">Lista pitanja</h2>
     <table class="table">
         <tbody>
             <?php 
@@ -129,6 +131,7 @@
         </tbody>
     </table> 
     <?php
+    echo $pagination;
         }
     }
     ?>

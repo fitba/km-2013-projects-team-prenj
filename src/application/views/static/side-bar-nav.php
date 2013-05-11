@@ -1,9 +1,16 @@
 <div class="span3">
     <div class="well sidebar-nav">
+        <?php
+        $segment2 = $this->uri->segment(2);
+        if($segment2 != 'profile')
+        {
+            echo '<center><h2 id="preporuka">Preporuka</h2></center>';
+        }
+        ?>
       <ul class="nav nav-list">
         <?php
         $segment3 = $this->uri->segment(3);
-        $segment2 = $this->uri->segment(2);
+        
         if($segment2 == 'profile')
         {
         ?>
@@ -33,21 +40,23 @@
                     echo '<img src="'. $userData['ProfilePicture'] .'" height="202" width="200"/>';
                 }
                 ?>
+                        
+                    <?php 
+                    if($userData['UserID'] === $sessionData['UserID'])
+                    {
+                    ?>
                         <hr/>
                         <form action="<?php echo base_url('index.php/main/profile/' . $user_id) ?>" method="post" enctype="multipart/form-data">
                             <div>
                                 <input type="file" name="profilePicture" class="btn"/>
-                                <?php 
-                                if($userData['UserID'] === $sessionData['UserID'])
-                                {
-                                ?>
-                                <input type="submit" name="uploadPicture" value="Upload" class="btn btn-primary"/>
-                                <input type="submit" name="deletePicture" value="Obriši" class="btn btn-primary"/>
-                                <?php 
-                                }
-                                ?>
-                            </div>
+                                <button type="submit" name="uploadPicture" class="btn btn-primary"><i class="icon-upload icon-white"></i> Upload</button>
+                                <button type="submit" name="deletePicture" class="btn btn-primary"><i class="icon-remove icon-white"></i> Obriši</button>
+                                </div>
                         </form>
+                    <?php 
+                    }
+                    ?>
+                            
                 </center>
             </li>
         <?php
@@ -55,7 +64,7 @@
         else 
         {
         ?>
-            <li class="nav-header">Pitanja</li>
+            <li class="nav-header my-nav-header">Pitanja</li>
             <?php
             if(isset($top_rated_questions))
             {
@@ -126,7 +135,7 @@
                 }
             }
             ?>
-            <li class="nav-header">Članci</li>
+            <li class="nav-header my-nav-header">Članci</li>
             <?php
             if(isset($top_rated_articles))
             {
@@ -199,7 +208,7 @@
             if(isset($userID))
             {
                 ?>
-                <li class="nav-header">Korisnici</li>
+                <li class="nav-header my-nav-header">Korisnici</li>
                 <?php 
                 foreach ($userID as $value)
                 {
@@ -211,7 +220,7 @@
             else if(isset($users_by_tags))
             {
                 ?>
-                <li class="nav-header">Korisnici</li>
+                <li class="nav-header my-nav-header">Korisnici</li>
                 <?php
                 if(isset($sessionData))
                 {
@@ -243,7 +252,7 @@
             if(isset($top_rated_tags))
             {
                 ?>
-                <li class="nav-header">Tagovi</li>
+                <li class="nav-header my-nav-header">Tagovi</li>
                 <?php
                 foreach($top_rated_tags as $tag)
                 {

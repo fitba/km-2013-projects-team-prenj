@@ -4,7 +4,7 @@
 ?>
 <div class="row-fluid">
   <div class="span12">
-    <h2>Korisnici</h2>
+    <h2 class="naslov">Korisnici</h2>
     <form action="<?php echo base_url('index.php/qawiki_c/users') ?>" method="GET" class="input-append">
         <input name="user_search" class="span4" type="text">
         <input class="btn" type="submit" value="Pretraga" />
@@ -63,6 +63,7 @@
         </tbody>
     </table>
     <?php 
+    echo $pagination;
         }
         else
         {

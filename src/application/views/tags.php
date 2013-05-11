@@ -2,10 +2,10 @@
     $data['title'] = 'Tagovi';
     $this->load->view('static/header.php', $data);
     
-if(!isset($tag_id))
+if(!isset($tag_id) || $tag_id == 0)
 {
 ?>
-    <h3>Tags</h3>
+    <h2 class="naslov">Tags</h2>
     <form action="<?php echo base_url('index.php/qawiki_c/tags') ?>" method="GET" class="input-append">
         <input name="tag_search" class="span4" type="text">
         <input class="btn" type="submit" value="Pretraga" />
@@ -41,6 +41,7 @@ if(!isset($tag_id))
             $i = $iterate - 1;
             echo '</div><hr/>';
         }
+        echo $pagination;
     }
     else
     {
@@ -78,7 +79,7 @@ else
     if(count($tag) > 0)
     {
 ?>
-    <h3><?php echo $tag['Name']; ?> <a style="float: right; font-size: 13px;"  href="<?php echo base_url('index.php/qawiki_c/tags/' . $tag['TagID'] . '?editTag=true'); ?>">[promijeni]</a></h3>
+    <h3 class="naslov"><?php echo $tag['Name']; ?> <a style="float: right; font-size: 13px; color: #FFF;"  href="<?php echo base_url('index.php/qawiki_c/tags/' . $tag['TagID'] . '?editTag=true'); ?>">[promijeni]</a></h3>
     <hr/>
     <?php
     if(isset($_GET['editTag']) && $_GET['editTag'] == 'true')
@@ -88,14 +89,14 @@ else
         {
             echo '<form action="'.  base_url('index.php/qawiki_c/tags/' . $tag['TagID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
                     <p><textarea id="editor" name="description">Trenutno nemate nikakav opis za ovaj tag.</textarea></p>
-                    <p><input type="submit" name="submitEditTag" value="Promijeni" class="btn btn-primary"/></p>
+                    <p><button type="submit" name="submitEditTag" class="btn btn-primary"><i class="icon-pencil icon-white"></i> Snimi promjene</button></p>
                  </form>';
         }
         else
         {
             echo '<form action="'.  base_url('index.php/qawiki_c/tags/' . $tag['TagID']) .'" method="post" onsubmit="return saveScrollPositions(this);">
                     <p><textarea id="editor" name="description">'.html_entity_decode($tag['Description']).'</textarea></p>
-                    <p><input type="submit" name="submitEditTag" value="Promijeni" class="btn btn-primary"/></p>
+                    <p><button type="submit" name="submitEditTag" class="btn btn-primary"><i class="icon-pencil icon-white"></i> Snimi promjene</button></p>
                  </form>';
         }
     }
