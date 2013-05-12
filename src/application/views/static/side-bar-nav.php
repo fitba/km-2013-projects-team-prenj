@@ -4,7 +4,14 @@
         $segment2 = $this->uri->segment(2);
         if($segment2 != 'profile')
         {
-            echo '<center><h2 id="preporuka">Preporuka</h2></center>';
+            if(($segment2 == 'wiki' || $segment2 == 'qa' || $segment2 == 'index') && !isset($_GET['pretraga']))
+            {
+                echo '<center><h2 id="preporuka">Tagovi</h2></center>';
+            }
+            else
+            {
+                echo '<center><h2 id="preporuka">Preporuka</h2></center>';
+            }
         }
         ?>
       <ul class="nav nav-list">
@@ -60,6 +67,22 @@
                 </center>
             </li>
         <?php
+        }
+        else if(($segment2 == 'wiki' || $segment2 == 'qa' || $segment2 == 'index') && !isset($_GET['pretraga']))
+        {
+            $iterate = 0;
+            for ($i = 0; $i < count($tagsSide); $i++)
+            {
+                for ($j = 0; $j < 3; $j++)
+                {
+                    if($iterate != count($tagsSide))
+                    {
+                        echo '<span class="label"><a style="color:#FFF" href="'.base_url('index.php/search_c/index?pretraga=' . $tagsSide[$iterate]['Name']).'">'.$tagsSide[$iterate]['Name'].'</a></span>' . ' ';
+                        $iterate++;
+                    }
+                }
+                $i = $iterate - 1;
+            }
         }
         else 
         {

@@ -152,6 +152,7 @@ class Qawiki_c extends CI_Controller
                 $data['pagination'] = generate_pagination ('qawiki_c/qa/questions/', 
                 count($this->general_m->getAll('questions', 'AskDate')), 4, PER_PAGE);
             }
+            $data['tagsSide'] = $this->general_m->getAll('tags', 'Name');
         }
         
         $data['key'] = $key;
@@ -316,7 +317,7 @@ class Qawiki_c extends CI_Controller
         $data[''] = '';
         $data['subtitlesTags'] = '';
         $data['sessionData'] = $this->sessionData;
-        
+        $data['tagsSide'] = $this->general_m->getAll('tags', 'Name');
         if(isset($key))
         {
             $data['key'] = $key;

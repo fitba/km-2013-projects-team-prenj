@@ -36,7 +36,7 @@ class Main extends CI_Controller
         
         $data['articles'] = $this->general_m->getAll('articles', 'PostDate', $config);
         $data['questions'] = $this->general_m->getAll('questions', 'AskDate', $config);
-        
+        $data['tagsSide'] = $this->general_m->getAll('tags', 'Name');
         $this->load->helper('MY_pagination');
         $data['pagination'] = generate_pagination ('main/index/', 
         count($this->general_m->getAll('questions', 'AskDate')), 3, PER_PAGE);

@@ -202,6 +202,7 @@
             ?>
         </div>
     </div>
+    <!--
     <div class="span12">
         <div class="span5">
             <?php 
@@ -236,6 +237,7 @@
             ?>
         </div>
     </div>
+    -->
 </div>
 <?php 
     $this->load->view('static/footer.php');
