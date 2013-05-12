@@ -1,7 +1,8 @@
 <?php 
     $data['title'] = 'Home';
-    $this->load->view('static/header.php', $data); 
+    $this->load->view('static/header.php', $data);
 ?>
+
 <div class="tabbable"> <!-- Only required for left/right tabs -->
     <ul class="nav nav-tabs">
       <li class="active"><a href="#tab1" data-toggle="tab">Pitanja</a></li>

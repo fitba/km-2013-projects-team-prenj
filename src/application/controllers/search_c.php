@@ -21,7 +21,11 @@ class Search_c extends CI_Controller
     public function index()
     {
         $this->load->library('recommender');
+        $this->load->library('externalsources');
         $data = $this->recommender->recommenderSystem($this->sessionData);
+        
+        $data['xmlWikiData'] = $this->externalsources->getDataFromWikipedia($_GET['pretraga']);
+        $data['jsonStackData'] = $this->externalsources->getDataFromStackOverflow($_GET['pretraga']);
             
         // If a search_query parameter has been posted, search the index.
         if ($_GET['pretraga'])

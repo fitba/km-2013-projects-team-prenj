@@ -202,8 +202,11 @@ class Qawiki_c extends CI_Controller
         
         if(isset($tag_id))
         {
+            $this->load->library('externalsources');
             $data['tag_id'] = $tag_id;
             $tag = $this->general_m->selectSomeById('*', 'tags', "TagID = '$tag_id'");
+            $data['xmlWikiData'] = $this->externalsources->getDataFromWikipedia($tag['Name']);
+            $data['jsonStackData'] = $this->externalsources->getDataFromStackOverflow($tag['Name']);
             
             if(isset($_POST['submitEditTag']))
             {

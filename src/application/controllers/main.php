@@ -16,6 +16,7 @@ class Main extends CI_Controller
         $this->load->model('qawiki_m');
         $this->load->model('logs_m');
         $this->load->library('recommender');
+        $this->load->library('externalsources');
         $this->sessionData = $this->login_m->isLoggedIn();
     }
     
@@ -637,6 +638,8 @@ class Main extends CI_Controller
             else
             {
                 $data['tags'] = $tags;
+                $data['xmlWikiData'] = $this->externalsources->getDataFromWikipedia($tags[0]['Name']);
+                $data['jsonStackData'] = $this->externalsources->getDataFromStackOverflow($tags[0]['Name']);
             }
             
             $joinQuestion = array('questions' => 'questions.QuestionID = logs.QuestionID',
@@ -968,6 +971,8 @@ class Main extends CI_Controller
             else
             {
                 $data['tags'] = $tags;
+                $data['xmlWikiData'] = $this->externalsources->getDataFromWikipedia($tags[0]['Name']);
+                $data['jsonStackData'] = $this->externalsources->getDataFromStackOverflow($tags[0]['Name']);
             }
             
             if($negative !== FALSE && $positive !== FALSE)

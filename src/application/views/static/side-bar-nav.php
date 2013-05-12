@@ -64,10 +64,32 @@
         else 
         {
         ?>
-            <li class="nav-header my-nav-header">Pitanja</li>
             <?php
-            if(isset($top_rated_questions))
+            if(count($xmlWikiData->Section->Item) > 0)
             {
+                echo '<li class="nav-header my-nav-header">Wikipedia</li>';
+                for($i = 0; $i < count($xmlWikiData->Section->Item); $i++)
+                {
+                    echo '<li><a target="_blank" href="'.$xmlWikiData->Section->Item[$i]->Url.'">'. $xmlWikiData->Section->Item[$i]->Text . '</a></li>';
+                }
+            }
+            ?>
+            
+            <?php
+            if(count($jsonStackData->questions) > 0)
+            {
+                echo '<li class="nav-header my-nav-header">Stack overflow</li>';
+                for($i = 0; $i < count($jsonStackData->questions); $i++)
+                {
+                    echo '<li><a target="_blank" href="http://stackoverflow.com/'.$jsonStackData->questions[$i]->question_timeline_url.'">'. $jsonStackData->questions[$i]->title .'</a></li>';
+                }
+            }
+            ?>
+            
+            <?php
+            if(count($top_rated_questions) > 0)
+            {
+                echo '<li class="nav-header my-nav-header">Pitanja</li>';
                 foreach($top_rated_questions as $question)
                 {
             ?>
@@ -75,8 +97,9 @@
             <?php
                 }
             }
-            else if(isset($most_viewed_questions))
+            else if(count($most_viewed_questions) > 0)
             {
+                echo '<li class="nav-header my-nav-header">Pitanja</li>';
                 foreach($most_viewed_questions as $question)
                 {
                 ?>
@@ -84,8 +107,9 @@
                 <?php
                 }
             }
-            else if(isset($questionIds))
+            else if(count($questionIds) > 0)
             {
+                echo '<li class="nav-header my-nav-header">Pitanja</li>';
                 if(isset($question_id))
                 {
                     foreach($questionIds as $id)
@@ -110,8 +134,9 @@
                     }
                 }
             }
-            else if(isset($questions_by_tags))
+            else if(count($questions_by_tags) > 0)
             {
+                echo '<li class="nav-header my-nav-header">Pitanja</li>';
                 if(isset($question_id))
                 {
                     foreach($questions_by_tags as $question)
@@ -135,10 +160,11 @@
                 }
             }
             ?>
-            <li class="nav-header my-nav-header">Članci</li>
+            
             <?php
-            if(isset($top_rated_articles))
+            if(count($top_rated_articles) > 0)
             {
+                echo '<li class="nav-header my-nav-header">Članci</li>';
                 foreach($top_rated_articles as $article)
                 {
             ?>
@@ -146,8 +172,9 @@
             <?php
                 }
             }
-            else if(isset($most_viewed_articles))
+            else if(count($most_viewed_articles) > 0)
             {
+                echo '<li class="nav-header my-nav-header">Članci</li>';
                 foreach($most_viewed_articles as $article)
                 {
                 ?>
@@ -155,8 +182,9 @@
                 <?php
                 }
             }
-            else if(isset($articleIds))
+            else if(count($articleIds) > 0)
             {
+                echo '<li class="nav-header my-nav-header">Članci</li>';
                 if(isset($article_id))
                 {
                     foreach($articleIds as $id)
@@ -181,8 +209,9 @@
                     }
                 }
             }
-            else if(isset($articles_by_tags))
+            else if(count($articles_by_tags) > 0)
             {
+                echo '<li class="nav-header my-nav-header">Članci</li>';
                 if(isset($article_id))
                 {
                     foreach($articles_by_tags as $article)
@@ -205,7 +234,7 @@
                     }
                 }
             }
-            if(isset($userID))
+            if(count($userID) > 0)
             {
                 ?>
                 <li class="nav-header my-nav-header">Korisnici</li>
@@ -217,7 +246,7 @@
                     echo '<li><a href="'.base_url('index.php/main/profile/' . $u['UserID']).'">'.$u['FirstName'] . ' ' . $u['LastName'] .'</a></li>';
                 }
             }
-            else if(isset($users_by_tags))
+            else if(count($users_by_tags) > 0)
             {
                 ?>
                 <li class="nav-header my-nav-header">Korisnici</li>
@@ -249,7 +278,7 @@
                         echo '<li><a href="#">'.$value.'</a></li>';
                 }
             }*/
-            if(isset($top_rated_tags))
+            if(count($top_rated_tags) > 0)
             {
                 ?>
                 <li class="nav-header my-nav-header">Tagovi</li>
